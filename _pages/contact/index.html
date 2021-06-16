@@ -7,7 +7,7 @@ permalink: /contact/
   <div class="c-header__box">
     <div class="c-search u-full-width">
       <div class="c-search__box">
-        <label for="js-search-input" class="u-screen-reader-text">Search for Blog</label>
+        <label for="js-search-input" class="u-screen-reader-text">블로그 내에서 검색</label>
         <input type="text" id="js-search-input" class="c-search__text" autocomplete="off" placeholder="Type to search...">
         <div data-icon='ei-search' data-size='s'></div>
       </div>
@@ -19,25 +19,25 @@ permalink: /contact/
   <form class="c-form" action="{% if site.author-email %}https://formspree.io/{{site.author-email}}{% else %}#{% endif %}"
     method="POST">
     <a href="/"><div class="c-form-bnt__close" data-icon='ei-close' data-size='s'></div></a>
-    <div class="c-form__title">You can contact me!</div>
+    <div class="c-form__title">언제든 연락주세요!</div>
     <div class="c-form__group">
-      <label for="form-name">Your Name (Required)</label>
+      <label for="form-name">이름 (필수)</label>
       <input class="c-form__input" id="form-name" type="text" name="name" required>
     </div>
     <div class="c-form__group">
-      <label for="form-email">Your Email (Required)</label>
+      <label for="form-email">메일 주소 (필수)</label>
       <input class="c-form__input" id="form-email" type="email" name="_replyto" required>
     </div>
     <div class="c-form__group">
-      <label for="form-subject">Subject</label>
+      <label for="form-subject">제목</label>
       <input class="c-form__input" id="form-subject" type="text" name="_subject">
     </div>
     <div class="c-form__group">
-      <label for="form-text">Your Message (Required)</label>
+      <label for="form-text">내용</label>
       <textarea class="c-form__input" id="form-text" name="text" rows="10" required></textarea>
     </div>
     <div class="c-form__group">
-      <button class="c-btn c-btn--secondary c-btn--big c-btn--shadow" type="submit">Send</button>
+      <button class="c-btn c-btn--secondary c-btn--big c-btn--shadow" type="submit">보내기</button>
     </div>
     <input type="hidden" name="_next" value="{{ site.baseurl }}/contact/thanks/" />
   </form>
