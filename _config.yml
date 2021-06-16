@@ -4,19 +4,19 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://kimbap918.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Author
-author-name:    준혁
+author-name:    김밥
 author-image:   1.jpg
 author-job:     Web Developer
 author-email:   fx887722@naver.com # Add your email for contant form.
-author-twitter: artemsheludko_ # Add your twitter account
-about-author:   I am a web developer focusing on front-end development. Always hungry to keep learning.
+author-twitter:  # Add your twitter account
+about-author:   안녕하세요 초보 개발자 김밥입니다.
 
 # Social settings
-social-twitter:   artemsheludko_
+social-twitter:   
 social-facebook:
-social-github:    artemsheludko
-social-pinterest: artemsheludko
-social-instagram: artemsheludko_
+social-github:    kimbap918
+social-pinterest: 
+social-instagram: 
 social-youtube:
 social-vk:   
 social-linkedin:
