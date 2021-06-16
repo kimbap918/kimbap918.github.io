@@ -1,4 +1,4 @@
-title: 김밥의 코딩공부 블로그
+title: 김밥의 코딩 공부 블로그
 description: Flexton is a responsive and ultra-minimal theme for Jekyll.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://kimbap918.github.io" # the base hostname & protocol for your site, e.g. http://example.com
@@ -9,8 +9,7 @@ author-image:   1.jpg
 author-job:     Web Developer
 author-email:   fx887722@naver.com # Add your email for contant form.
 author-twitter:  # Add your twitter account
-about-author:   안녕하세요 초보 개발자 김밥입니다. <br>     
-                메일주소 fx887722@naver.com
+about-author:   초보 개발자 김밥 / 메일 fx887722@naver.com
 
 # Social settings
 social-twitter:   
@@ -29,7 +28,7 @@ mailchimp: # Add your MailChimp form identifier. For example - blogenjoyfreedom.
 google-analytics: # Add your identifier. For example UA-99631805-1
 
 # Comment Section (Disqus)
-disqus-identifier: mr-brown # Add your shortname for Disqus Comment. For example mr-brown
+disqus-identifier: kimbap # Add your shortname for Disqus Comment. For example mr-brown
 
 # Build settings
 markdown: kramdown
