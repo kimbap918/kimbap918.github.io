@@ -10,7 +10,7 @@
         {% if post.image %}
         <div class="c-categories__img">
           <figure style="background-image: url('{{ site.baseurl }}/images/{{ post.image }}');"></figure>
-          <span class="c-categories__more">View all</span>
+          <span class="c-categories__more">모두 보기</span>
         </div>
         {% else %}
           {% assign empty-figure = 'c-empty-figure' %}
@@ -18,7 +18,7 @@
         {% endfor %}
         <div class="c-categories__container {{empty-figure}}">
           <h2 class="c-categories__header">{{ category }}</h2>
-          <p class="c-categories__count"><span>{{ site.categories[category] | size }}</span> Posts</p>
+          <p class="c-categories__count"><span>{{ site.categories[category] | size }}</span> 포스트</p>
         </div>
       </a>
     </li>
