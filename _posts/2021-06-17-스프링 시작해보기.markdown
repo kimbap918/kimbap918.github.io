@@ -43,8 +43,8 @@ Spring에서 Ioc는 스프링 컨테이너가 필요에 따라 개발자 대신 
 
 ### **6. MVC 패턴(Model2)**  
 
-![mvc_image]({{site.baseurl}}/images/mvc2.jpg)
-*DTO(Data Transfer Object ) : 데이터 전송을 위한 개체  
+![mvc_image]({{site.baseurl}}/images/mvc2.jpg)  
+*DTO(Data Transfer Object) : 데이터 전송을 위한 객체  
 ***
 
 MVC란 <span style="color:red">M</span>odel, <span style="color:red">V</span>iew, <span style="color:red">C</span>ontroller 구조로 사용자 인터페이스와 비지니스 로직을 분리하여 개발 하는 것이다. MVC에서는 Model1과 Model2로 나누어져 있으며 일반적인 MVC는 Model2를 지칭한다. 
