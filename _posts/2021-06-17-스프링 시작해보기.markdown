@@ -43,7 +43,7 @@ Spring에서 Ioc는 스프링 컨테이너가 필요에 따라 개발자 대신 
 
 ### **6. MVC 패턴(Model2)**  
 
-![mvc_image](../images/mvc2.jpg)
+![mvc_image]({{site.baseurl}}../images/mvc2.jpg)
 
 ***
 
