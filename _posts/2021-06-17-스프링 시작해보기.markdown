@@ -90,7 +90,7 @@ Model1은 요청 흐름을 제어하기 위한 Controller 가 특별히 존재�
 Model2가 Model1에 비해 개발 초기의 부하가 비교적 높고, 아키텍처에 대한 수준 높은 이해를 요구하지만, <span style="color:red">재사용성이 높고 확장이 Model1에 비해 용이하다는 장점이 있다.</span> 무엇보다, Model2는 그 구조적 특징으로 인해 자연스럽게 MVC각 영역의 역할이 구분되도록 해준다.  
 Model2는 Controller 역할을 하는 서블릿의 역할이 매우 중요하며, <span style="color:red">서블릿이 잘못 개발된 경우 애플리케이션 전체에 미치는 영향이 매우 크다.</span> 초기에 Model2를 적용한 웹 애플리케이션 중에는 서블릿 구현시 Model 영역과 View 영역을 호출해주는 부분이 하드 코딩되어 있거나 비효율적으로 구현되어 애플리케이션의 효율을 떨어뜨리고 구조만 복잡하게 되어버리는 경우가 많았다. 그러나 수많은 시행착오 끝에 잘 구축된 Controller들이 재활용되기 시작하면서 <span style="color:red">웹 프레임워크(Framework) 형태로 보급되기 시작하였다.</span>
 <br>
-
+<br>
 
 ### **Spring Framework의 구조**  
 ![Framework_image]({{site.baseurl}}/images/Framework.jpg)  
