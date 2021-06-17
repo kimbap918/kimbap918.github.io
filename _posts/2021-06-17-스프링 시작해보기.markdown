@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 스프링(Spring)으로 프로젝트 생성하기
+title: 스프링(Spring)으로 프로젝트 만들어보기(1)
 image: 13.jpg
 date: 2021-06-17 14:10:00 +0900
 tags: spring
@@ -10,7 +10,7 @@ categories: guide
 
 ***
 
-## **스프링 프레임워크의 특징**  
+## **스프링 프레임워크의 특징 알아보기**  
 
 #### 스프링 프레임워크는 다른 프레임워크에 비해 다음과 같은 특징을 가지고 있다.  
 <br>
@@ -52,13 +52,13 @@ MVC란 <span style="color:red">M</span>odel, <span style="color:red">V</span>iew
 
 
 **Model**  
-Model은 데이터처리를 담당하는 부분이다. Model부분은 Serivce영역과 DAO영역으로 나누어지게 된다. 여기서 중요한 것은 Service부분은 불필요하게 HTTP통신을 하지 않아야하고 request나 response와 같은 객체를 매개변수로 받아선 안된다. 또한 Model 부분의 Service는 view에 종속적인 코드가 없어야 하고 View 부분이 변경되더라도 Service 부분은 그대로 재사용 할 수 있어야 한다.
+Model은 데이터처리를 담당하는 부분이다. Model 부분은 Serivce 영역과 DAO 영역으로 나누어지게 된다. 여기서 중요한 것은 Service 부분은 불필요하게 HTTP통신을 하지 않아야하고, request나 response와 같은 객체를 매개변수로 받아선 안된다. 또한 Model 부분의 Service는 view에 종속적인 코드가 없어야 하고 View 부분이 변경되더라도 Service 부분은 그대로 재사용 할 수 있어야 한다.
 Model에서는 View와 Controller 어떠한 정보도 가지고 있어서는 안된다.
 <br>
 
 
 **View**  
-View는 사용자 Interface를 담당하며 사용자에게 보여지는 부분이다. View는 Controller를 통해 모델에 데이터에 대한 시각화를 담당하며 View는 자신이 요청을 보낼 Controller의 정보만 알고 있어야 하는 것이 핵심이다.  
+View는 사용자 인터페이스를 담당하며 사용자에게 보여지는 부분이다. View는 Controller를 통해 모델에 데이터에 대한 시각화를 담당하며 View는 자신이 요청을 보낼 Controller의 정보만 알고 있어야 하는 것이 핵심이다.  
 Model이 가지고 있는 정보를 저장해서는 안되며 Model, Controller에 구성 요소를 알아서는 안된다.
 <br>
 
@@ -67,85 +67,3 @@ Model이 가지고 있는 정보를 저장해서는 안되며 Model, Controller�
 Controller에서는 View에 받은 요청을 가공하여 Model(Service 영역)에 이를 전달한다. 또한 Model로 부터 받은 결과를 View로 넘겨주는 역할을 한다. Controller에서는 모든 요청 에러와 모델 에러를 처리하며 View와 Model의 정보를 알고 있어야한다. 
 <br>
 
-
-#### Headings by default:
-
-# H1 For example
-## H2 For example
-### H3 For example
-#### H4 For example
-##### H5 For example
-###### H6 For example
-
-{% highlight markdown %}
-## Heading first level
-### Heading second level
-#### Heading third level
-{% endhighlight %}
-
-***
-
-#### Lists
-
-###### Ordered list example:
-
-1. Poutine drinking vinegar bitters.
-2. Coloring book distillery fanny pack.
-3. Venmo biodiesel gentrify enamel pin meditation.
-4. Jean shorts shaman listicle pickled portland.
-5. Salvia mumblecore brunch iPhone migas.
-
-###### Unordered list example:
-
-* Bitters semiotics vice thundercats synth.
-* Literally cred narwhal bitters wayfarers.
-* Kale chips chartreuse paleo tbh street art marfa.
-* Mlkshk polaroid sriracha brooklyn.
-* Pug you probably haven't heard of them air plant man bun.
-
-{% highlight markdown %}
-1. Order list item 1
-2. Order list item 1
-
-* Unordered list item 1
-* Unordered list item 2
-{% endhighlight %}
-
-***
-
-#### Quotes
-
-###### A quote looks like this:
-
-> Never put off till tomorrow what may be done day after tomorrow just as well. — Mark Twain
-
-***
-
-#### Syntax Highlighter
-
-{% highlight js %}
-  $('.top').click(function () {
-    $('html, body').stop().animate({ scrollTop: 0 }, 'slow', 'swing');
-  });
-  $(window).scroll(function () {
-    if ($(this).scrollTop() > $(window).height()) {
-      $('.top').addClass("top-active");
-    } else {
-      $('.top').removeClass("top-active");
-    };
-  });
-{% endhighlight %}
-
-***
-
-#### Images
-
-![]({{site.baseurl}}/images/2.jpg)
-
-***
-
-#### Videos
-
-###### Youtube
-
-<iframe src="https://www.youtube.com/embed/iWowJBRMtpc" frameborder="0" allowfullscreen></iframe>
