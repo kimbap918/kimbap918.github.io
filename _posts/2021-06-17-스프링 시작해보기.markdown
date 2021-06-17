@@ -41,6 +41,14 @@ Spring에서 Ioc는 스프링 컨테이너가 필요에 따라 개발자 대신 
 <br>
 
 
+### **6. MVC 패턴(Model2) **  
+
+![]({{site.baseurl}}/images/mvc2.jpg)
+
+***
+
+MVC란 (Model View Controller) 구조로 사용자 인터페이스와 비지니스 로직을 분리하여 개발 하는 것 입니다. MVC에서는 Model1과 Model2로 나누어져 있으며 일반적인 MVC는 Model2를 지칭합니다. 
+
 #### Headings by default:
 
 # H1 For example
