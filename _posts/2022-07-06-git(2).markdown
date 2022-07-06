@@ -30,6 +30,8 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
 
 ![git_image]({{site.baseurl}}/images/git1.png) 
 
+
+
 2. 저장소 설정
 
 ![git_image]({{site.baseurl}}/images/git3.png) 
