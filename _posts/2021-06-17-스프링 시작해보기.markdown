@@ -4,7 +4,7 @@ title: 스프링(Spring)으로 프로젝트 만들어보기(1)
 image: 13.jpg
 date: 2021-06-17 14:10:00 +0900
 tags: spring
-categories: guide
+categories: spring
 ---
 스프링 프레임워크(Spring Framework)는 Java 플랫폼을 위한 오픈 소스 애플리케이션 프레임워크로서 동적인 웹 사이트를 개발하기 위한 여러 가지 서비스를 제공하는 경량화된 솔루션이다. 또한 대한민국 공공기관의 웹 서비스 개발 시 사용을 권장하고 있는 전자정부 표준 프레임워크 기반 기술로서 쓰이고 있다.
 

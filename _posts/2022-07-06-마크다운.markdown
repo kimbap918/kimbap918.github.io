@@ -4,7 +4,7 @@ title: 마크다운
 image: md.png
 date: 2022-07-04 10:35:20 +0900
 tags: markdown
-categories: guide
+categories: markdown
 ---
 # 마크다운
 

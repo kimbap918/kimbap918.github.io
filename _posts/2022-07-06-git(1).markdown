@@ -4,7 +4,7 @@ title: git(1)
 date: 2022-07-06 11:10:00 +0900
 image: github.png
 tags: git
-categories: guide
+categories: git
 ---
 # git(1)
 

@@ -4,7 +4,7 @@ title: 파이썬(python)
 date: 2022-07-05 13:50:00 +0900
 image: 14.jpg
 tags: python
-categories: guide
+categories: python
 ---
 ## Python
 
