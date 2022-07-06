@@ -1,12 +1,11 @@
 ---
 layout: post
 title: git(1)
-image: github.png
-date: 2022-07-06 10:55:00 +0900
+date: 2022-07-06 11:10:00 +0900
+image: 12.jpg
 tags: git
 categories: guide
 ---
-
 # git(1)
 
 
