@@ -89,7 +89,7 @@ print('hello')
 
 2. 이미지 링크 : ![문자열]+(url)로 가능
 
-![image1](Markdown.assets/image1.png)
+![mkdn_image]({{site.baseurl}}/images/4.jpg)
 
 
 
