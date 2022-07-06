@@ -24,9 +24,7 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
 2. 로컬 저장소의 commit을 push하여 원격저장소로 보낸다.
 3. 원격 저장소의 버전을 로컬 저장소로 가져온다(pull)
 
-
-
- ## 원격 저장소 생성
+## 원격 저장소 생성
 
 1. New Repository 클릭
 
@@ -34,7 +32,7 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
 
 2. 저장소 설정
 
-   ![git_image]({{site.baseurl}}/images/git3.png) 
+![git_image]({{site.baseurl}}/images/git3.png) 
 
 * Repository name 저장소 이름
 * Description 저장소에 대한 설명 
@@ -56,7 +54,7 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
 
 4. 로컬저장소의 버전을 원격 저장소로 보내주기
 
-   ![git_image]({{site.baseurl}}/images/git5.png) 
+![git_image]({{site.baseurl}}/images/git5.png) 
 
 ``` bash
 $ git remote add origin https://github.com/kimbap918/dukbokki.git
@@ -66,9 +64,9 @@ $ git remote add origin https://github.com/kimbap918/dukbokki.git
 
 5. 로컬 저장소의 commit을 push하기
 
-   ``` bash
-   $ git push -u origin main
-   ```
+``` bash
+$ git push -u origin main
+```
 
 * push 하기 전, 반드시 commit이 되어있어야한다.
 
