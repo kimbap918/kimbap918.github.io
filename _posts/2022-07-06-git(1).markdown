@@ -5,7 +5,6 @@ image: github.png
 date: 2022-07-06 10:55:00 +0900
 tags: git
 categories: guide
-
 ---
 
 # git(1)
@@ -94,19 +93,19 @@ git의 로컬 저장소는 크게 3가지로 나눠져있는데,
    ``` bash
    $ git status
    ```
-   
+
    * 파일들의 상태를 확인할 수 있다.
-   
+
    * 작업 디렉토리(working directory)와 스테이징 영역(staging area)의 상태를 확인하기 위해 사용한다.
-   
+
      
-   
+
      
-   
+
      ## 예시
-   
+
    * a.txt 파일을 만든 직후
-   
+
      ``` bash
      $ git status
      On branch master
@@ -123,7 +122,7 @@ git의 로컬 저장소는 크게 3가지로 나눠져있는데,
      # git add 사용해서 트래킹해
      nothing added to commit but untracked files present (use "git add" to track)
      ```
-   
+
    * b.txt 파일을 만들고 add한 이후
 
      ``` bash
@@ -137,14 +136,14 @@ git의 로컬 저장소는 크게 3가지로 나눠져있는데,
      	(use "git add <file>..." to include in what will be committed)
      	 a.txt
      ```
-   
+
    * a.txt 파일과 b.txt 파일을 모두 add한 이후 커밋까지
-   
+
      ``` bach
      $ git status
      On branch master
      
      nothing to commit, working tree clean
      ```
-   
+
      
