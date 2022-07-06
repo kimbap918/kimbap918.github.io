@@ -4,12 +4,12 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://kimbap918.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Author
-author-name:    김밥
+author-name:    kimbap918
 author-image:   1.jpg
-author-job:     Web Developer
-author-email:   fx887722@naver.com # Add your email for contant form.
+author-job:     개발자
+author-email:   lol123lol52@gmail.com # Add your email for contant form.
 author-twitter:  # Add your twitter account
-about-author:   초보 개발자 김밥 / 메일 fx887722@naver.com
+about-author:   초보 개발자 / 메일 lol123lol52@gmail.com
 
 # Social settings
 social-twitter:   
