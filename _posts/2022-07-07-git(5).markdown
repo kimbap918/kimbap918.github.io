@@ -1,13 +1,11 @@
 ---
 layout: post
-title: git(5)
+title: git(5) - merge🤝
 date: 2022-07-07 19:05:00 +0900
 image: github.png
 tags: git
 categories: git
 ---
-# git(5) - merge🤝
-
 
 
 ## merge?

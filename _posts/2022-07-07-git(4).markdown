@@ -1,13 +1,11 @@
 ---
 layout: post
-title: git(4)
+title: git(4) - branch🌲🍆
 date: 2022-07-07 19:03:00 +0900
 image: github.png
 tags: git
 categories: git
 ---
-# git(4) - branch🌲🍆
-
 
 
 ## branch?

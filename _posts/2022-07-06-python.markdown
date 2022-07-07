@@ -6,8 +6,6 @@ image: 14.jpg
 tags: python
 categories: python
 ---
-## Python
-
 
 
 ## 1. 개요

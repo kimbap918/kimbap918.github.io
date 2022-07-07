@@ -1,13 +1,11 @@
 ---
 layout: post
-title: git(3)
+title: git(3) - clone👥
 date: 2022-07-07 11:45:00 +0900
 image: github.png
 tags: git
 categories: git
 ---
-# git(3) - clone👥
-
 
 
 ## 명령어 clone에 관해
