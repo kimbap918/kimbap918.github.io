@@ -1,6 +1,6 @@
 ---
 layout: post
-title: git 참고 - pull request
+title: git(6) - pull request
 date: 2022-07-07 20:34:00 +0900
 image: github.png
 tags: git
