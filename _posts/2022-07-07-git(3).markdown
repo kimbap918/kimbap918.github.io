@@ -6,7 +6,7 @@ image: github.png
 tags: git
 categories: git
 ---
-# git(3)
+# git(3) - clone👥
 
 
 
@@ -56,7 +56,7 @@ $ git clone https://github.com/kimbap918/dukbokki.git
 
 
 
-### 그렇다면 pull과의 차이는?
+### 그렇다면 pull과의 차이는🤔?
 
 clone과 pull모두 원격 저장소에서 받아온다는 점에서 헷갈릴 수 있다.
 
