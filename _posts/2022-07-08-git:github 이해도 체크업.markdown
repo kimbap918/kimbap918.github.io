@@ -20,13 +20,6 @@ categories: git
 ## Q1. Git은 무엇인지 작성해주세요
 
 <details markdown="1">
-<summary>확인</summary>
-
-분산버전관리시스템(DVCS)
-
-</details>
-
-<details markdown="1">
 <summary>접기/펼치기</summary>
 
 
