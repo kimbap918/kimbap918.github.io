@@ -35,25 +35,27 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
    ``` bash
    (master) $ git merge --abort 
    ```
-
-<br>
-
-3. 병합하면서 해당 branch는 기록을 남기고 싶을때
+   
+   <br>
+   
+2. 병합하면서 해당 branch는 기록을 남기고 싶을때
 
    ``` bash
    (master) $ git merge --no-ff
    ```
-
+   
    <br>
+   
+2. branch 확인
 
-4. branch 확인
-
-   ``` bash
+   ```bash
    $ git branch --merged # 현재 브랜치에 머지가 된 브랜치 확인
    $ git branch --no-merged # 마스터 브런치에서 파생된 브랜치 학인
    ```
+   
+   
 
-   <br>
+<br>
 
 ## 2. branch 병합 시나리오
 
@@ -92,7 +94,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 2. 작업 완료 후 commit
 
-   ```bash
+   ``` bash
    (feature/home) $ touch home.txt
    (feature/home) $ git add .
    (feature/home) $ git commit -m 'Add home.txt'
@@ -100,23 +102,21 @@ d7afaf1 (HEAD -> master) add README # 예시
    b534a34 (HEAD -> feature/home) Complete Home!!!!
    e89616a (master) Init
    ```
-
-<br>
-
-
-3. master 이동
+   
+   <br>
+   
+2. master 이동
 
    ```bash
    (feature/home) $ git checkout master
    (master) $ git log --oneline
    ```
+   
+   <br>
+   
+2. master에 병합
 
-<br>
-
-
-4. master에 병합
-
-   ```bash
+   ``` bash
    (master) $ git merge feature/home 
    Updating e89616a..b534a34
    Fast-forward
@@ -124,28 +124,29 @@ d7afaf1 (HEAD -> master) add README # 예시
     1 file changed, 0 insertions(+), 0 deletions(-)
     create mode 100644 home.txt
    ```
-
+   
    <br>
-
-
-5. 결과 : fast-foward
+   
+2. 결과 : fast-foward
 
    ```bash
    (master) $ git log --oneline
    b534a34 (HEAD -> master, feature/home) Complete Home!!!!
    e89616a Init
    ```
-
+   
    <br>
+   
+2. branch 삭제
 
-6. branch 삭제
-
-   ```bash
+   ``` bash
    (master) $ git branch -d feature/home 
    Deleted branch feature/home (was b534a34).
    ```
+   
+   
 
-   <br>
+<br>
 
 ---
 
@@ -261,8 +262,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 2. 작업 완료 후 commit
 
-   ```bash
-   # README.md 파일 열어서 수정
+   ``` bash README.md 파일 열어서 수정
    (feature/test) $ touch test.txt
    (feature/test) $ git add .
    (feature/test) $ git commit -m 'Add test.txt'
@@ -274,55 +274,49 @@ d7afaf1 (HEAD -> master) add README # 예시
    b534a34 Complete Home!!!!
    e89616a Init
    ```
+   
+   <br>
+   
+2. master 이동
 
-<br>
-
-
-3. master 이동
-
-   ```bash
+   ``` bash
    $ git checkout master
    ```
-
+   
    <br>
-
-
-4. master에 추가 commit을 발생시키기
+   
+2. master에 추가 commit을 발생시키기
 
    * **동일 파일을 수정 혹은 생성해야한다.**
-
-   ```bash
-   # README.md 파일 열어서 수정
+   
+   ``` bash README.md 파일 열어서 수정
    (master) $ git add README.md
    (master) $ git commit -m 'Update README.md'
    ```
-
+   
    <br>
+   
+2. master에 병합
 
-5. master에 병합
-
-   ```bash
+   ``` bash
    (master) $ git merge feature/test 
    Auto-merging README.md
    CONFLICT (content): Merge conflict in README.md
    Automatic merge failed; fix conflicts and then commit the result.
    ```
-
+   
    <br>
-
-
+   
 6. 결과 -> *merge conflict발생*
 
    > git status 명령어로 충돌 파일을 확인할 수 있음.
 
-   ```bash
-   (master|MERGING) $ git status
+   ``` bash (master|MERGING) $ git status
    On branch master
    You have unmerged paths.
      (fix conflicts and run "git commit")        
      (use "git merge --abort" to abort the merge)
-   
-   Changes to be committed:
+     Changes to be committed:
            new file:   test-1.txt
            new file:   test-2.txt
            new file:   test.txt
@@ -334,10 +328,9 @@ d7afaf1 (HEAD -> master) add README # 예시
 
    <br>
 
-
 7. 충돌 확인 및 해결
 
-   ```
+   ``` bash
    <<<<<<< HEAD
    # 마스터에서 작업함...
    =======
@@ -347,10 +340,9 @@ d7afaf1 (HEAD -> master) add README # 예시
 
    <br>
 
-
 8. merge commit 진행
 
-   ```bash
+   ``` bash
    (master|MERGING) $ git add .
    (master|MERGING) $ git commit
    ```
@@ -367,7 +359,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 9. 커밋 및 확인하기
 
-   ```bash
+   ``` bash
    (master) $ git log --oneline --graph
    *   bc1c0cd (HEAD -> master) Merge branch 'feature/test'
    |\  
@@ -383,18 +375,15 @@ d7afaf1 (HEAD -> master) add README # 예시
    * e89616a Init
    ```
 
-<br>
-
+   <br>
 
 10. branch 삭제
 
-    ```bash
-    (master) $ git branch -d feature/test
-    ```
+   ``` bash
+   (master) $ git branch -d feature/test
+   ```
 
-
-
-<br>
+   <br>
 
 
 #### merge에 관한 참고하기 좋은 자료

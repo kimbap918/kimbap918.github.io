@@ -40,18 +40,16 @@ $ git clone https://github.com/kimbap918/dukbokki.git
    ```
 
    ![git_image]({{site.baseurl}}/images/git7.png) 확인해보면 .git 폴더가 있다.
-
-<br>
-
+   
+   <br>
+   
 2. Download ZIP
 
    ![git_image]({{site.baseurl}}/images/git8.png) 
 
    ZIP 파일은 .git 폴더가 없다.
 
-<br>
-
-.git 폴더가 없다는것은, Download ZIP으로 생성된 폴더는 git으로 관리가 안된다는 뜻이다. 이 점을 유의하자.
+   .git 폴더가 없다는것은, Download ZIP으로 생성된 폴더는 git으로 관리가 안된다는 뜻이다. 이 점을 유의하자.
 
 <br>
 
