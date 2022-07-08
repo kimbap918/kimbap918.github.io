@@ -262,7 +262,8 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 2. 작업 완료 후 commit
 
-   ``` bash README.md 파일 열어서 수정
+   ```bash
+   # README.md 파일 열어서 수정
    (feature/test) $ touch test.txt
    (feature/test) $ git add .
    (feature/test) $ git commit -m 'Add test.txt'
@@ -274,49 +275,55 @@ d7afaf1 (HEAD -> master) add README # 예시
    b534a34 Complete Home!!!!
    e89616a Init
    ```
-   
-   <br>
-   
-2. master 이동
 
-   ``` bash
+   <br>
+
+
+3. master 이동
+
+   ```bash
    $ git checkout master
    ```
-   
+
    <br>
-   
-2. master에 추가 commit을 발생시키기
+
+
+4. master에 추가 commit을 발생시키기
 
    * **동일 파일을 수정 혹은 생성해야한다.**
-   
-   ``` bash README.md 파일 열어서 수정
+
+   ```bash
+   # README.md 파일 열어서 수정
    (master) $ git add README.md
    (master) $ git commit -m 'Update README.md'
    ```
-   
-   <br>
-   
-2. master에 병합
 
-   ``` bash
+   <br>
+
+5. master에 병합
+
+   ```bash
    (master) $ git merge feature/test 
    Auto-merging README.md
    CONFLICT (content): Merge conflict in README.md
    Automatic merge failed; fix conflicts and then commit the result.
    ```
-   
+
    <br>
-   
+
+
 6. 결과 -> *merge conflict발생*
 
    > git status 명령어로 충돌 파일을 확인할 수 있음.
 
-   ``` bash (master|MERGING) $ git status
+   ```bash
+   (master|MERGING) $ git status
    On branch master
    You have unmerged paths.
      (fix conflicts and run "git commit")        
      (use "git merge --abort" to abort the merge)
-     Changes to be committed:
+   
+   Changes to be committed:
            new file:   test-1.txt
            new file:   test-2.txt
            new file:   test.txt
@@ -328,9 +335,10 @@ d7afaf1 (HEAD -> master) add README # 예시
 
    <br>
 
+
 7. 충돌 확인 및 해결
 
-   ``` bash
+   ```
    <<<<<<< HEAD
    # 마스터에서 작업함...
    =======
@@ -340,9 +348,10 @@ d7afaf1 (HEAD -> master) add README # 예시
 
    <br>
 
+
 8. merge commit 진행
 
-   ``` bash
+   ```bash
    (master|MERGING) $ git add .
    (master|MERGING) $ git commit
    ```
@@ -379,20 +388,18 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 10. branch 삭제
 
-   ``` bash
-   (master) $ git branch -d feature/test
-   ```
+    ``` bash
+    (master) $ git branch -d feature/test
+    ```
 
-   <br>
+    <br>
+
+
+
+
 
 
 #### merge에 관한 참고하기 좋은 자료
 
 https://otzslayer.github.io/git/2021/12/05/git-merge-fast-forward.html
-
-
-
-
-
-
 

@@ -63,7 +63,7 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
    $ git remote add origin https://github.com/kimbap918/dukbokki.git
    ```
 
-   
+   <br>
 
 5. 로컬 저장소의 commit을 push하기
 
@@ -73,7 +73,7 @@ git(1)에서는 로컬저장소와 로컬저장소에서 사용되는 명령어�
 
    * push 하기 전, 반드시 commit이 되어있어야한다.
 
-<br>
+     <br>
 
 ## 명령어
 
