@@ -7,6 +7,7 @@ tags: git
 categories: git
 ---
 
+<br>
 
 ## merge?
 
@@ -14,7 +15,7 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
 
 
 
-
+<br>
 
 ## 1. 명령어
 
@@ -27,7 +28,7 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
    (master) $ git merge example 
    ```
 
-   
+   <br>
 
 2. merge 취소
 
@@ -35,13 +36,15 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
    (master) $ git merge --abort 
    ```
 
-
+<br>
 
 3. 병합하면서 해당 branch는 기록을 남기고 싶을때
 
    ``` bash
    (master) $ git merge --no-ff
    ```
+
+   <br>
 
 4. branch 확인
 
@@ -50,7 +53,7 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
    $ git branch --no-merged # 마스터 브런치에서 파생된 브랜치 학인
    ```
 
-   
+   <br>
 
 ## 2. branch 병합 시나리오
 
@@ -58,11 +61,15 @@ merge는 branch로 분기된 각 commit을 하나로 다시 합치고싶을 때 
 >
 > 다양한 시나리오 속에서 어떤 상황인지 파악하고 자유롭게 활용할 수 있어야 한다.
 
+<br>
+
 ### 상황 1. fast-foward
 
 > fast-foward 란 뿌리가 되는 master브랜치에 변화가 주어지지 않은 채 다른 변화가 생긴 브랜치로 머지를 하게 되는 것.
 >
 > 새로운 커밋이 생성되지 않고 **HEAD**의 위치만 변한 채 머지를 한 대상 브랜치의 마지막 커밋에 master 브랜치가 자리잡게 된다.
+
+<br>
 
 ### head?
 
@@ -72,7 +79,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 > 내가 이동한 Commit의 정보를 표시, 위 예시는 master에 위치해 있음을 나타낸다.
 
-
+<br>
 
 1. feature/home branch 생성 및 이동
 
@@ -81,7 +88,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $ git checkout feature/home
    ```
 
-   
+   <br>
 
 2. 작업 완료 후 commit
 
@@ -94,7 +101,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    e89616a (master) Init
    ```
 
-
+<br>
 
 
 3. master 이동
@@ -104,7 +111,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $ git log --oneline
    ```
 
-
+<br>
 
 
 4. master에 병합
@@ -118,7 +125,7 @@ d7afaf1 (HEAD -> master) add README # 예시
     create mode 100644 home.txt
    ```
 
-   
+   <br>
 
 
 5. 결과 : fast-foward
@@ -129,7 +136,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    e89616a Init
    ```
 
-   
+   <br>
 
 6. branch 삭제
 
@@ -138,7 +145,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    Deleted branch feature/home (was b534a34).
    ```
 
-   
+   <br>
 
 ---
 
@@ -155,7 +162,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (feature/about) $
    ```
 
-   
+   <br>
 
 2. 작업 완료 후 commit
 
@@ -169,7 +176,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    e89616a Init
    ```
 
-   
+   <br>
 
 3. master 이동
 
@@ -178,7 +185,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $
    ```
 
-   
+   <br>
 
 4. master에 추가 commit을 발생시킨다.
 
@@ -194,7 +201,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    e89616a Init
    ```
 
-   
+   <br>
 
 5. master에 병합
 
@@ -202,11 +209,11 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $ git merge feature/about
    ```
 
-   
+   <br>
 
 6. 결과 -> 자동으로 *merge commit 발생*
 
-   
+   <br>
 
 7. 커밋 및 그래프 확인하기
 
@@ -221,17 +228,15 @@ d7afaf1 (HEAD -> master) add README # 예시
    * e89616a Init
    ```
 
-   
+   <br>
 
 8. branch 삭제
-
-   
 
    ```bash
    $ git branch -d feature/about 
    Deleted branch feature/about (was 5e1f6de).
    ```
-
+   
    
 
 ---
@@ -252,7 +257,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $ git checkout -b feature/test
    ```
 
-   
+   <br>
 
 2. 작업 완료 후 commit
 
@@ -270,6 +275,8 @@ d7afaf1 (HEAD -> master) add README # 예시
    e89616a Init
    ```
 
+<br>
+
 
 3. master 이동
 
@@ -277,7 +284,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    $ git checkout master
    ```
 
-   
+   <br>
 
 
 4. master에 추가 commit을 발생시키기
@@ -290,7 +297,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    (master) $ git commit -m 'Update README.md'
    ```
 
-   
+   <br>
 
 5. master에 병합
 
@@ -301,7 +308,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    Automatic merge failed; fix conflicts and then commit the result.
    ```
 
-   
+   <br>
 
 
 6. 결과 -> *merge conflict발생*
@@ -325,7 +332,7 @@ d7afaf1 (HEAD -> master) add README # 예시
            both modified:   README.md
    ```
 
-   
+   <br>
 
 
 7. 충돌 확인 및 해결
@@ -338,7 +345,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    >>>>>>> feature/test
    ```
 
-   
+   <br>
 
 
 8. merge commit 진행
@@ -356,7 +363,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
    * vs code 편집기에서 메시지보고 닫을것.
 
-     
+     <br>
 
 9. 커밋 및 확인하기
 
@@ -376,7 +383,7 @@ d7afaf1 (HEAD -> master) add README # 예시
    * e89616a Init
    ```
 
-
+<br>
 
 
 10. branch 삭제
@@ -387,7 +394,7 @@ d7afaf1 (HEAD -> master) add README # 예시
 
 
 
-
+<br>
 
 
 #### merge에 관한 참고하기 좋은 자료

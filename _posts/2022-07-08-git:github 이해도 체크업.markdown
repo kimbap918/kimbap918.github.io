@@ -15,9 +15,9 @@ categories: git
 
 아래의 답변은 내가 직접 작성한 답변이라 정답과 다를 수 있다.
 
+<br>
 
-
-## Q1. Git은 무엇인지 작성해주세요
+### Q1. Git은 무엇인지 작성해주세요
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -28,9 +28,9 @@ categories: git
 
 </details>
 
+<br>
 
-
-## Q2. Staging Area(임시공간)의 의미를 작성해주세요.
+### Q2. Staging Area(임시공간)의 의미를 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -41,9 +41,9 @@ Commit을 하기위해 `$ git add` 명령어로 추가한 파일들이 모여있
 
 </details>
 
+<br>
 
-
-## Q3. 작업이 완료 되었을 때, 버전을 기록하는 과정을 명령어로 작성하고, 커밋이 가지는 의미가 무엇인지 작성해주세요.
+### Q3. 작업이 완료 되었을 때, 버전을 기록하는 과정을 명령어로 작성하고, 커밋이 가지는 의미가 무엇인지 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -61,9 +61,9 @@ commit은 `$ git add` 로 모여있는 파일들에 대한 확정을 짓고 버�
 
 </details>
 
+<br>
 
-
-## Q4. .gitignore를 활용하는 이유를 작성해주세요.
+### Q4. .gitignore를 활용하는 이유를 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -74,9 +74,9 @@ git은 생성된 모든 하위 디렉토리의 파일을 추적하는데, .gitig
 
 </details>
 
+<br>
 
-
-## Q5. 커밋 내역을 확인하는 명령어는 `$ git ___ `이다.
+### Q5. 커밋 내역을 확인하는 명령어는 `$ git ___ `이다.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -87,9 +87,9 @@ log
 
 </details>
 
+<br>
 
-
-## Q6. 원격저장소를 제공하는 서비스는 Github 밖에 없다.
+### Q6. 원격저장소를 제공하는 서비스는 Github 밖에 없다.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -99,9 +99,9 @@ X
 
 </details>
 
+<br>
 
-
-## Q7. 아래의 이미지 오류의 원인과 해결방안을 작성하세요.
+### Q7. 아래의 이미지 오류의 원인과 해결방안을 작성하세요.
 
 ![git_image]({{site.baseurl}}/images/git15.png)
 
@@ -116,9 +116,9 @@ hint: 의 조언과 같이 git pull로 로컬저장소를 업데이트 한 후 p
 
 </details>
 
+<br>
 
-
-## Q8. 원격저장소 https://github.com/kimbap918/TIL.git 를 복제하기 위한 명령어를 작성해주세요.
+### Q8. 원격저장소 https://github.com/kimbap918/TIL.git 를 복제하기 위한 명령어를 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -129,9 +129,9 @@ hint: 의 조언과 같이 git pull로 로컬저장소를 업데이트 한 후 p
 
 </details>
 
+<br>
 
-
-## Q8-1 해당 명령어를 바탕화면에서 입력했을 때 저장소는?
+### Q8-1 해당 명령어를 바탕화면에서 입력했을 때 저장소는?
 
 1. 바로 바탕화면에서 활용 가능하다.
 2. 바탕화면에 TIL 폴더가 생성되어 있다.
@@ -145,9 +145,9 @@ hint: 의 조언과 같이 git pull로 로컬저장소를 업데이트 한 후 p
 
 </details>
 
+<br>
 
-
-## Q9. 브랜치를 사용하는 목적은 무엇인지 작성해주세요.
+### Q9. 브랜치를 사용하는 목적은 무엇인지 작성해주세요.
 
 <details markdown="1">
   <summary>접기/펼치기</summary>
@@ -158,9 +158,9 @@ hint: 의 조언과 같이 git pull로 로컬저장소를 업데이트 한 후 p
 
 </details>
 
+<br>
 
-
-## Q10. merge conflict가 발생하였을 때 해야하는 일을 작성해주세요.
+### Q10. merge conflict가 발생하였을 때 해야하는 일을 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>
@@ -173,9 +173,9 @@ hint: 의 조언과 같이 git pull로 로컬저장소를 업데이트 한 후 p
 
 </details>
 
+<br>
 
-
-## Q11. GitHub에서 1) Shared Repository와 2) Fork & Pull Request의 차이점을 작성해주세요.
+### Q11. GitHub에서 1) Shared Repository와 2) Fork & Pull Request의 차이점을 작성해주세요.
 
 <details markdown="1">
 <summary>접기/펼치기</summary>

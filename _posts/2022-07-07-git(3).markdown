@@ -7,6 +7,7 @@ tags: git
 categories: git
 ---
 
+<br>
 
 ## 명령어 clone에 관해
 
@@ -23,7 +24,7 @@ $ git clone https://github.com/kimbap918/dukbokki.git
 
 두가지 다 실행 시 폴더를 받아오지만 다른점이 있다.
 
-
+<br>
 
 1. Clone
 
@@ -40,7 +41,7 @@ $ git clone https://github.com/kimbap918/dukbokki.git
 
    ![git_image]({{site.baseurl}}/images/git7.png) 확인해보면 .git 폴더가 있다.
 
-
+<br>
 
 2. Download ZIP
 
@@ -48,11 +49,11 @@ $ git clone https://github.com/kimbap918/dukbokki.git
 
    ZIP 파일은 .git 폴더가 없다.
 
-
+<br>
 
 .git 폴더가 없다는것은, Download ZIP으로 생성된 폴더는 git으로 관리가 안된다는 뜻이다. 이 점을 유의하자.
 
-
+<br>
 
 ### 그렇다면 pull과의 차이는🤔?
 

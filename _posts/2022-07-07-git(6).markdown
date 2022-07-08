@@ -7,7 +7,7 @@ tags: git
 categories: git
 ---
 
-
+<br>
 
 ## 목적
 
@@ -15,11 +15,11 @@ A뿐만 아니라 B도 로컬 저장소에 브랜치를 생성해서 같은 원�
 
 또한 자신이 소유하지 않고 권한이 없는 작업에 대해 협업 하기 위해서 사용한다.
 
-
+<br>
 
 ## 사용 방법
 
-
+<br>
 
 ### 1. Fork
 
@@ -27,7 +27,7 @@ A뿐만 아니라 B도 로컬 저장소에 브랜치를 생성해서 같은 원�
 
 ![git_image]({{site.baseurl}}/images/git9.png) 
 
-
+<br>
 
 ### 2. 내 컴퓨터의 로컬저장소에 원격저장소를 추가(clone)
 
@@ -47,7 +47,7 @@ mac/Desktop - (main) > cd pull_folder # 폴더 생성 후 생성된 폴더 내�
 Desktop/pull_folder - (master) > 
 ```
 
-
+<br>
 
 ### 3. branch 생성
 
@@ -60,7 +60,7 @@ $ git branch example
 Desktop/pull_folder - (master) > git branch example
 ```
 
-
+<br>
 
 * 생성 후 이동
 
@@ -73,13 +73,13 @@ Switched to branch 'example'
 Desktop/pull_folder - (example) > # master -> example로 branch가 이동됨
 ```
 
-
+<br>
 
 * 생성된 폴더의 모습
 
 ![git_image]({{site.baseurl}}/images/git14.png) 
 
-
+<br>
 
 ### 4. 수정 작업 후 add, commit, push
 
@@ -94,10 +94,9 @@ Desktop/pull_folder - (example) > git push origin example
 ```
 
 * 작업이 완료되면 Github Repository(origin)에 add, commit, push한다.
-
 * push할때 develop 브랜치의 수정내역을 origin으로 푸시한다.
 
-  
+<br>
 
 ### 5. pull Request 생성
 
@@ -106,19 +105,19 @@ Desktop/pull_folder - (example) > git push origin example
 
 ![git_image]({{site.baseurl}}/images/git12.png) 
 
-
+<br>
 
 * 내용을 작성 후 pull request 를 생성
 
 ![git_image]({{site.baseurl}}/images/git13.png) 
 
-
+<br>
 
 ### 6. Merge Pull Request
 
 - PR을 받은 관리자는 코드 변경내역을 환인하고 Merge여부를 결정하게 된다.
 
-  
+<br>
 
 ### 7. Merge 이후 동기화 및 branch 삭제
 

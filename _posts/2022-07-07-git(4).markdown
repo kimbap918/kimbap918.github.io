@@ -7,14 +7,17 @@ tags: git
 categories: git
 ---
 
+<br>
 
 ## branch?
 
 소프트웨어 개발 시 개발자들은 동일한 소스코드를 공유해서 다루게 된다. 만일 여러 사람이 **동일한 소스코드를 기반으로 서로 다른작업을 하게되는 경우에는 각각 서로 다른 버전의 코드가 여러갈래로 나올 수 밖에 없다.**
 
+<br>
+
 이런 경우에 **개발자들이 동시에 다양한 작업을 할 수 있게 해주는 기능이 브랜치(branch)다.** 브랜치는 각자 독립적인 작업 영역(repository) 안에서 소스코드를 변경할 수 있다. 또한, 작업 후에 원래 버전과 비교 해 다른 하나의 새로운 버전을 만들어 낼 수 있다.
 
-
+<br>
 
 ## 1. branch 관련 명령어
 
@@ -30,6 +33,8 @@ categories: git
    (master) $ git branch example
    ```
 
+   <br>
+
 2. branch 이동
 
    ``` bash
@@ -37,6 +42,8 @@ categories: git
    (master) $ git switch {branch name}
    (master) $ git checkout example
    ```
+
+   <br>
 
 3. branch를 생성하면서 이동(생성과 이동 동시에)
 
@@ -46,6 +53,8 @@ categories: git
    (master) $ git checkout -b example
    ```
 
+   <br>
+
 4. branch 삭제
 
    ``` bash
@@ -53,6 +62,8 @@ categories: git
    (master) $ git push origin --delete # 서버에 있는 브랜치 삭제
    (master) $ git branch -d example
    ```
+
+   <br>
 
 5. branch 목록
 

@@ -11,7 +11,7 @@ categories: python
 
 💦 파이썬을 공부하다가 몰랐던 내용이 있어서 남긴다 
 
-
+<br>
 
 ## input()대신 sys.stdin.readline()을 사용하기 💡 
 
@@ -37,7 +37,7 @@ for i in range(T):
 
 다만, sys.stdin.readline()은 문자열을 저장하는 경우에 개행문자까지 같이 받기때문에 **.rstrip()** 를 추가해주는것이 좋다.
 
-
+<br>
 
 ### 수정하기 📝
 
@@ -55,13 +55,13 @@ for i in range(T):
 
 1. 먼저 sys.stdin.readline()을 사용하기 위해 **sys**를 import 했다.
 
+![python_image]({{site.baseurl}}/images/python1.png) 
 
-
-![python1](../../python1.png)
+<br>
 
 2. 문제에서 입력과 출력 예제가 위와 같이 나와서 예시와 똑같이 나오게 하려고 입력을 모두 받고 배열에 담아서 출력하게끔 만들었는데 **입력 스트림과 출력 스트림은 달라서** 하나 입력 받고 하나 출력하는 방식으로 해도 문제 없다고한다. 그래서 수정했다.
 
-
+<br>
 
 ## sys.stdin.readline()에 대한 추가적인 이야기 💬
 

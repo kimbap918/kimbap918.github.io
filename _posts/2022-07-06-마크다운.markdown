@@ -20,7 +20,7 @@ categories: markdown
 
 ###### h6
 
-
+<br>
 
 ## 목록(List)
 
@@ -36,6 +36,8 @@ categories: markdown
   - 바다딸기
 - -> shift + tab시 단계 조절 가능
 
+<br>
+
 ### 2. 순서가 있는 리스트 : 1.
 
 아침에 일어나서 KDT 교육 듣기
@@ -44,7 +46,7 @@ categories: markdown
 2. 산책
 3. Syllaverse
 
-
+<br>
 
 ## 코드블록
 
@@ -71,13 +73,15 @@ print('hello')
 <!-- 주석 -->
 ```
 
+<br>
+
 ### 2. Inline Code block
 
 `(backtick) 기호 두개로 원하는 것을 감싼다
 
 `print`는 파이썬에서 출력하는 함수이다.
 
-
+<br>
 
 ## 링크
 
@@ -89,7 +93,7 @@ print('hello')
 
 ![mkdn_image]({{site.baseurl}}/images/4.jpg)
 
-
+<br>
 
 ## 인용문
 
@@ -97,7 +101,7 @@ print('hello')
 
 > life is short, you need python 
 
-
+<br>
 
 ## table(표) 
 
@@ -111,7 +115,7 @@ option + command + T
 |      |      |      |
 |      |      |      |
 
-
+<br>
 
 ## 텍스트
 
@@ -121,7 +125,7 @@ option + command + T
 
 3. ~~취소선~~ : ~~~~
 
-   
+   <br>
 
 ## 수평선
 
