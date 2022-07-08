@@ -1,6 +1,6 @@
 ---
 layout: post
-title: git(6) - pull request
+title: git(6) - Fork🍴 & pull request🙏
 date: 2022-07-07 20:34:00 +0900
 image: github.png
 tags: git
@@ -12,6 +12,8 @@ categories: git
 ## 목적
 
 A뿐만 아니라 B도 로컬 저장소에 브랜치를 생성해서 같은 원격 저장소에 푸시하는 경우에 충돌이 일어날 수 있기때문에 pull request를 통해 원격 저장소에 요청하고 원격 저장소에서 merge 하는것
+
+또한 자신이 소유하지 않고 권한이 없는 작업에 대해 협업 하기 위해서 사용한다.
 
 
 
