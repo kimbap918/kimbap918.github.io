@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Git/Github 이해도 체크업💡
-date: 2022-07-07 20:34:00 +0900
+date: 2022-07-08 19:00:00 +0900
 image: github.png
 tags: git
 categories: git
