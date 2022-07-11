@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 파이썬과 기본 문법
-date: 2022-07-09 21:14:00 +0900
+date: 2022-07-11 18:12:00 +0900
 image: 14.jpg
 tags: 문법
 categories: python
