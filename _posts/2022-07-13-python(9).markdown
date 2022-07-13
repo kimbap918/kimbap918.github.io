@@ -7,9 +7,7 @@ tags: 문법
 categories: python
 ---
 
-<br>
-
- ## 📦 함수(function)
+## 📦 함수(function)
 
 * 특정한 기능을 하는 코드의 조각
 
