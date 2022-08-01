@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 쉽게 푸는 문제(백준 BOJ 1292)
 date: 2022-07-28 18:30:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 알고리즘
 categories: python 
 ---

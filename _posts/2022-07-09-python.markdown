@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 빠른 입출력(백준 BOJ 15552)
 date: 2022-07-09 01:06:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 문법
 categories: python
 ---

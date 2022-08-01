@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 셀프 넘버(백준 BOJ 4673) 
 date: 2022-07-12 00:30:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 문법
 categories: python
 ---

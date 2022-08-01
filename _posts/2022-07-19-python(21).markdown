@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 소수 찾기(백준 BOJ 1978)
 date: 2022-07-19 21:48:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 문법
 categories: python
 ---

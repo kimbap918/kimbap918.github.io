@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 크로아티아 알파벳(백준 BOJ 2941) 
 date: 2022-07-14 10:05:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 문법
 categories: python
 ---

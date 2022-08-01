@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 소인수분해(백준 BOJ 11653)
 date: 2022-07-20 23:23:00 +0900
-image: 14.jpg
+image: 백준.png
 tags: 문법
 categories: python
 ---
