@@ -4,7 +4,7 @@ title: 파이썬 덩치(백준 BOJ 7568)
 date: 2022-07-27 21:30:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

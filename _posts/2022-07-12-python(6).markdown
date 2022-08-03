@@ -4,7 +4,7 @@ title: 파이썬 한수(백준 BOJ 1065)
 date: 2022-07-12 01:50:00 +0900
 image: 백준.png
 tags: 문법
-categories: python
+categories: 문제풀이
 ---
 
 <br>

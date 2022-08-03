@@ -4,7 +4,7 @@ title: 파이썬 소수(백준 BOJ 2581)
 date: 2022-07-19 22:38:00 +0900
 image: 백준.png
 tags: 문법
-categories: python
+categories: 문제풀이
 ---
 
 <br>

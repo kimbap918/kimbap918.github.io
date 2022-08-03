@@ -4,7 +4,7 @@ title: 파이썬 재귀함수가 뭔가요?(BOJ 17478)
 date: 2022-07-24 22:06:00 +0900
 image: 백준.png
 tags: 문법
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

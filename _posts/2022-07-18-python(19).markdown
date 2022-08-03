@@ -4,7 +4,7 @@ title: 파이썬 설탕 배달(백준 BOJ 2839)
 date: 2022-07-18 22:00:00 +0900
 image: 백준.png
 tags: 문법
-categories: python
+categories: 문제풀이
 ---
 
 <br>

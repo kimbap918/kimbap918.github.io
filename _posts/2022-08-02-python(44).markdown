@@ -4,7 +4,7 @@ title: 파이썬 우유 축제(백준 BOJ 14720)
 date: 2022-08-02 02:50:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

@@ -4,7 +4,7 @@ title: 파이썬 베르트랑 공준(백준BOJ 4948)
 date: 2022-07-22 00:12:00 +0900
 image: 백준.png
 tags: 문법
-categories: python
+categories: 문제풀이
 ---
 
 <br>

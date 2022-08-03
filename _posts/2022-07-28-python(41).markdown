@@ -4,7 +4,7 @@ title: 파이썬 회사에 있는 사람(백준 BOJ 7785)
 date: 2022-07-28 18:40:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 딕셔너리 사용하기

@@ -4,7 +4,7 @@ title: 파이썬 최소힙(백준 BOJ 1927)
 date: 2022-08-03 00:10:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

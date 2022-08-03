@@ -4,7 +4,7 @@ title: 파이썬 블랙잭(백준 BOJ 2798)
 date: 2022-07-30 16:52:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 부르트 포스

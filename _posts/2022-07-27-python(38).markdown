@@ -4,7 +4,7 @@ title: 파이썬 슈퍼마리오(백준 BOJ 2851)
 date: 2022-07-27 20:54:00 +0900
 image: 백준.png
 tags: 알고리즘
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

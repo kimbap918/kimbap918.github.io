@@ -4,7 +4,7 @@ title: 파이썬 피보나치 수5(BOJ 10870)
 date: 2022-07-24 21:15:00 +0900
 image: 백준.png
 tags: 문법
-categories: python 
+categories: 문제풀이
 ---
 
 <br>

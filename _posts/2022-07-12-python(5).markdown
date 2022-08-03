@@ -4,7 +4,7 @@ title: 파이썬 셀프 넘버(백준 BOJ 4673)
 date: 2022-07-12 00:30:00 +0900
 image: 백준.png
 tags: 문법
-categories: python
+categories: 문제풀이
 ---
 
 <br>
