@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 파이썬 힙(Heap)과 셋(Set)
-date: 2022-08-03 00:20:00 +0900
+title: 파이썬 그래프(graph)
+date: 2022-08-09 23:20:00 +0900
 image: 14.jpg
 tags: 알고리즘
 categories: python 
