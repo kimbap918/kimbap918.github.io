@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SQL(3)
+title: SQL(3) - 기본 함수와 연산
 date: 2022-08-18 11:54:00 +0900
 image: SQL.png
 tags: SQL
@@ -8,8 +8,6 @@ categories: SQL
 ---
 
 <br>
-
-## SQL(2) - 기본 함수와 연산
 
 #### 문자열 함수
 
