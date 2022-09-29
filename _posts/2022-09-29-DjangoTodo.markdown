@@ -932,8 +932,3 @@ def update(request, pk):
 ```
 
 <br>
-
-## 시연하기
-
-![todo_시연]({{site.baseurl}}/images/과정.mp4) 
-
