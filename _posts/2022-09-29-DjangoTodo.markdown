@@ -935,4 +935,5 @@ def update(request, pk):
 
 ## 시연하기
 
-<video src="../images/과정.mp4"></video>
+![todo_시연]({{site.baseurl}}/images/과정.mp4) 
+
