@@ -2,7 +2,7 @@
 layout: post
 title: Django(3) - Quick Start
 date: 2022-09-26 12:20:00 +0900
-image:django.jpg
+image:jango.jpg
 tags: django
 categories: django
 ---
