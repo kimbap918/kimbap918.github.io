@@ -2,7 +2,7 @@
 layout: post
 title: Django(1) - 환경설정
 date: 2022-09-21 21:20:00 +0900
-image: django.jpg
+image:jango.jpg
 tags: django
 categories: django
 ---
