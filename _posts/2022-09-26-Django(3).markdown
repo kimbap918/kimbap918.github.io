@@ -359,8 +359,8 @@ def pong(request):
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 </head>
 <body>
-  <!-- {% block content %}
-  {% endlblock content %} -->
+  {% raw %}{% block content %}
+  {% endlblock content %}{% endraw %}
 </body>
 </html>
 ```
@@ -371,16 +371,16 @@ index 템플릿에서 base템플릿을 상속받음
 
 ``` html
 <!-- 최상단에 작성 -->
-{% extends 'base.html %}
+ {% raw %}{% extends 'base.html %}{% endraw %}
 
-<!-- {% block content %} -->
+ {% raw %}{% block content %}{% endraw %}
 <h1>검색 모음</h1>
 <h2>Google</h2>
 <form action="https://www.google.com/search">
   <input type="text" name="q">
   <input type="submit">
 </form>
-<!-- {% endblock %} -->
+ {% raw %}{% endblock %} {% endraw %}
 ```
 
 공통된 부분을 제외하고 block 과 endblock 사이에 개별적인 내용을 넣으면 템플릿 상속이 가능함
