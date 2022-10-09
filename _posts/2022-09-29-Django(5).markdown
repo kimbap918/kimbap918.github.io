@@ -11,85 +11,6 @@ categories: django
 
 <br>
 
-## 요구사항
-
-### 모델 Model
-
-모델은 아래 조건을 만족해야 합니다.
-
-다만, 기능 추가를 위해 필드를 추가해도 됩니다.
-
-- 모델 이름 : Todo
-
-- 모델 필드 및 속성
-
-  | 필드 이름  | 역할       | 필드    | 속성              |
-  | ---------- | ---------- | ------- | ----------------- |
-  | content    | 할 일 내용 | Char    | max_length=80     |
-  | completed  | 완료 여부  | Boolean | default=False     |
-  | priority   | 우선순위   | Integer | default=3         |
-  | created_at | 생성 날짜  | Date    | auto_now_add=True |
-  | deadline   | 마감 기한  | Date    | null=True         |
-
-### 기능 View
-
-아래 기능을 구현합니다.
-
-- 할 일 추가하기 Create
-  - 힌트
-    1. create() 메소드를 활용합니다.
-    2. 아래 데이터를 사용자에게 입력받아서 데이터를 생성합니다.
-       - 내용 / 우선 순위 / 마감 기한
-    3. 할 일 목록 페이지로 redirect 합니다.
-- 할 일 목록 보기 Read
-  - 힌트
-    1. 모든 데이터를 id를 기준으로 오름차순으로 정렬해서 불러옵니다.
-    2. 불러온 데이터를 템플릿에서 반복문을 사용해 1개씩 화면에 표시합니다.
-- 할 일 완료(completed) 여부(True / False) 변경하기 Update
-  - 힌트
-    1. 삭제할 할 일의 id가 필요합니다.
-    2. get() 메소드를 사용하여 변경할 데이터를 불러옵니다.
-    3. 불러온 데이터의 상태를 변경 후 저장합니다.
-    4. 할 일 목록 페이지로 redirect 합니다.
-- 할 일 삭제하기 Delete
-  - 힌트
-    1. 삭제할 할 일의 id가 필요합니다.
-    2. get() 메소드를 사용하여 변경할 데이터를 불러옵니다.
-    3. 불러온 데이터를 삭제합니다.
-    4. 할 일 목록 페이지로 redirect 합니다.
-
-### 화면 Template
-
-- 할 일 추가 폼 <form>
-
-  - 할 일
-    - <input type = “text”> 태그를 활용합니다.
-    - 최대 입력 길이는 80입니다.
-  - 우선 순위
-    - <select> <option> 태그를 활용합니다.
-    - 참고 자료 : https://thrillfighter.tistory.com/572
-  - 마감 기한
-    - <input type="date"> 태그를 활용합니다.
-  - 할 일 추가 버튼
-    - <input type=”submit”> 태그를 활용합니다.
-
-  ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/72153a58-09b6-4827-af5d-4250235981fe/Untitled.png)
-
-  ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0d52e188-dfe3-45f4-ac24-316044b7594d/Untitled.png)
-
-- 할 일 목록 테이블 <table>
-
-  - <thead>
-    - 우선 순위 / 할 일 내용 / 생성 날짜 / 마감 기한 / 진행 상태 / 상태 변경 / 삭제 를 테이블 헤더로 사용합니다.
-  - <tbody>
-    - id를 기준으로 오름차순으로 정렬한 모든 데이터를 화면에 표시합니다.
-  - 변경
-    - 버튼을 누르면 해당 할 일의 상태(True / False)가 수정됩니다.
-  - 삭제
-    - 버튼을 누르면 해당 할 일이 삭제됩니다
-
-<br>
-
 ## 가상환경 생성 및 프로젝트 생성
 
 #### 작업 폴더 생성 및 이동
@@ -141,6 +62,16 @@ python -m pip install --upgrade pip
 
 <br>
 
+#### Django 설치 및 기록
+
+``` terminal
+$ pip install django==3.2.13
+$ pip install django-bootstrap5 # 부트스트랩 5 사용시
+$ pip freeze > requirements.txt
+```
+
+<br>
+
 #### Django 프로젝트 폴더 생성
 
 ``` terminal
@@ -179,6 +110,7 @@ python -m pip install --upgrade pip
 INSTALLED_APPS = [
   	# 생성한 애플리케이션 폴더(todo) 등록
   	'todo',
+  	'django_bootstrap5', # 부트스트랩5 설치시 등록
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -276,10 +208,26 @@ from . import views # .은 현재경로 라는 뜻, 현재경로의 views를 가
 
 app_name = 'todo' 
 
-urlpatterns = {
+urlpatterns = [
     path('', views.index, name='index'),
 
-}
+]
+```
+
+<br>
+
+* 활용 : `todo:index` => `/todo/`
+
+* Template에서 활용 예시
+
+```django
+{% raw %}{% url 'todo:index' %}{% endraw %}
+```
+
+* View에서 활용 예시
+
+```python
+redirect('todo:index')
 ```
 
 <br>
@@ -299,34 +247,32 @@ def index(request):
 
 <br>
 
-#### 애플리케이션 폴더(todo) > template 폴더 생성 > template 폴더 내 todo 폴더 생성 > index.html 파일 생성
+#### 애플리케이션 폴더(todo) > templates 폴더 생성 > templates 폴더 내 todo 폴더 생성 > index.html 파일 생성
 
 <br>
 
-#### templates > base.html
+#### 프로젝트 폴더(todospjt) > templates 폴더 생성 > templates 폴더 내 base.html 생성
 
 ``` html
+{% raw %}{% load django_bootstrap5 %}{% endraw %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <!-- CSS only -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-  <!-- JavaScript Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-    crossorigin="anonymous"></script>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% raw %}{% bootstrap_css %}
+    {% block css %}{% endblock css %}{% endraw %}
+  </head>
 
-<body>
-  {% block content %}
-  {% endblock content %}
-</body>
+  <body>
+    <div class="container">
+      {% raw %}{% block body %}{% endblock body %}{% endraw %}
+    </div>
+    {% raw %}{% bootstrap_javascript %}{% endraw %}
+  </body>
 
 </html>
 ```
@@ -336,14 +282,42 @@ def index(request):
 #### templates > todo > index.html
 
 ``` html
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-{% block content %}
-  <h1>index.html</h1>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
+
+{% block body %} 
+<h1>todo list</h1>
+{% endblock %}{% endraw %}
 ```
 
 <br>
+
+#### settings.py > TEMPLATES
+
+``` python
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "todospjt" / "templates"], # BASE_DIR / "프로젝트폴더명" / "템플릿폴더명"
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+```
+
+
 
 #### 프로젝트 실행 후 작동 확인(manage.py 경로에서 실행 해야함)
 
@@ -357,6 +331,24 @@ def index(request):
 
 * 아래의 내용부터는 프로젝트의 내용에 대해서 다루므로, 내용이 많습니다. 프로젝트의 생성과 실행만 참고한다면 보지 않아도 상관없어요.
 
+## 0. ModelForm 선언
+
+> 선언된 모델에 따른 필드 구성 (1) Form 생성 (2) 유효성 검사
+
+```python
+# 애플리케이션 폴더에 forms.py 생성하기
+from django import forms
+from .models import Todo
+
+class TodoForm(forms.ModelForm):
+
+    class Meta:
+        model = Todo
+        fields = ['content', 'completed', 'priority', 'created_at', 'deadline']
+```
+
+<br>
+
 ## 1. 할 일 추가하기(Create)
 
 #### templates > todo > index.html
@@ -368,9 +360,15 @@ def index(request):
 * input에 입력한 text 값을 `content_` 라는 이름으로 식별해준다. (임의 지정)
 
 ``` html
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block body %} 
   <h1>index.html</h1>
   <!-- 사용자에게 정보를 입력받을 때 form 태그를 사용해야한다. -->
   <!-- action : 어떤 url을 요청할지 -->
@@ -379,7 +377,7 @@ def index(request):
     <!-- input에 입력한 text 값을 content_ 로 식별해준다 -->
     <input type="text" name="content_" id="" maxlength="80">
     <input type="submit" value="할 일 추가">
-{% endblock %}
+{% endblock %}{% endraw %}
 ```
 
 <br>
@@ -474,9 +472,15 @@ def create(request):
 * DTL for문을 사용하여 views.py에서 정의된 todos를 반복문을 돌면서 뿌려줌
 
 ``` python
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block body %} 
   <h1>index.html</h1>
   <!-- 사용자에게 정보를 입력받을 때 form 태그를 사용해야한다. -->
   <!-- action : 어떤 url을 요청할지 -->
@@ -495,7 +499,7 @@ def create(request):
     <li>{{ todo.id }} - {{ todo.content }} - {{ todo.completed }}</li>
     {% endfor %}
   </ul>
-{% endblock %}
+{% endblock %}{% endraw %}
 ```
 
 <br>
@@ -505,9 +509,15 @@ def create(request):
 #### templates > todo > index.html
 
 ``` html
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block body %} 
 <h1>index.html</h1>
 <!-- 사용자에게 정보를 입력받을 때 form 태그를 사용해야한다. -->
 <!-- action : 어떤 url을 요청할지 -->
@@ -527,7 +537,7 @@ def create(request):
   </li>
   {% endfor %}
 </ul>
-{% endblock %}
+{% endblock %}{% endraw %}
 ```
 
 <br>
@@ -611,9 +621,15 @@ def update(request, pk):
 * li 태그 내에 삭제 버튼 생성
 
 ``` html
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block body %} 
 <h1>index.html</h1>
 <!-- 사용자에게 정보를 입력받을 때 form 태그를 사용해야한다. -->
 <!-- action : 어떤 url을 요청할지 -->
@@ -635,7 +651,7 @@ def update(request, pk):
   </li>
   {% endfor %}
 </ul>
-{% endblock %}
+{% endblock %}{% endraw %}
 ```
 
 <br>
@@ -726,7 +742,13 @@ def delete(request, todo_pk):
 #### index.html
 
 ``` html
-{% extends 'base.html' %}
+{% raw %}{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 
 {% block content %}
 <!-- 변경 버튼 클릭 시 취소선을 긋기 위한 스타일 정의 -->
@@ -846,7 +868,7 @@ def delete(request, todo_pk):
     date_input.datepicker(options);
   })
 </script>
-{% endblock %}
+{% endblock %}{% endraw %}
 ```
 
 <br>
@@ -932,3 +954,481 @@ def update(request, pk):
 ```
 
 <br>
+
+## 추가적인 내용
+
+#### (번외)Create - POST로 제출하기
+
+new.html
+
+``` html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+	<h1>글쓰기</h1>
+  <!-- method를 POST로 변경 -->
+  <form action="{% url 'articles:create' %}" method="POST">
+    {% csrf_token %}
+    <label for="title">제목 : </label>
+    <input type="text" name="title" id='title'>
+    <label for="title">내용 : </label>
+    <textarea name="content" id='content' cols='30' rows=10></textarea>
+    <input type="submit" value='글쓰기'>
+  </form>
+</body>
+
+</html>
+```
+
+<br>
+
+views.py
+
+``` python
+from django.shortcuts import render, redirect
+from .models import Article
+
+# 요청 정보를 받아서
+def index(request):
+  	# 게시글을 가져와서
+  	articles = Article.objects.order_by('-pk')
+    # template에 전달한다
+    context = {
+      'articles' : articles
+    }
+		# 페이지를 render
+    return render(request, 'articles/index.html')
+  
+def new(request):
+  
+  return render(request, 'articles/new.html')
+
+def create(request):
+  title = request.POST.get('title')
+  content = request.POST.get('content')
+  Article.objects.create(title=title, content=content)
+  return redirect('articles:index')
+```
+
+<br>
+
+## Django ModelForm
+
+* DB기반의 애플리케이션을 개발하다보면,  HTML Form(UI)은 Django 모델(DB)과 매우 밀접한 관계를 가지게 됨
+  * 사용자로부터 값을 받아 DB에 저장하여 활용하기 때문
+  * 즉, 모델에 정의한 필드의 구성 및 종류에 따라 HTML Form이 결정됨
+* 사용자가 입력한 값이 DB의 데이터 형식과 일치하는지를 확인하는 유효성 검증이 반드시 필요하며 이는 서버 사이드에서 반드시 처리해야함.
+
+forms.py 생성
+
+``` python
+from django import forms
+from .models import Article
+
+class ArticleForm(forms.ModelForm):
+  
+  class Meta:
+    model = Article
+    fields = '__all__'
+    # fields = ['title', 'content'] 필요한것만 가져올 수 있음
+```
+
+ <br>
+
+views.py
+
+``` python
+from django.shortcuts import render, redirect
+from .models import Article
+
+# 요청 정보를 받아서
+def index(request):
+  	# 게시글을 가져와서
+  	articles = Article.objects.order_by('-pk')
+    # template에 전달한다
+    context = {
+      'articles' : articles
+    }
+		# 페이지를 render
+    return render(request, 'articles/index.html')
+  
+#def new(request):
+#  article_form = ArticleForm()
+#  context = {
+#    'article_form' : article_form
+#  }
+#  return render(request, 'articles/new.html', context=context)
+
+# new를 제거하고 create에서 전부 처리 가능
+def create(request): # 유효성 검사도 가능
+  if request.method == 'POST':
+  	article_form = ArticleForm(request.POST)
+  	if article_form.is_valid():
+    	article_form.save()
+    	return redirect('articles:index')
+  else:
+    # 유효하지 않을때
+    article_form = ArticleForm()
+    context = {
+      'article_form': article_form
+    }
+    return render(request, 'articles/new.html', context=context)
+```
+
+<br>
+
+new.html
+
+``` html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+	<h1>글쓰기</h1>
+  <!-- method를 POST로 변경 -->
+  <form action="{% url 'articles:create' %}" method="POST">
+    {% raw %}{% csrf_token %}{% endraw %}
+    <!-- 기존의 form을 대체할 수 있다 -->
+    {{ article_form.as_p }}
+</body>
+
+</html>
+```
+
+<br>
+
+#### 3. read - 상세보기
+
+url.py
+
+``` python
+from django.urls import path
+from . import views
+
+app_name = 'articles'
+
+urlpatterns = [
+  path('', views.index, name='index'),
+  # path('new/', views.new, name='new'),
+  path('create/', views.create, name='create'),
+  path('<int:pk>/', views.detail, name='detail'),
+]
+```
+
+views.py
+
+``` python
+from django.shortcuts import render, redirect
+from .models import Article
+
+# 요청 정보를 받아서
+def index(request):
+  	# 게시글을 가져와서
+  	articles = Article.objects.order_by('-pk')
+    # template에 전달한다
+    context = {
+      'articles' : articles
+    }
+		# 페이지를 render
+    return render(request, 'articles/index.html')
+  
+#def new(request):
+#  article_form = ArticleForm()
+#  context = {
+#    'article_form' : article_form
+#  }
+#  return render(request, 'articles/new.html', context=context)
+
+# new를 제거하고 create에서 전부 처리 가능
+def create(request): # 유효성 검사도 가능
+  if request.method == 'POST':
+  	article_form = ArticleForm(request.POST)
+  	if article_form.is_valid():
+    	article_form.save()
+    	return redirect('articles:index')
+  else:
+    # 유효하지 않을때
+    article_form = ArticleForm()
+    context = {
+      'article_form': article_form
+    }
+    return render(request, 'articles/new.html', context=context)
+  
+def detail(request):
+  article = Article.onjects.get(pk=pk)
+  context = {
+    'article' : article
+  }
+  return render(request, 'articles/detail.html', context)
+  
+```
+
+detail.html
+
+``` python
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+	<h1>{{ article.pk }}번 게시글</h1>
+  <p>{{ article.created_at }} | {{ article.updated_at}}</p>
+  <p>{{ article.content }}</p>
+  <a href="{% url 'article:update' article.pk %}">수정하기</a>
+</body>
+
+</html>
+```
+
+<br>
+
+#### 수정하기(Update)
+
+urls.py
+
+``` python
+from django.urls import path
+from . import views
+
+app_name = 'articles'
+
+urlpatterns = [
+  path('', views.index, name='index'),
+  # path('new/', views.new, name='new'),
+  path('create/', views.create, name='create'),
+  path('<int:pk>/', views.detail, name='detail'),
+  path('<int:pk>/update/', views.update, name='update'),
+]
+```
+
+<br>
+
+views.py
+
+``` python
+from django.shortcuts import render, redirect
+from .models import Article
+
+# 요청 정보를 받아서
+def index(request):
+  	# 게시글을 가져와서
+  	articles = Article.objects.order_by('-pk')
+    # template에 전달한다
+    context = {
+      'articles' : articles
+    }
+		# 페이지를 render
+    return render(request, 'articles/index.html')
+  
+#def new(request):
+#  article_form = ArticleForm()
+#  context = {
+#    'article_form' : article_form
+#  }
+#  return render(request, 'articles/new.html', context=context)
+
+# new를 제거하고 create에서 전부 처리 가능
+def create(request): # 유효성 검사도 가능
+  if request.method == 'POST':
+  	article_form = ArticleForm(request.POST)
+  	if article_form.is_valid():
+    	article_form.save()
+    	return redirect('articles:index')
+  else:
+    # 유효하지 않을때
+    article_form = ArticleForm()
+  context = {
+      'article_form': article_form
+  }
+ 	return render(request, 'articles/new.html', context=context)
+ 
+def detail(request):
+  article = Article.onjects.get(pk=pk)
+  context = {
+    'article' : article
+  }
+  return render(request, 'articles/detail.html', context)
+  
+def update(request, pk)
+  article = Article.objects.get(pk=pk)
+  if request.method == 'POST':
+    # POST : input 값 가져와서 검증하고 DB에 저장
+    article_form = ArticleForm(request.POST, instance=article) # 특정한 글을 수정하는 것이기 때문에 인스턴스를 반드시 넘겨주어야 함
+    if article_form.is_valid():
+      # 유효성 검사 통과하면 저장하고 상세보기 페이지로 
+      article_form.save()
+      return redirect('articles:detail', article.pk)
+      
+  else:
+  	article_form = ArticleForm(instance=article)
+  context = {
+    'article_form' : article_form
+  }
+  return render(request, 'artitle/update.html', context)
+  
+```
+
+<br>
+
+update.html
+
+``` html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+	<h1>글 수정하기</h1>
+  <form action="{% url 'articles:update' %}" method="POST"></form>
+  {{ article_form.as_p }}
+  <input type="submit" value="수정하기">
+  </form>
+</body>
+
+</html>
+```
+
+<br>
+
+## Django Admin
+
+``` terminal
+$ source venv/bin/activate # 가상환경 실행
+$ python manage.py createsuperuser # 슈퍼유저 생성
+
+Username (leave blank to use 'mac'): admin
+Email address: fx887722@naver.com
+Password: 
+Password (again): 
+Superuser created successfully.
+(server-venv) server/day3 - (main) > 
+```
+
+<br>
+
+admin.py
+
+``` python
+from django.contrib import admin
+from .models import Article
+
+# Register your models here.
+admin.site.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    fields = ['title']
+
+admin.site.register(Article, ArticleAdmin)
+```
+
+<br>
+
+#### Static files
+
+* 웹 서버는 특정 위치(URL)에 있는 자원(resource)을 요청받아서 제공하는 응답을 처리하는 것을 기본 동작으로 한다.
+* 즉, 웹 서버는 요청 받은 URL로 서버에 존재하는 정적 자원을 제공
+
+settings.py
+
+``` python
+...
+import os
+
+INSTALLED_APPS = [
+    'posts',
+    'articles',
+    'practices',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles', # 프로젝트 생성시 설정이 되어있음
+]
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STATIC_URL = '/static/' # 기본으로 설정되어있음.
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'config', 'static') # 추가
+]
+```
+
+<br>
+
+앱 안에 static 폴더 생성 -> static 폴더 안에 image 폴더 생성 -> 생성한 image 폴더에 이미지 넣기
+
+<br>
+
+HTML 내에서 아래와 같이 {% STATIC_URL 에 설정한 경로  '파일명' %} 사용시 파일 로드 가능
+
+``` html
+{% raw %}<img src="{% static 'image/apparel.jpeg' %}">{% endraw %}
+```
+
+<br>
+
+## Django Bootstrap5
+
+#### settings.py
+
+``` python
+INSTALLED_APPS = [
+    'articles',
+    'django_bootstrap5', # 부트스트랩 추가
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+```
+
+<br>
+
+#### 사용 예시
+
+``` html
+{% raw %}{% load django_bootstrap5 %}
+
+{% bootstrap_css %}
+
+{% bootstrap_javascript %}
+
+{% bootstrap_form article_form %}
+
+{% bootstrap_button button_type="submit" %}{% endraw %}
+```
+
+
+

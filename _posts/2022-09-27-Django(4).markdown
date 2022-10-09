@@ -230,8 +230,8 @@ def create(request):
 #### articles/template/article/create.html
 
 ``` html
-{% extends 'base.html' %}
-{% block content %}
+{% raw %}{% extends 'base.html' %} {% endraw %}
+{% raw %}{% block content %} {% endraw %}
 
 <body>
   <div>
@@ -254,6 +254,6 @@ def create(request):
 
 </body>
 
-{% endblock %}
+{% raw %}{% endblock %}{% endraw %}
 ```
 
