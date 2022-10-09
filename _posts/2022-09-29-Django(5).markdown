@@ -373,7 +373,7 @@ class TodoForm(forms.ModelForm):
   <!-- 사용자에게 정보를 입력받을 때 form 태그를 사용해야한다. -->
   <!-- action : 어떤 url을 요청할지 -->
   <!-- create 라는 이름을 가진 주소를 요청 -->
-  <form action="{% url ' todo:create' %}">
+  {% raw %}<form action="{% url ' todo:create' %}">{% endraw %}
     <!-- input에 입력한 text 값을 content_ 로 식별해준다 -->
     <input type="text" name="content_" id="" maxlength="80">
     <input type="submit" value="할 일 추가">
@@ -975,7 +975,7 @@ new.html
 <body>
 	<h1>글쓰기</h1>
   <!-- method를 POST로 변경 -->
-  <form action="{% url 'articles:create' %}" method="POST">
+  {% raw %}<form action="{% url 'articles:create' %}" method="POST">{% endraw %}
     {% csrf_token %}
     <label for="title">제목 : </label>
     <input type="text" name="title" id='title'>
@@ -1101,8 +1101,8 @@ new.html
 <body>
 	<h1>글쓰기</h1>
   <!-- method를 POST로 변경 -->
-  <form action="{% url 'articles:create' %}" method="POST">
-    {% raw %}{% csrf_token %}{% endraw %}
+  {% raw %}<form action="{% url 'articles:create' %}" method="POST">
+    {% csrf_token %}{% endraw %}
     <!-- 기존의 form을 대체할 수 있다 -->
     {{ article_form.as_p }}
 </body>
@@ -1195,7 +1195,7 @@ detail.html
 	<h1>{{ article.pk }}번 게시글</h1>
   <p>{{ article.created_at }} | {{ article.updated_at}}</p>
   <p>{{ article.content }}</p>
-  <a href="{% url 'article:update' article.pk %}">수정하기</a>
+  {% raw %}<a href="{% url 'article:update' article.pk %}">수정하기</a>{% endraw %}
 </body>
 
 </html>
@@ -1306,7 +1306,7 @@ update.html
 
 <body>
 	<h1>글 수정하기</h1>
-  <form action="{% url 'articles:update' %}" method="POST"></form>
+  {% raw %}<form action="{% url 'articles:update' %}" method="POST"></form>{% endraw %}
   {{ article_form.as_p }}
   <input type="submit" value="수정하기">
   </form>
