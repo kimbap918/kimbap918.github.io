@@ -254,6 +254,6 @@ def create(request):
 
 </body>
 
-{% raw %}{% endblock %}{% endraw %}
+{% raw %}{% endblock %}{% raw %}
 ```
 
