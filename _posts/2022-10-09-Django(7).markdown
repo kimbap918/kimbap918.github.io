@@ -54,7 +54,7 @@ admin.site.register(Article, ArticleAdmin)
 settings.py
 
 ``` python
-...
+{% raw %}...
 import os
 
 INSTALLED_APPS = [
@@ -77,7 +77,7 @@ STATIC_URL = '/static/' # 기본으로 설정되어있음.
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'config', 'static') # 추가
-]
+]{% endraw %}
 ```
 
 <br>
