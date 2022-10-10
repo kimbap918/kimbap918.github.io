@@ -1,52 +1,46 @@
-<h1>Flexton is an ultra-minimalist and responsive theme for Jekyll</h1>
+## github.io 블로그 업로드 오류시 확인사항
 
-<p>Flexton created especially for those who appreciate minimalism and functionality.</p>
-<p>Amazing flexibility with pleasant colors and custom design makes Flexton a simple theme, suitable for almost any blog.</p>
+며칠 전에 GitHub.io 업로드 에러가 발생해서 블로그에 TIL업로드를 한동안 못한 적이 있었다.
 
-<h2>Demo</h2>
+주말에 검점 차 확인해보니 원인이 확인돼서 다시 비슷한 일이 일어났을 때 대처할 수 있도록 기록해두려고 한다.
 
-Check the theme in action [Demo](https://flexton.netlify.com/)
+<br>
 
-![Page preview](https://github.com/artemsheludko/flexton/blob/master/images/preview.png?raw=true)
+#### github.io 푸시 반영이 안될때  
 
-<h2>Features</h2>
+![githubError_image]({{site.baseurl}}/images/githubError(3).png)
 
-<ul>
-	<li>100% responsive and clean theme</li>
- 	<li>Optimized for mobile devices</li>
-	<li>Valid HTML5 code</li>
-	<li>Included site search</li>
-	<li>Contact Page</li>
-	<li>Post sharing</li>
-	<li>Supports Mail Chimp Subscriber</li>
-	<li>Supports Disqus Comments</li>
-	<li>Social Media Profiles</li>
-	<li>Contact Form - FormsPree</li>
-	<li>Evil Icons</li>
-	<li>Google Fonts</li>
-</ul>
+ 빨간 네모 부분을 클릭
 
-<h2>Credits</h2>
+<br>
 
-<p>I have used the following scripts, fonts or other files as listed.</p>
+![githubError_image]({{site.baseurl}}/images/githubError(2).png)
 
-<ul>
-  <li><a href="https://fonts.google.com/">Google Fonts</a> (Volkhov, Open Sans).</li>
-  <li><a href="http://evil-icons.io/">Evil Icons</a></li>
-  <li><a href="http://fitvidsjs.com/">FitVids.js</a></li>
-  <li><a href="https://jquery.com/">jQuery.com</a></li>
-  <li><a href="https://github.com/christian-fei/Simple-Jekyll-Search">Simple-Jekyll-Search</a></li>
-  <li>Preview Images form <a href="https://unsplash.com/">unsplash.com</a>, <a href="https://www.pexels.com/">pexels.com</a></li>
-</ul>
+Build를 클릭해서 에러 내용 확인
 
-<h2>Deployment</h2>
+<br>
 
-To run the theme locally, navigate to the theme directory and run `bundle install` to install the dependencies, then run `jekyll serve` or `bundle exec serve` to start the Jekyll server.
+![githubError_image]({{site.baseurl}}/images/githubError(1).png)
 
-I would recommend checking the [Deployment Methods](https://jekyllrb.com/docs/deployment-methods/) page on Jekyll website.
+에러 내용 확인 후 해당 파일 찾아서 수정
 
-<h2>Buy me a coffee</h2>
+<br>
 
-<p>If you want to show your appreciation, buy me one <a href="https://www.buymeacoffee.com/artemsheludko" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a> ! Every five cups of coffee and a new theme for Jekyll is ready 😋</p>
-<p>Either way, your support is a way to thank me ❤️</p>
-<p align="center"><b>Thank you for your support!</b></p>
+#### 자주 발생하는 실수
+
+![githubError_image]({{site.baseurl}}/images/githubError(4).png)
+
+포스팅 정보 입력하는 부분에서 콜론(:) 사용 후 띄워쓰기를 하지 않았을때 오류가 발생함. 
+
+<br>
+
+![githubError_image]({{site.baseurl}}/images/githubError(5).png)
+
+{% raw %}{% %}{% endraw %} 태그 사용시, Liquid tag error 발생,
+
+위 사진과 같이 `사용되는 태그 사이에{% raw %}, {% endraw %} ` 를 삽입하면 해결됨
+
+<br>
+
+
+
