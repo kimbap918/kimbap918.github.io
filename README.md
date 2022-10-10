@@ -8,19 +8,19 @@
 
 #### github.io 푸시 반영이 안될때  
 
-![githubError_image]({{site.baseurl}}/images/githubError(3).png)
+![githubError_image](https://user-images.githubusercontent.com/75712723/194895275-cf5ef26d-a21b-4978-9ba1-0aeb6aa5c392.png)
 
  빨간 네모 부분을 클릭
 
 <br>
 
-![githubError_image]({{site.baseurl}}/images/githubError(2).png)
+![githubError_image](https://user-images.githubusercontent.com/75712723/194895271-b3630e21-327a-4f01-868c-3e8ce62702c3.png)
 
 Build를 클릭해서 에러 내용 확인
 
 <br>
 
-![githubError_image]({{site.baseurl}}/images/githubError(1).png)
+![githubError_image](https://user-images.githubusercontent.com/75712723/194895279-967b9bb4-ee45-4f94-8054-df2bf7f40f64.png)
 
 에러 내용 확인 후 해당 파일 찾아서 수정
 
@@ -28,13 +28,13 @@ Build를 클릭해서 에러 내용 확인
 
 #### 자주 발생하는 실수
 
-![githubError_image]({{site.baseurl}}/images/githubError(4).png)
+![githubError_image](https://user-images.githubusercontent.com/75712723/194895270-d1b2c6e7-c41a-44d4-9175-aba5baca3c76.png)
 
 포스팅 정보 입력하는 부분에서 콜론(:) 사용 후 띄워쓰기를 하지 않았을때 오류가 발생함. 
 
 <br>
 
-![githubError_image]({{site.baseurl}}/images/githubError(5).png)
+![githubError_image](https://user-images.githubusercontent.com/75712723/194895259-692562be-53bb-4248-987d-79fd3bef61e0.png)
 
 {% raw %}{% %}{% endraw %} 태그 사용시, Liquid tag error 발생,
 
