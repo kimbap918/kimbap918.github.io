@@ -73,6 +73,8 @@ INSTALLED_APPS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_URL = '/static/' # 기본으로 설정되어있음.
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'config', 'static') # 추가
 ]{% endraw %}
@@ -84,7 +86,7 @@ STATICFILES_DIRS = [
 
 <br>
 
-HTML 내에서 아래와 같이 {% STATIC_URL 에 설정한 경로  '파일명' %} 사용시 파일 로드 가능
+HTML 내에서 아래와 같이 {% raw %}{% STATIC_URL 에 설정한 경로  '파일명' %}{% endraw %} 사용시 파일 로드 가능
 
 ``` html
 {% raw %}<img src="{% static 'image/apparel.jpeg' %}">{% endraw %}
