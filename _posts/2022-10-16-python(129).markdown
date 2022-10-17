@@ -57,7 +57,7 @@ N만큼 반복하면서 queue에 1부터 N+1 값을 넣는다.
 
 deque는 양 끝 엘리먼트의 append와 pop이 압도적으로 빠르다. 이 문제를 풀려고 pop을 여러번 사용하면서 pop과 append를 하면 시간초과가 발생한다. 그래서 popleft를 사용해서 왼쪽의 값을 빼내고 deque를 회전시켜 다시 왼쪽의 값을 빼내는것을 1개가 남을때까지 하면 시간초과가 발생하지 않는다.
 
-```
+```python
 from collections import deque
 import sys
 
