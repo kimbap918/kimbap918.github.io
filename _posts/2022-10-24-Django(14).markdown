@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Django(13) - 프로필과 댓글 기능 추가하기
-date: 2022-10-19 23:30:00 +0900
+title: Django(14) - 좋아요 기능 구현하기
+date: 2022-10-24 18:30:00 +0900
 image: django.jpg
 tags: django
 categories: django
