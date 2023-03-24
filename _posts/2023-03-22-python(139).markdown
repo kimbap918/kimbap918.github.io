@@ -3,7 +3,7 @@ layout: post
 title: 파이썬 최소공배수(백준 BOJ 13241)
 date: 2023-03-22 20:10:00 +0900
 image: 백준.png
-tags: 알고리즘, 유클리드호제법
+tags: 알고리즘 유클리드호제법
 categories: 문제풀이
 
 ---
