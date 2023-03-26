@@ -2,7 +2,7 @@
 layout: post
 title: 파이썬 입력 받기(sys.stdin.readline)
 date: 2023-03-26 15:00:00 +0900
-image: 14.png
+image: 14.jpg
 tags: 파이썬 문법
 categories: 파이썬
 
@@ -41,7 +41,7 @@ input()은 prompt 인수가 있으면, 인수가 끝에 개행 없이 표준 출
 
 >The [`readline`](https://docs.python.org/3/library/readline.html#module-readline) module defines a number of functions to facilitate completion and reading/writing of history files from the Python interpreter. This module can be used directly, or via the [`rlcompleter`](https://docs.python.org/3/library/rlcompleter.html#module-rlcompleter) module, which supports completion of Python identifiers at the interactive prompt. Settings made using this module affect the behaviour of both the interpreter’s interactive prompt and the prompts offered by the built-in [`input()`](https://docs.python.org/3/library/functions.html#input) function.
 
-readline 모듈은 파이썬 인터프리터에서 컴플리션과 히스토리 파일을 읽고 쓰기 용히하게 하는 여러가지 함수를 정의한다.
+readline 모듈은 파이썬 인터프리터에서 컴플리션과 히스토리 파일을 읽고 쓰기 용이하게 하는 여러가지 함수를 정의한다.
 
 이 모듈은 직접 사용하거나, 파이썬 식별자의 완성을 지원하는  rlcompleter module을 통해서 interactive prompt에서 사용할 수 있다. 이 모듈을 사용하기 위해 설정하는 것은 인터프리터의 대화식 prompts와 내장 input() 함수가 제공하는 prompt 동작에 영향을 준다.
 
