@@ -1,0 +1,75 @@
+---
+layout: post
+title: 파이썬 입력 받기(sys.stdin.readline)
+date: 2023-03-26 15:00:00 +0900
+image: 14.png
+tags: 파이썬 문법
+categories: 파이썬
+
+---
+
+<br>
+
+## input() 과 sys.stdin.readline() 의 차이점은 무엇일까?
+
+백준의 문제를 풀다보면, input()으로 입력받는것과 sys.stdin.readline()으로 입력받는것의 속도가 큰 차이가 있다는걸 알수있다.
+
+테스트 케이스를 입력받는등의 1번 입력받는건 속도에 큰 문제가 없지만, 반복문으로 여려줄을 입력받을 땐 반드시 `sys.stdin.readline()`을 써야 시간초과를 받지 않는데 이유를 알고싶어서 찾아서 정리해봤다.
+
+### input
+
+>**input**()
+>
+>**input**(*prompt*)
+>
+>If the *prompt* argument is present, it is written to standard output without a trailing newline. The function then reads a line from input, converts it to a string (stripping a trailing newline), and returns that. When EOF is read, [`EOFError`](https://docs.python.org/3/library/exceptions.html#EOFError) is raised. Example:
+
+```
+>>> s = input('--> ')  
+--> Monty Python's Flying Circus
+>>> s  
+"Monty Python's Flying Circus"
+```
+
+input()은 prompt 인수가 있으면, 인수가 끝에 개행 없이 표준 출력에 써진다. 그 후에 함수는 입력값의 라인을 읽고(그 이후 줄 바꿈을 제거하고) string으로 반환한다. 
+
+파일의 끝(EOF)가 읽히면, EOFerror를 일으킨다.
+
+<br>
+
+### readline
+
+>The [`readline`](https://docs.python.org/3/library/readline.html#module-readline) module defines a number of functions to facilitate completion and reading/writing of history files from the Python interpreter. This module can be used directly, or via the [`rlcompleter`](https://docs.python.org/3/library/rlcompleter.html#module-rlcompleter) module, which supports completion of Python identifiers at the interactive prompt. Settings made using this module affect the behaviour of both the interpreter’s interactive prompt and the prompts offered by the built-in [`input()`](https://docs.python.org/3/library/functions.html#input) function.
+
+readline 모듈은 파이썬 인터프리터에서 컴플리션과 히스토리 파일을 읽고 쓰기 용히하게 하는 여러가지 함수를 정의한다.
+
+이 모듈은 직접 사용하거나, 파이썬 식별자의 완성을 지원하는  rlcompleter module을 통해서 interactive prompt에서 사용할 수 있다. 이 모듈을 사용하기 위해 설정하는 것은 인터프리터의 대화식 prompts와 내장 input() 함수가 제공하는 prompt 동작에 영향을 준다.
+
+<br>
+
+>`f.readline()` reads a single line from the file; a newline character (`\n`) is left at the end of the string, and is only omitted on the last line of the file if the file doesn’t end in a newline. 
+>
+>This makes the return value unambiguous; if `f.readline()` returns an empty string, the end of the file has been reached, while a blank line is represented by `'\n'`, a string containing only a single newline.
+
+```
+>>> f.readline()
+'This is the first line of the file.\n'
+>>> f.readline()
+'Second line of the file\n'
+>>> f.readline()
+''
+```
+
+f.readline()은 파일에서 한 줄을 읽는다. 문자열 끝에는 개행 문자 (`\n`)가 남아있고 파일이 새 줄에서 끝나지 않는 경우에만 파일의 마지막 줄에서 생략된다. 이렇게 하면 값을 명확하게 만든다. 만약 f.readline()이 빈 문야열을 반환하면, 파일의 끝에 도달하게 되고 빈 줄은 새 줄 하나만 포함하는 문자열 `\n`으로 표시된다.
+
+<br>
+
+정리해보면 `input()`은 사용자에게 입력을 받으면 -> 문자열로 반환 -> 줄바꿈 제거 -> 값을 반환 하는 과정을 거친다.
+
+input()은 내장 함수로서 파라미터로 prompt message를 받아서 사용할수 있고, 입력받은 값의 개행 문자를 삭제시켜 반환한다.
+
+stdin.readline()은 prompt message를 파라미터로 받지 않으며, 개행 문자를 포함하여 반환한다.
+
+<br>
+
+이러한 input()의 과정때문에 input()이 느리며,  sys.stdin.readline()을 사용하는것이 빠르다. 
