@@ -2,10 +2,9 @@
 layout: post
 title: 파이썬 색종이 만들기(백준 BOJ 2630)
 date: 2023-03-28 17:55:00 +0900
-image: 백준.jpg
+image: 백준.png
 tags: 알고리즘 분할정복 재귀
 categories: 문제풀이
-
 ---
 
 <br>
