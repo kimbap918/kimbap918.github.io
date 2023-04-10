@@ -53,7 +53,7 @@ categories: 문제풀이
 
 랜선의 길이를 움직여서 랜선의 개수를 맞춰보기
 
-![binary_search](../../binary_search.gif)
+![binary_search_image]({{site.baseurl}}/images/binary_search.gif) 
 
 <br>
 
