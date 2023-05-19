@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 파이썬에서 유용하게 쓰이는 라이브러리와 함수
-date: 2023-05-15 17:10:00 +0900
+date: 2023-05-17 17:10:00 +0900
 image: goorm.png
 tags: 함수 라이브러리
 categories: 공부
