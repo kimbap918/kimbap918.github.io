@@ -131,15 +131,28 @@ const searchMeta = document.getElementById('searchMeta');
 
 const allIds = Object.keys(items);
 
+// 이름 뒤에 붙는 +N/☆/★/[태그]만 떼고 비교하기 위한 "계열 이름".
+function baseName(name) {
+  return name.replace(/\s*(\+\d+|[☆★]+|\[.*?\])\s*$/, '').trim();
+}
+
 // 강화 체인의 중간 단계(+1, +2 ...)는 다른 아이템의 up.result로 참조되므로,
 // 그런 참조가 전혀 없는 "루트"만 검색 결과에 노출한다 - 나머지 단계는
-// 상세 화면에서 체인을 따라가며 한꺼번에 보여준다.
-const referencedAsResult = new Set();
+// 상세 화면에서 체인을 따라가며 한꺼번에 보여준다. 다만 강화하다가 이름
+// 자체가 바뀌는 진화 체인(실측 확인, 예: 강인한 하와의 배지 -> ... ->
+// 강인한 미네르바의 배지 -> ... -> 최종 강인한 제피로스의 배지까지 8단계
+// 진화)은 다른 아이템의 결과물이라도 이름이 바뀐 지점마다 별도로 검색
+// 가능해야 한다(사용자 요청 - 계열별로 분리).
+const sourceOf = new Map();
 for (const id of allIds) {
   const up = items[id].up;
-  if (up && up.result) referencedAsResult.add(String(up.result));
+  if (up && up.result) sourceOf.set(String(up.result), id);
 }
-const rootIds = allIds.filter(id => !referencedAsResult.has(id));
+const rootIds = allIds.filter(id => {
+  const src = sourceOf.get(id);
+  if (!src || !items[src]) return true;
+  return baseName(items[src].n) !== baseName(items[id].n);
+});
 
 rootIds.sort((a, b) => items[a].n.localeCompare(items[b].n, 'ko'));
 searchMeta.textContent = rootIds.length.toLocaleString() + '개 장비 아이템 (강화/인챈트 정보 보유분만, +강화 단계 통합) 검색 가능';
@@ -176,15 +189,25 @@ function fmtReqs(reqs) {
 }
 
 function walkChainIds(startId) {
-  // 시작 아이템부터 강화 체인 전체(기본~최종 단계)의 id를 순서대로 반환한다.
+  // 시작 아이템의 "계열 이름"이 유지되는 구간만 걷는다. 이름이 바뀌는
+  // 진화 지점(하와->미네르바류)은 별도 검색 루트로 분리했으므로, 여기서는
+  // 그 전환 한 칸(강화 재료/결과 이름은 보여줘야 하니)만 포함하고 멈춘다 -
+  // 그 뒤로는 새 이름의 몫이라 그 루트의 walkChainIds가 따로 담당한다.
   const ids = [];
   let curId = startId;
+  const startBase = items[startId] ? baseName(items[startId].n) : null;
   const seen = new Set();
   while (curId && items[curId] && !seen.has(curId)) {
     seen.add(curId);
     ids.push(curId);
     const up = items[curId].up;
-    curId = up ? up.result : null;
+    const nextId = up ? up.result : null;
+    if (!nextId || !items[nextId]) break;
+    if (baseName(items[nextId].n) !== startBase) {
+      ids.push(nextId);
+      break;
+    }
+    curId = nextId;
   }
   return ids;
 }
@@ -195,13 +218,22 @@ function walkChainIds(startId) {
 // 아무것도 안 나오므로, 루트별로 체인 전체의 이름을 모아 검색 대상으로 쓴다.
 const rootSearchText = new Map();
 for (const id of rootIds) {
-  rootSearchText.set(id, walkChainIds(id).map(cid => items[cid].n).join(' ').toLowerCase());
+  const startBase = baseName(items[id].n);
+  const names = walkChainIds(id)
+    .filter(cid => baseName(items[cid].n) === startBase)
+    .map(cid => items[cid].n);
+  rootSearchText.set(id, names.join(' ').toLowerCase());
 }
 
 function buildUpgradeChain(startId) {
   const ids = walkChainIds(startId);
+  const startBase = baseName(items[startId].n);
   const stages = [];
   for (const curId of ids) {
+    // walkChainIds가 마지막에 붙여주는 건 "이름이 바뀐 다음 계열의 도착점"
+    // 표시용일 뿐, 그 아이템 자신의 강화(그다음 +1 등)는 별도 검색 루트의
+    // 몫이라 여기서는 안 보여준다.
+    if (baseName(items[curId].n) !== startBase) continue;
     const up = items[curId].up;
     if (!up) continue;
     const resultId = up.result;
@@ -238,8 +270,10 @@ function mergedEnchantOptions(startId) {
   // 1~6 전부 존재함). OptionType은 체인 내내 고정이므로 그것만 있으면 된다.
   const seenKey = new Set();
   const merged = [];
+  const startBase = baseName(items[startId].n);
   const chainIds = walkChainIds(startId).filter(
-    id => !ENCHANT_EXCLUDE_STAGE_MARKERS.some(m => items[id].n.includes(m))
+    id => baseName(items[id].n) === startBase &&
+      !ENCHANT_EXCLUDE_STAGE_MARKERS.some(m => items[id].n.includes(m))
   );
   let ot = null;
   let maxClass = 0;
