@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>LaTale 장비 강화/인챈트 조회</title>
 <style>
 
@@ -37,6 +38,20 @@ details.enchant-group table{margin-top:0;}
 .toolbar{display:flex;gap:8px;margin:4px 0 16px;}
 .toolbar button{font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;}
 .toolbar button:hover{border-color:var(--accent);color:var(--accent);}
+@media (max-width:720px){
+  header{padding:12px 14px;}
+  h1{font-size:16px;}
+  #search{max-width:none;font-size:16px;padding:10px 12px;}
+  main{flex-direction:column;height:auto;}
+  #results{width:100%;max-height:45vh;border-right:none;border-bottom:1px solid var(--border);}
+  #results .row{padding:12px 14px;}
+  #detail{padding:16px;}
+  h2{font-size:17px;}
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+  table thead,table tbody{display:table;width:100%;}
+  .toolbar{flex-wrap:wrap;}
+  .toolbar button{flex:1 1 auto;padding:10px 12px;font-size:13px;}
+}
 @media print{
   header, #results, .toolbar{display:none !important;}
   main{display:block;height:auto;}
@@ -353,6 +368,11 @@ function selectItem(id, rowEl) {
   }
 
   detail.innerHTML = out;
+  // 좁은 화면에서는 목록이 위, 상세가 아래로 쌓이므로 선택 시 상세로
+  // 자동 스크롤해준다 - 안 그러면 아래에 내용이 갱신된 걸 못 보고 지나침.
+  if (window.innerWidth <= 720) {
+    detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 searchBox.addEventListener('input', () => renderResults(searchBox.value.trim()));
