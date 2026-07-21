@@ -34,6 +34,20 @@ details.enchant-group{margin-top:10px;border:1px solid var(--border);border-radi
 details.enchant-group summary{cursor:pointer;font-size:13px;padding:4px 0;}
 details.enchant-group[open] summary{border-bottom:1px solid var(--border);margin-bottom:6px;}
 details.enchant-group table{margin-top:0;}
+.toolbar{display:flex;gap:8px;margin:4px 0 16px;}
+.toolbar button{font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;}
+.toolbar button:hover{border-color:var(--accent);color:var(--accent);}
+@media print{
+  header, #results, .toolbar{display:none !important;}
+  main{display:block;height:auto;}
+  #detail{padding:0;overflow:visible;}
+  details.enchant-group{break-inside:avoid;border-color:#ccc;}
+  body{background:#fff;color:#000;}
+  th,td,table,details.enchant-group{border-color:#ccc !important;}
+  .small,.muted,#results .lv{color:#555 !important;}
+  details:not([open]) > *:not(summary){display:block !important;}
+  details{page-break-inside:avoid;}
+}
 
 </style>
 </head>
@@ -216,11 +230,68 @@ function mergedEnchantOptions(startId) {
   return merged;
 }
 
+function csvEscape(v) {
+  const s = v === undefined || v === null ? '' : String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function safeFileName(s) {
+  return s.replace(/[\\/:*?"<>|]/g, '_');
+}
+
+function downloadCSV(id) {
+  const it = items[id];
+  const rows = [];
+  rows.push(['아이템', it.n]);
+  rows.push(['레벨', it.lv]);
+  rows.push([]);
+
+  rows.push(['강화 단계별 필요 재료']);
+  rows.push(['단계', '재료', '성공확률(%)', '수치', '비고']);
+  buildUpgradeChain(id).forEach(s => {
+    const delta = s.toId ? statDelta(s.fromId, s.toId).replace(/<br>/g, ' / ') : '';
+    rows.push([
+      s.fromName + ' -> ' + s.toName,
+      fmtMats(s.up.mats),
+      s.up.pMin + (s.up.pMin !== s.up.pMax ? ('~' + s.up.pMax) : ''),
+      delta,
+      s.up.msg || '',
+    ]);
+  });
+  rows.push([]);
+
+  rows.push(['인챈트 옵션']);
+  rows.push(['분류', '레벨', '재료', '수치']);
+  mergedEnchantOptions(id)
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, 'ko') || (a.level || 0) - (b.level || 0))
+    .forEach(e => {
+      const matStr = e.mats && e.mats.length ? e.mats.map(([mid, cnt]) => matName(mid) + ' x' + cnt).join(' / ') : '-';
+      rows.push([e.name, 'Lv' + e.level, matStr, e.eMin !== undefined ? e.eMin : '-']);
+    });
+
+  // BOM을 붙여야 엑셀이 한글 CSV를 UTF-8로 제대로 인식한다.
+  const csv = '﻿' + rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = safeFileName(it.n) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function selectItem(id, rowEl) {
   document.querySelectorAll('#results .row').forEach(r => r.classList.remove('active'));
   if (rowEl) rowEl.classList.add('active');
   const it = items[id];
   let out = '<h2>' + it.n + ' <span class="small">#' + id + ' · Lv.' + it.lv + '</span></h2>';
+  out += '<div class="toolbar">' +
+    '<button onclick="downloadCSV(\'' + id + '\')">Excel(CSV) 다운로드</button>' +
+    '<button onclick="window.print()">PDF로 저장(인쇄)</button>' +
+    '</div>';
 
   const chain = buildUpgradeChain(id);
 
