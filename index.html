@@ -47,8 +47,11 @@ details.enchant-group table{margin-top:0;}
   #results .row{padding:12px 14px;}
   #detail{padding:16px;}
   h2{font-size:17px;}
-  table{display:block;overflow-x:auto;white-space:nowrap;}
-  table thead,table tbody{display:table;width:100%;}
+  /* 재료 칸에 재료 목록이 길게 들어가는데, 표를 통째로 가로 스크롤시키면
+     그 칸만 옆으로 쭉 늘어나서 유독 눈에 튀고 보기 불편했다(사용자 확인).
+     그 대신 표는 그대로 두고 셀 안에서 자연스럽게 줄바꿈되게 한다. */
+  table{font-size:12px;table-layout:fixed;}
+  th,td{padding:5px 6px;word-break:break-word;overflow-wrap:break-word;white-space:normal;}
   .toolbar{flex-wrap:wrap;}
   .toolbar button{flex:1 1 auto;padding:10px 12px;font-size:13px;}
 }
@@ -144,7 +147,7 @@ searchMeta.textContent = rootIds.length.toLocaleString() + '개 장비 아이템
 function renderResults(query) {
   results.innerHTML = '';
   const q = query.toLowerCase();
-  const list = q ? rootIds.filter(id => items[id].n.toLowerCase().includes(q)) : rootIds;
+  const list = q ? rootIds.filter(id => rootSearchText.get(id).includes(q)) : rootIds;
   if (list.length === 0) {
     results.innerHTML = '<div class="small" style="padding:10px 14px;">검색 결과 없음</div>';
     return;
@@ -184,6 +187,15 @@ function walkChainIds(startId) {
     curId = up ? up.result : null;
   }
   return ids;
+}
+
+// 강화하다가 이름 자체가 바뀌는 체인이 있다(실측 확인, 예: '강인한 하와의
+// 배지' -> ... -> '강인한 미네르바의 배지' -> ... -> '강인한 군주의 배지').
+// 루트 이름만으로 검색하면 사용자가 중간 단계 이름으로 검색했을 때
+// 아무것도 안 나오므로, 루트별로 체인 전체의 이름을 모아 검색 대상으로 쓴다.
+const rootSearchText = new Map();
+for (const id of rootIds) {
+  rootSearchText.set(id, walkChainIds(id).map(cid => items[cid].n).join(' ').toLowerCase());
 }
 
 function buildUpgradeChain(startId) {
