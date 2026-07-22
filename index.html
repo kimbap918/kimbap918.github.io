@@ -264,12 +264,6 @@ function buildUpgradeChain(startId) {
   return stages;
 }
 
-// [초월]/[신화] 단계는 강화 체인상 실존하지만, 그 단계에서 새로 열리는
-// 인챈트 레벨(실측 확인 결과 항상 이전 별★ 단계보다 1 높은 레벨)은 실제
-// 게임에서는 사용할 수 없다(사용자 확인) - 강화 재료 표에는 그대로 남기고
-// 인챈트 옵션 집계에서만 이 단계들의 기여를 건너뛴다.
-const ENCHANT_EXCLUDE_STAGE_MARKERS = ['[초월]', '[신화]'];
-
 function addEnchantEntries(merged, seenKey, key) {
   const list = enchantClasses[key];
   if (!list) return;
@@ -284,18 +278,18 @@ function addEnchantEntries(merged, seenKey, key) {
 function mergedEnchantOptions(startId) {
   // 강화 단계마다 인챈트 부류(oc)의 class가 바뀌는데(실측 확인 - 그렌델류는
   // 2→3→4→5, 홀리스타/정령석/카멜롯류는 대부분 구간 고정이다가 마지막에
-  // 한 번만 바뀌는 등 패턴이 제각각), 사용자 확인 결과 어느 경우든 "체인에서
-  // 실제로 도달한 최고 class"를 그 아이템의 인챈트 레벨 상한으로 보고
-  // 1~그 값 전체를 보여주는 게 맞다(예: 카멜롯의 스티커는 대부분 class=5로
-  // 머물다 마지막 +30 단계에서만 6이 되는데, 실제 최대 인챈트는 6이고
-  // 1~6 전부 존재함). OptionType은 체인 내내 고정이므로 그것만 있으면 된다.
+  // 한 번만 바뀌는 등 패턴이 제각각), 어느 경우든 "체인에서 실제로 도달한
+  // 최고 class"를 그 아이템의 인챈트 레벨 상한으로 보고 1~그 값 전체를
+  // 보여주는 게 맞다(예: 카멜롯의 스티커는 대부분 class=5로 머물다 마지막
+  // +30 단계에서만 6이 되는데, 실제 최대 인챈트는 6이고 1~6 전부 존재함).
+  // [초월]/[신화] 단계에서 새로 열리는 레벨(이전 별★ 단계보다 1 높음, 예:
+  // 4단계까지였던 체인이 [초월]에서 5단계가 됨)도 실제 게임에서 사용
+  // 가능하므로(사용자 확인, 2026-07-22) 체인에서 제외하지 않는다. OptionType은
+  // 체인 내내 고정이므로 그것만 있으면 된다.
   const seenKey = new Set();
   const merged = [];
   const startBase = baseName(items[startId].n);
-  const chainIds = walkChainIds(startId).filter(
-    id => baseName(items[id].n) === startBase &&
-      !ENCHANT_EXCLUDE_STAGE_MARKERS.some(m => items[id].n.includes(m))
-  );
+  const chainIds = walkChainIds(startId).filter(id => baseName(items[id].n) === startBase);
   let ot = null;
   let maxClass = 0;
   for (const id of chainIds) {
