@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaTale 캐릭터 패션 시뮬레이터 Latte_1</title>
+<link rel="stylesheet" href="style.css?v=19">
+</head>
+<body>
+<header class="topbar">
+  <div class="title-block">
+    <h1>LaTale 캐릭터 패션 시뮬레이터 Latte_1</h1>
+    <span class="version-tag">v1.1.4 · chipok</span>
+  </div>
+  <div class="header-controls">
+    <div class="combat-toggle" id="combatToggle"></div>
+    <div class="gender-toggle" id="genderToggle"></div>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="preview-pane">
+    <div class="preview-frame-wrap">
+      <div class="preview-frame" id="previewFrame">
+        <img id="previewImg" alt="캐릭터 미리보기">
+        <div id="previewLoading" class="loading hidden">렌더링 중…</div>
+      </div>
+    </div>
+
+    <div class="move-touch-controls hidden" id="moveTouchControls">
+      <button id="moveTouchLeft" class="move-touch-btn">◀</button>
+      <button id="moveTouchJump" class="move-touch-btn">점프</button>
+      <button id="moveTouchRight" class="move-touch-btn">▶</button>
+    </div>
+
+    <div class="bg-picker" id="bgPicker"></div>
+
+    <div class="controls">
+      <label class="control-row">
+        <span>포즈</span>
+        <select id="poseSelect"></select>
+      </label>
+      <label class="control-row">
+        <span>이모티콘</span>
+        <select id="emoticonSelect">
+          <option value="">(포즈 사용)</option>
+        </select>
+      </label>
+      <label class="control-row">
+        <span>프레임</span>
+        <input type="range" id="frameSlider" min="0" max="0" value="0">
+        <span id="frameLabel">1/1</span>
+      </label>
+      <label class="control-row">
+        <input type="checkbox" id="autoplayCheck">
+        <span>자동 재생</span>
+      </label>
+      <div class="control-row" id="outfitColorRow">
+        <span>기본옷 색상</span>
+        <div id="outfitColors" class="swatch-row"></div>
+      </div>
+      <label class="control-row">
+        <input type="checkbox" id="fashionDisabledCheck">
+        <span>패션 비활성 (헤어/눈/피부만)</span>
+      </label>
+      <label class="control-row">
+        <input type="checkbox" id="mannequinCheck">
+        <span>마네킹 모드 (대머리+무표정)</span>
+      </label>
+      <label class="control-row">
+        <input type="checkbox" id="moveTestCheck">
+        <span>실시간 이동 테스트 (←/→, 짧게 두번=달리기, C=점프)</span>
+      </label>
+      <div class="control-row hidden" id="moveSpeedRow">
+        <span>이동속도</span>
+        <input type="range" id="moveSpeedSlider" min="1" max="3" step="0.25" value="1">
+        <span id="moveSpeedLabel">1.0x</span>
+      </div>
+      <label class="control-row">
+        <input type="checkbox" id="afterimageCheck">
+        <span>잔상 적용</span>
+      </label>
+      <div class="control-row hidden" id="ghostStyleRow">
+        <span>잔상 종류</span>
+        <select id="ghostStyleSelect"></select>
+      </div>
+      <div class="move-hint hidden" id="moveHint">방향키로 좌우 이동 · 장비를 바꾸려면 체크를 껐다 켜세요</div>
+    </div>
+
+    <div class="presets-panel">
+      <div class="presets-header">
+        <span>프리셋 (이 브라우저에만 저장됨)</span>
+        <button id="presetSaveBtn">현재 조합 저장</button>
+      </div>
+      <div class="presets-list" id="presetsList"></div>
+    </div>
+
+    <div class="equipped-header">
+      <span>장비창</span>
+      <div class="equipped-header-btns">
+        <label class="save-bg-check">
+          <input type="checkbox" id="saveWithBgCheck">
+          배경 포함
+        </label>
+        <button id="saveImageBtn">이미지 저장</button>
+        <button id="saveTextBtn">TXT 저장</button>
+        <button id="undressAllBtn" class="undress-btn">모두 탈의</button>
+      </div>
+    </div>
+    <div class="equipped-list" id="equippedList"></div>
+  </section>
+
+  <section class="picker-pane">
+    <div class="toolbar">
+      <input type="text" id="globalSearchInput" class="search-input global-search-input"
+             placeholder="전체 부위 통합검색 (예: 고양이, 라이트 피치... / 초성검색 가능)">
+      <button id="setsViewBtn" class="view-switch-btn">세트 모음</button>
+      <button id="hiddenViewBtn" class="view-switch-btn">숨김 아이템</button>
+    </div>
+    <nav class="tab-bar" id="tabBar"></nav>
+    <div class="subtab-bar hidden" id="subtabBar"></div>
+    <div class="toolbar" id="toolbar">
+      <input type="text" id="searchInput" class="search-input" placeholder="검색 (초성검색 가능)">
+      <select id="weaponGroupSelect" class="weapon-group-select hidden"></select>
+      <button id="favFilterBtn" class="fav-filter-btn">★ 즐겨찾기만</button>
+    </div>
+    <div class="item-grid" id="itemGrid"></div>
+  </section>
+</main>
+
+<div id="tooltip" class="item-tooltip hidden"></div>
+
+<script>window.CHARSIM_API_BASE = "https://latalekit-1.onrender.com";</script>
+<script src="app.js?v=19"></script>
+</body>
+</html>

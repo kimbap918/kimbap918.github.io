@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>kimbap918 - LaTale 도구 모음</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
+.tab-shell { display: flex; flex-direction: column; height: 100%; }
+.tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #262f3d;
+  border-bottom: 1px solid #2a2f3a;
+}
+.tab-bar button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #2f3a4a;
+  color: #eaeef3;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+.tab-bar button:hover { background: #3c4a5e; }
+.tab-bar button.active { background: #5aa9e6; color: #10151d; font-weight: bold; }
+.tab-frame { flex: 1; border: none; width: 100%; background: #fff; }
+</style>
+</head>
+<body>
+<div class="tab-shell">
+  <nav class="tab-bar" id="tabBar">
+    <button type="button" data-src="sim/index.html" class="active">패션 시뮬레이터</button>
+    <button type="button" data-src="lookup.html">장비 강화·인챈트 조회</button>
+  </nav>
+  <iframe class="tab-frame" id="tabFrame" src="sim/index.html" title="LaTale 도구"></iframe>
+</div>
+<script>
+(function () {
+  var bar = document.getElementById("tabBar");
+  var frame = document.getElementById("tabFrame");
+  bar.addEventListener("click", function (e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    Array.prototype.forEach.call(bar.children, function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    frame.src = btn.dataset.src;
+  });
+})();
+</script>
+</body>
+</html>
