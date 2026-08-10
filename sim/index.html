@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaTale 캐릭터 패션 시뮬레이터 Latte_1</title>
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 <header class="topbar">
@@ -23,7 +23,12 @@
     <div class="preview-frame-wrap">
       <div class="preview-frame" id="previewFrame">
         <img id="previewImg" alt="캐릭터 미리보기">
-        <div id="previewLoading" class="loading hidden">렌더링 중…</div>
+        <div id="previewLoading" class="loading hidden">
+          <div class="loading-content">
+            <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+            <span>렌더링 중…</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -131,6 +136,6 @@
 <div id="tooltip" class="item-tooltip hidden"></div>
 
 <script>window.CHARSIM_API_BASE = "https://latalekit-1.onrender.com";</script>
-<script src="app.js?v=21"></script>
+<script src="app.js?v=24"></script>
 </body>
 </html>
