@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaTale 캐릭터 패션 시뮬레이터 Latte_1</title>
-<link rel="stylesheet" href="style.css?v=23">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 <header class="topbar">
@@ -121,6 +121,7 @@
       <input type="text" id="globalSearchInput" class="search-input global-search-input"
              placeholder="전체 부위 통합검색 (예: 고양이, 라이트 피치... / 초성검색 가능)">
       <button id="setsViewBtn" class="view-switch-btn">세트 모음</button>
+      <button id="damageSkinViewBtn" class="view-switch-btn">대미지 스킨</button>
       <button id="hiddenViewBtn" class="view-switch-btn">숨김 아이템</button>
     </div>
     <nav class="tab-bar" id="tabBar"></nav>
@@ -136,7 +137,27 @@
 
 <div id="tooltip" class="item-tooltip hidden"></div>
 
+<div id="damageSkinModal" class="damage-skin-modal hidden">
+  <div class="damage-skin-modal-inner">
+    <button id="damageSkinModalClose" class="damage-skin-modal-close" title="닫기">×</button>
+    <h3 id="damageSkinModalName"></h3>
+    <p id="damageSkinModalDesc"></p>
+    <div class="damage-skin-stage" id="damageSkinStage">
+      <img id="damageSkinFreeling" class="damage-skin-freeling" alt="프리링">
+    </div>
+    <div class="damage-skin-mode-row">
+      <button id="dmgSkinModeRandom" class="view-switch-btn active">랜덤 데미지</button>
+      <button id="dmgSkinModeAll" class="view-switch-btn">전체 숫자 0~9 보기</button>
+    </div>
+    <div class="damage-skin-controls">
+      <label><input type="checkbox" id="dmgSkinShowNormal" checked> 일반</label>
+      <label><input type="checkbox" id="dmgSkinShowCritical" checked> 크리티컬</label>
+      <label><input type="checkbox" id="dmgSkinShowHundredMillion" checked> 억대</label>
+    </div>
+  </div>
+</div>
+
 <script>window.CHARSIM_API_BASE = "https://latalekit-1.onrender.com";</script>
-<script src="app.js?v=24"></script>
+<script src="app.js?v=25"></script>
 </body>
 </html>
