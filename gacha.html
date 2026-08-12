@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>라테일 확률형 상자 기대값 계산기</title>
+<style>
+
+:root{color-scheme:light dark;--bg:#0f1115;--panel:#171a21;--border:#2a2f3a;--text:#e6e8ee;--muted:#9aa3b2;--accent:#6ea8ff;--best:#e8b93a;}
+@media (prefers-color-scheme:light){:root{--bg:#f5f6f8;--panel:#ffffff;--border:#dde1e8;--text:#1b1f27;--muted:#5b6472;--accent:#2f6fed;--best:#a8790a;}}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Segoe UI",Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--text);}
+header{padding:16px 20px;border-bottom:1px solid var(--border);}
+h1{font-size:18px;margin:0 0 6px;}
+.updateDate{font-size:11px;color:var(--muted);font-weight:normal;margin-left:8px;}
+.lead{font-size:12px;color:var(--muted);margin:0 0 10px;}
+select{padding:8px 12px;font-size:14px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);max-width:420px;width:100%;}
+#main{padding:16px 20px;max-width:920px;margin:0 auto;}
+h2{font-size:15px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-top:26px;}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px;}
+th,td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle;}
+th{color:var(--muted);font-weight:600;}
+.mono{font-variant-numeric:tabular-nums;}
+tr.reward-row{cursor:pointer;}
+tr.reward-row:hover{background:var(--panel);}
+tr.reward-row.selected{outline:2px solid var(--accent);outline-offset:-2px;}
+tr.reward-row.best td{color:var(--best);}
+.badge{font-size:11px;padding:2px 6px;border-radius:4px;background:var(--best);color:#000;}
+.small{color:var(--muted);font-size:12px;}
+.calc-box{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:10px;background:var(--panel);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:8px;}
+.calc-grid .k{color:var(--muted);}
+.calc-grid .v{font-weight:600;font-variant-numeric:tabular-nums;}
+.n-presets{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.n-presets button{font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;}
+.n-presets button.active{border-color:var(--accent);color:var(--accent);}
+.n-presets input{width:70px;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);}
+@media (max-width:720px){
+  #main{padding:14px;}
+  .calc-grid{grid-template-columns:1fr;}
+  table{font-size:12px;}
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>확률형 상자 기대값 계산기 <span class="updateDate">최근 업데이트 2026.08.12</span></h1>
+    <p class="lead">실제 공개된 확률(게임산업법 확률 공개용 수치)과 캐시샵 가격을 그대로 계산에 씁니다.</p>
+    <select id="boxSelect"></select>
+  </header>
+  <main id="main"></main>
+</div>
+<script id="game-data" type="application/json">{"boxes": [{"id": 2511, "title": "2025 로얄 상자 5", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 2500}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1500}, {"id": 170193805, "name": "히어로즈 공격력의 비약 2", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170195250, "name": "히어로즈 방어의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 600}, {"id": 190145203, "name": "룬워드 스크롤", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170160101, "name": "장비 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 190147983, "name": "파란 별이 담긴 병", "count": 300, "best": false, "grade": 0, "prob": 500}, {"id": 190171178, "name": "아이템 봉인용 자물쇠", "count": 10, "best": false, "grade": 0, "prob": 400}, {"id": 170171335, "name": "별의 축복이 담긴 물약", "count": 5, "best": false, "grade": 2, "prob": 150}, {"id": 190146045, "name": "그림자 스킨(30일) 교환권", "count": 1, "best": false, "grade": 2, "prob": 150}, {"id": 190146568, "name": "메모리얼 파편", "count": 15, "best": false, "grade": 2, "prob": 100}, {"id": 170197079, "name": "소울이와 할로윈 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 55}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190148093, "name": "모드레드 깜찍발랄 의상상자", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190144681, "name": "스페셜 각성제", "count": 2, "best": false, "grade": 2, "prob": 50}, {"id": 190149448, "name": "상급 각성석 연장권 (90일)", "count": 1, "best": true, "grade": 1, "prob": 15}, {"id": 190149442, "name": "로얄 무기스킨 등록권 II", "count": 1, "best": true, "grade": 1, "prob": 15}, {"id": 190149527, "name": "리아&미아 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149265, "name": "초롱이 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190147842, "name": "슈리 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149530, "name": "방구석 용사 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149528, "name": "소울이 인형탈 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149523, "name": "아이스 블루 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149524, "name": "아이스 블루 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}]}, {"id": 2512, "title": "2025 로얄 6", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 2500}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1500}, {"id": 170171239, "name": "히어로즈 경험치의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170171240, "name": "히어로즈 공격력의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 600}, {"id": 170171364, "name": "비앙카의 경험치 비약", "count": 5, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170160301, "name": "기타 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170194890, "name": "로얄 강태공의 축복 (2시간)", "count": 2, "best": false, "grade": 0, "prob": 500}, {"id": 190171178, "name": "아이템 봉인용 자물쇠", "count": 10, "best": false, "grade": 0, "prob": 400}, {"id": 190146568, "name": "메모리얼 파편", "count": 15, "best": false, "grade": 0, "prob": 150}, {"id": 170160701, "name": "창고 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 190148563, "name": "던전 타이틀 습득서(1/10) 선택권", "count": 1, "best": false, "grade": 0, "prob": 100}, {"id": 170197143, "name": "오목스 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 55}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149608, "name": "오목스 대미지 스킨", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 170171449, "name": "축복받은 라이티티아 던전 차감 티켓", "count": 2, "best": false, "grade": 2, "prob": 50}, {"id": 190149448, "name": "상급 각성석 연장권 (90일)", "count": 1, "best": true, "grade": 1, "prob": 15}, {"id": 190149610, "name": "로얄 무기스킨 등록권 III", "count": 1, "best": true, "grade": 1, "prob": 15}, {"id": 190149605, "name": "밀리 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149437, "name": "쁘띠 말파스 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190148762, "name": "청연 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149607, "name": "오목스의 둥지 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149606, "name": "스포츠카 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149268, "name": "비비드 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149269, "name": "비비드 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}]}, {"id": 2513, "title": "2026 패션로얄", "rewards": [{"id": 180202202, "name": "플래티넘 망치", "count": 1, "best": false, "grade": 0, "prob": 1400}, {"id": 190150902, "name": "부활의 정수", "count": 10, "best": false, "grade": 0, "prob": 1400}, {"id": 170195215, "name": "빛나는 폭풍 포션", "count": 25, "best": false, "grade": 0, "prob": 1400}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1400}, {"id": 190146493, "name": "초기화의 결정", "count": 2, "best": false, "grade": 0, "prob": 1400}, {"id": 180202202, "name": "플래티넘 망치", "count": 2, "best": false, "grade": 0, "prob": 500}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 500}, {"id": 170196890, "name": "빛나는 폭풍 포션(60분)", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 190144681, "name": "스페셜 각성제", "count": 1, "best": false, "grade": 0, "prob": 450}, {"id": 170197192, "name": "벨리알의 거울 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 170197193, "name": "벨리알의 거울 타이틀 습득서(영구제)", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190149335, "name": "알콩달콩 콩밭에서 등록권", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190148590, "name": "눈꽃 나무 등록권", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190148591, "name": "개화의 시간 등록권", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190146827, "name": "초엔팜 의상 상자", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190147032, "name": "샤이닉 의상 상자", "count": 1, "best": false, "grade": 2, "prob": 100}, {"id": 190149674, "name": "벨리알 대미지 스킨", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190148753, "name": "로얄 무기스킨 등록권", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190148560, "name": "부기&우기 등록권", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149334, "name": "기리니콩콩 등록권", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149665, "name": "하급 마족 의상 선택권", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149442, "name": "로얄 무기스킨 등록권 II", "count": 1, "best": false, "grade": 2, "prob": 20}, {"id": 190149666, "name": "벨리알 의상 선택권 I", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149667, "name": "벨리알 의상 선택권 II", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149668, "name": "벨리알 얼굴형태 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149670, "name": "벨리알 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149672, "name": "벨리알의 거울 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149673, "name": "벨리알 그림자 스킨", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149610, "name": "로얄 무기스킨 등록권 III", "count": 1, "best": false, "grade": 2, "prob": 10}, {"id": 190149669, "name": "벨리알 얼굴형태 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}, {"id": 190149671, "name": "벨리알 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 90543411, "name": "벨리알의 뿔&머리장식&아우라 등록권", "count": 1, "points": 200}, {"id": 40143411, "name": "벨리알의 날개&아우라 등록권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}]}, {"id": 2601, "title": "2026 로얄 1", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 2500}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1500}, {"id": 170193805, "name": "히어로즈 공격력의 비약 2", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170195250, "name": "히어로즈 방어의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 600}, {"id": 190145203, "name": "룬워드 스크롤", "count": 2, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 190147983, "name": "파란 별이 담긴 병", "count": 300, "best": false, "grade": 0, "prob": 500}, {"id": 170194890, "name": "로얄 강태공의 축복 (2시간)", "count": 4, "best": false, "grade": 0, "prob": 500}, {"id": 190146568, "name": "메모리얼 파편", "count": 15, "best": false, "grade": 0, "prob": 400}, {"id": 170171335, "name": "별의 축복이 담긴 물약", "count": 5, "best": false, "grade": 0, "prob": 150}, {"id": 170193806, "name": "로얄 폭풍 포션", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 190148563, "name": "던전 타이틀 습득서(1/10) 선택권", "count": 1, "best": false, "grade": 0, "prob": 100}, {"id": 170197218, "name": "인페르노 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 60}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190144681, "name": "스페셜 각성제", "count": 2, "best": false, "grade": 2, "prob": 50}, {"id": 190149684, "name": "인페르노 대미지 스킨", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149448, "name": "상급 각성석 연장권 (90일)", "count": 1, "best": true, "grade": 1, "prob": 15}, {"id": 190149682, "name": "인페르노 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149527, "name": "리아&미아 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149089, "name": "오목스 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190148930, "name": "밤하늘 범고래 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149683, "name": "게르다의 스노우볼 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149091, "name": "밤하늘 범고래 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190147840, "name": "스위트 블루 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190147841, "name": "스위트 블루 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}]}, {"id": 2602, "title": "2026 로얄 2", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 2500}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1500}, {"id": 170171239, "name": "히어로즈 경험치의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170171240, "name": "히어로즈 공격력의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170171364, "name": "비앙카의 경험치 비약", "count": 5, "best": false, "grade": 0, "prob": 600}, {"id": 190148754, "name": "어드벤처 주사위", "count": 40, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170160201, "name": "소비 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 190145203, "name": "룬워드 스크롤", "count": 2, "best": false, "grade": 0, "prob": 500}, {"id": 190171178, "name": "아이템 봉인용 자물쇠", "count": 10, "best": false, "grade": 0, "prob": 400}, {"id": 190146045, "name": "그림자 스킨(30일) 교환권", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 170193806, "name": "로얄 폭풍 포션", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 190148563, "name": "던전 타이틀 습득서(1/10) 선택권", "count": 1, "best": false, "grade": 0, "prob": 100}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190144681, "name": "스페셜 각성제", "count": 2, "best": false, "grade": 2, "prob": 50}, {"id": 190148764, "name": "청연 의상 상자", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 170196861, "name": "DARK PANTERA 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149724, "name": "영원의 시계 교환권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149448, "name": "상급 각성석 연장권 (90일)", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149720, "name": "라이트닝 윙 Violet ver. 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149605, "name": "밀리 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190148667, "name": "켈시아 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190148811, "name": "다크 판테라 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190148663, "name": "블론드 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149724, "name": "영원의 시계 교환권", "count": 2, "best": true, "grade": 1, "prob": 5}, {"id": 190148665, "name": "블론드 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}, {"id": 165700101, "name": "영원의 시계", "count": 1, "points": 200}]}, {"id": 2603, "title": "2026 슈퍼 로얄", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 1700}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1300}, {"id": 170193805, "name": "히어로즈 공격력의 비약 2", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170195250, "name": "히어로즈 방어의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170160401, "name": "이벤트 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170194890, "name": "로얄 강태공의 축복 (2시간)", "count": 4, "best": false, "grade": 0, "prob": 600}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 600}, {"id": 190145203, "name": "룬워드 스크롤", "count": 2, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 190146568, "name": "메모리얼 파편", "count": 15, "best": false, "grade": 0, "prob": 500}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170171335, "name": "별의 축복이 담긴 물약", "count": 5, "best": false, "grade": 0, "prob": 280}, {"id": 170193806, "name": "로얄 폭풍 포션", "count": 1, "best": false, "grade": 0, "prob": 280}, {"id": 190148563, "name": "던전 타이틀 습득서(1/10) 선택권", "count": 1, "best": false, "grade": 0, "prob": 240}, {"id": 190144681, "name": "스페셜 각성제", "count": 2, "best": false, "grade": 2, "prob": 160}, {"id": 170197019, "name": "초롱이 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 160}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 110}, {"id": 190149434, "name": "라이트닝 윙 Red ver. 등록권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149527, "name": "리아&미아 분양권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149265, "name": "초롱이 분양권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149523, "name": "아이스 블루 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149530, "name": "방구석 용사 등록권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149366, "name": "엘레나의 보금자리 등록권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149610, "name": "로얄 무기스킨 등록권 III", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149448, "name": "상급 각성석 연장권 (90일)", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149524, "name": "아이스 블루 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}, {"id": 165700101, "name": "영원의 시계", "count": 1, "points": 200}]}, {"id": 2604, "title": "2026 로얄 3", "rewards": [{"id": 170195215, "name": "빛나는 폭풍 포션", "count": 10, "best": false, "grade": 0, "prob": 2500}, {"id": 170197041, "name": "아비오 제로 콜라", "count": 30, "best": false, "grade": 0, "prob": 1500}, {"id": 170171240, "name": "히어로즈 공격력의 비약", "count": 3, "best": false, "grade": 0, "prob": 800}, {"id": 170196604, "name": "경험치의 비약 20%", "count": 2, "best": false, "grade": 0, "prob": 800}, {"id": 190150902, "name": "부활의 정수", "count": 20, "best": false, "grade": 0, "prob": 600}, {"id": 170171364, "name": "비앙카의 경험치 비약", "count": 5, "best": false, "grade": 0, "prob": 600}, {"id": 170196680, "name": "고급 프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 600}, {"id": 170195424, "name": "경험치의 비약 100%", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 170160101, "name": "장비 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 500}, {"id": 190145203, "name": "룬워드 스크롤", "count": 2, "best": false, "grade": 0, "prob": 500}, {"id": 190171178, "name": "아이템 봉인용 자물쇠", "count": 10, "best": false, "grade": 0, "prob": 400}, {"id": 170160701, "name": "창고 인벤토리 가방", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 170193806, "name": "로얄 폭풍 포션", "count": 1, "best": false, "grade": 0, "prob": 150}, {"id": 190146568, "name": "메모리얼 파편", "count": 15, "best": false, "grade": 0, "prob": 100}, {"id": 190144681, "name": "스페셜 각성제", "count": 2, "best": false, "grade": 2, "prob": 60}, {"id": 170197014, "name": "[계정] 고대의 서 - 《결합》 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190148661, "name": "시간의 연회 의상 상자", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 170196789, "name": "하늘의 시간 타이틀 습득서(30일)", "count": 1, "best": false, "grade": 2, "prob": 50}, {"id": 190149724, "name": "영원의 시계 교환권", "count": 1, "best": true, "grade": 1, "prob": 20}, {"id": 190149784, "name": "쁘띠 파티 쥬얼링 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149682, "name": "인페르노 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149437, "name": "쁘띠 말파스 분양권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149782, "name": "윈드 서핑 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149786, "name": "애쉬 블루 머리모양 변경권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149790, "name": "로얄 무기스킨 등록권 Ⅳ", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149724, "name": "영원의 시계 교환권", "count": 2, "best": true, "grade": 1, "prob": 5}, {"id": 190149787, "name": "애쉬 블루 머리모양 영구 변경권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149535, "name": "엘리아스 왕립 학교 교복 상자 I", "count": 1, "points": 200}, {"id": 190149536, "name": "엘리아스 왕립 학교 교복 상자 II", "count": 1, "points": 200}, {"id": 190149538, "name": "심연을 보는 눈 얼굴형태 영구 변경권", "count": 1, "points": 200}, {"id": 190149513, "name": "[이벤트] 로얄 티켓", "count": 10, "points": 200}, {"id": 165700101, "name": "영원의 시계", "count": 1, "points": 200}]}, {"id": 2605, "title": "산리오캐릭터즈 콜라보 로얄", "rewards": [{"id": 190149830, "name": "마이멜로디와 쿠로미의 티켓", "count": 1, "best": false, "grade": 0, "prob": 3000}, {"id": 170193806, "name": "로얄 폭풍 포션", "count": 1, "best": false, "grade": 0, "prob": 2500}, {"id": 170195643, "name": "프리미엄 시럽", "count": 1, "best": false, "grade": 0, "prob": 2500}, {"id": 190149830, "name": "마이멜로디와 쿠로미의 티켓", "count": 2, "best": false, "grade": 0, "prob": 1000}, {"id": 190149830, "name": "마이멜로디와 쿠로미의 티켓", "count": 3, "best": false, "grade": 0, "prob": 500}, {"id": 170197262, "name": "SANRIO CHARACTERS FX 타이틀 습득서 (30일)", "count": 1, "best": false, "grade": 0, "prob": 195}, {"id": 170197261, "name": "SANRIO CHARACTERS FX 타이틀 습득서", "count": 1, "best": true, "grade": 2, "prob": 100}, {"id": 190149830, "name": "마이멜로디와 쿠로미의 티켓", "count": 4, "best": false, "grade": 0, "prob": 100}, {"id": 90558101, "name": "쿠로미 머리장식 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 20258101, "name": "쿠로미 상의 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 30458101, "name": "쿠로미 하의 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 70258101, "name": "쿠로미 신발 등록권", "count": 1, "best": false, "grade": 1, "prob": 10}, {"id": 40158101, "name": "쿠로미 망토 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 90558102, "name": "마이멜로디 머리장식 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 20258102, "name": "마이멜로디 상의 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 30458102, "name": "마이멜로디 하의 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 70258102, "name": "마이멜로디 신발 등록권", "count": 1, "best": false, "grade": 1, "prob": 10}, {"id": 40158102, "name": "마이멜로디 망토 등록권", "count": 1, "best": true, "grade": 1, "prob": 10}, {"id": 190149826, "name": "마이멜로디와 쿠로미의 불꽃놀이 등록권", "count": 1, "best": true, "grade": 1, "prob": 5}], "priceTiers": [{"n": 1, "cash": 1500, "sale": 1200}, {"n": 2, "cash": 3000, "sale": 2400}, {"n": 3, "cash": 4500, "sale": 3600}, {"n": 4, "cash": 6000, "sale": 4800}, {"n": 5, "cash": 7500, "sale": 6000}, {"n": 6, "cash": 9000, "sale": 7200}, {"n": 7, "cash": 10500, "sale": 8400}, {"n": 8, "cash": 12000, "sale": 9600}, {"n": 9, "cash": 13500, "sale": 10800}, {"n": 10, "cash": 15000, "sale": 12000}], "trade": [{"id": 190149833, "name": "[이벤트] 산리오캐릭터즈 콜라보 로얄 티켓", "count": 10, "points": 200}]}]}</script>
+<script>
+
+const DATA = JSON.parse(document.getElementById('game-data').textContent);
+const boxes = DATA.boxes;
+const boxSelect = document.getElementById('boxSelect');
+const main = document.getElementById('main');
+
+boxes.forEach((b, i) => {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = b.title;
+  boxSelect.appendChild(opt);
+});
+
+let target = { kind: 'row', idx: 0 };
+let sampleN = 10;
+
+function pct(prob) { return (prob / 100).toFixed(2); }
+
+function cheapestTier(box, key) {
+  return box.priceTiers.reduce((best, t) => (t[key] / t.n < best[key] / best.n ? t : best));
+}
+
+function bestAggregateProb(box) {
+  return box.rewards.filter(r => r.best).reduce((s, r) => s + r.prob, 0);
+}
+
+function targetProb(box) {
+  if (target.kind === 'best') return bestAggregateProb(box);
+  return box.rewards[target.idx].prob;
+}
+function targetName(box) {
+  if (target.kind === 'best') return '탑급(TOP) 아이템 중 아무거나 하나';
+  return box.rewards[target.idx].name;
+}
+
+function fmtWon(n) {
+  return Math.round(n).toLocaleString('ko-KR') + '원';
+}
+
+function render() {
+  const box = boxes[boxSelect.value];
+  if (target.kind === 'row' && !box.rewards[target.idx]) target = { kind: 'row', idx: 0 };
+
+  let out = '';
+
+  out += '<h2>구성 아이템 · 확률표 <span class="small">(행을 클릭하면 아래 계산기 대상이 바뀝니다)</span></h2>';
+  out += '<table><thead><tr><th>아이템</th><th>수량</th><th>등급</th><th>확률</th></tr></thead><tbody>';
+  box.rewards.forEach((r, i) => {
+    const selected = target.kind === 'row' && target.idx === i;
+    out += '<tr class="reward-row' + (r.best ? ' best' : '') + (selected ? ' selected' : '') + '" data-idx="' + i + '">' +
+      '<td>' + r.name + '</td><td>' + r.count + '</td>' +
+      '<td>' + (r.best ? '<span class="badge">TOP</span>' : (r.grade ? ('G' + r.grade) : '')) + '</td>' +
+      '<td class="mono">' + pct(r.prob) + '%</td></tr>';
+  });
+  out += '</tbody></table>';
+
+  const bestSum = bestAggregateProb(box);
+  if (bestSum > 0) {
+    const selected = target.kind === 'best';
+    out += '<table><tbody><tr class="reward-row best' + (selected ? ' selected' : '') + '" data-idx="best">' +
+      '<td>탑급(TOP) 아이템 중 아무거나 하나 <span class="small">(위 TOP 항목 확률 합)</span></td>' +
+      '<td colspan="2"></td><td class="mono">' + pct(bestSum) + '%</td></tr></tbody></table>';
+  }
+
+  out += '<h2>가격 (묶음 구매)</h2>';
+  const perPullSaleList = box.priceTiers.map(t => t.sale / t.n);
+  const linear = perPullSaleList.every(v => Math.abs(v - perPullSaleList[0]) < 0.01);
+  out += '<table><thead><tr><th>묶음</th><th>정가</th><th>할인가</th><th>개당 단가(할인가)</th></tr></thead><tbody>';
+  box.priceTiers.forEach(t => {
+    out += '<tr><td>' + t.n + '회</td><td class="mono">' + fmtWon(t.cash) + '</td><td class="mono">' + fmtWon(t.sale) + '</td><td class="mono">' + fmtWon(t.sale / t.n) + '</td></tr>';
+  });
+  out += '</tbody></table>';
+  out += '<p class="small">' + (linear ? '모든 묶음의 개당 단가가 동일합니다 - 대량 구매해도 추가 할인은 없습니다.' : '묶음이 클수록 개당 단가가 달라집니다 - 표에서 가장 저렴한 묶음을 골라 아래 계산에 반영했습니다.') + '</p>';
+
+  const p = targetProb(box) / 10000;
+  const expectedPulls = 1 / p;
+  const saleTier = cheapestTier(box, 'sale');
+  const cashTier = cheapestTier(box, 'cash');
+  const cheapSale = saleTier.sale / saleTier.n;
+  const cheapCash = cashTier.cash / cashTier.n;
+  const hitProb = 1 - Math.pow(1 - p, sampleN);
+
+  out += '<h2>기대값 계산기</h2>';
+  out += '<div class="calc-box">';
+  out += '<div><strong>대상:</strong> ' + targetName(box) + ' <span class="small mono">(개별 확률 ' + (target.kind === 'best' ? pct(bestSum) : pct(box.rewards[target.idx].prob)) + '%)</span></div>';
+  out += '<div class="calc-grid">';
+  out += '<div class="k">기대 뽑기 횟수(평균)</div><div class="v">' + expectedPulls.toFixed(1) + '회</div>';
+  out += '<div class="k">적용 단가(할인가, 1회당)</div><div class="v">' + fmtWon(cheapSale) + ' <span class="small">(' + saleTier.n + '회 묶음 기준)</span></div>';
+  out += '<div class="k">기대 비용(할인가 기준)</div><div class="v">' + fmtWon(expectedPulls * cheapSale) + '</div>';
+  out += '<div class="k">적용 단가(정가, 1회당)</div><div class="v">' + fmtWon(cheapCash) + ' <span class="small">(' + cashTier.n + '회 묶음 기준)</span></div>';
+  out += '<div class="k">기대 비용(정가 기준)</div><div class="v">' + fmtWon(expectedPulls * cheapCash) + '</div>';
+  out += '<div class="k">' + sampleN + '회 실제 소비 금액(할인가)</div><div class="v">' + fmtWon(sampleN * cheapSale) + '</div>';
+  out += '<div class="k">' + sampleN + '회 실제 소비 금액(정가)</div><div class="v">' + fmtWon(sampleN * cheapCash) + '</div>';
+  out += '<div class="k">' + sampleN + '회 뽑을 때 1개 이상 나올 확률</div><div class="v">' + (hitProb * 100).toFixed(2) + '%</div>';
+  out += '</div>';
+  out += '<div class="n-presets">';
+  [1, 5, 10, 30, 50, 100].forEach(n => {
+    out += '<button data-n="' + n + '" class="' + (sampleN === n ? 'active' : '') + '">' + n + '회</button>';
+  });
+  out += '<input type="number" id="nInput" min="1" value="' + sampleN + '">';
+  out += '</div>';
+  out += '<p class="small">기대 비용은 평균값입니다 - 확률형 상자는 결과가 매번 랜덤이라 실제로 그보다 훨씬 적게/많이 쓸 수 있습니다.</p>';
+  out += '</div>';
+
+  if (box.trade.length) {
+    out += '<h2>포인트 교환</h2>';
+    out += '<p class="small">뽑을 때마다 쌓이는 포인트로 교환 가능한 확정 보상입니다. 1회당 적립 포인트는 클라이언트 데이터에 없어(하드코딩 추정) 필요 포인트만 표시합니다.</p>';
+    out += '<table><thead><tr><th>교환 아이템</th><th>수량</th><th>필요 포인트</th></tr></thead><tbody>';
+    box.trade.forEach(t => {
+      out += '<tr><td>' + t.name + '</td><td>' + t.count + '</td><td class="mono">' + t.points.toLocaleString('ko-KR') + 'P</td></tr>';
+    });
+    out += '</tbody></table>';
+  }
+
+  main.innerHTML = out;
+
+  main.querySelectorAll('.reward-row').forEach(el => {
+    el.onclick = () => {
+      const idx = el.dataset.idx;
+      target = idx === 'best' ? { kind: 'best' } : { kind: 'row', idx: parseInt(idx, 10) };
+      render();
+    };
+  });
+  main.querySelectorAll('.n-presets button').forEach(btn => {
+    btn.onclick = () => { sampleN = parseInt(btn.dataset.n, 10); render(); };
+  });
+  const nInput = document.getElementById('nInput');
+  if (nInput) {
+    nInput.onchange = () => {
+      const v = parseInt(nInput.value, 10);
+      if (v > 0) { sampleN = v; render(); }
+    };
+  }
+}
+
+boxSelect.addEventListener('change', () => { target = { kind: 'row', idx: 0 }; render(); });
+render();
+
+</script>
+</body>
+</html>
