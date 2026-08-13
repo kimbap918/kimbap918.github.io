@@ -89,6 +89,7 @@
       <div class="control-row hidden" id="ghostStyleRow">
         <span>잔상 종류</span>
         <select id="ghostStyleSelect"></select>
+        <button id="mirrorGalleryBtn" type="button">잔상 갤러리</button>
       </div>
       <div class="move-hint hidden" id="moveHint">방향키로 좌우 이동 · 장비를 바꾸려면 체크를 껐다 켜세요</div>
     </div>
@@ -157,7 +158,16 @@
   </div>
 </div>
 
+<div id="mirrorGalleryModal" class="damage-skin-modal hidden">
+  <div class="damage-skin-modal-inner mirror-gallery-inner">
+    <button id="mirrorGalleryClose" class="damage-skin-modal-close" title="닫기">×</button>
+    <h3>잔상 갤러리</h3>
+    <p class="mirror-gallery-hint">현재 캐릭터가 달리는 동안 전체 잔상거울(+6 강화)이 남기는 잔상을 실시간으로 미리 봅니다.</p>
+    <div class="mirror-gallery-grid" id="mirrorGalleryGrid"></div>
+  </div>
+</div>
+
 <script>window.CHARSIM_API_BASE = "https://latalekit-1.onrender.com";</script>
-<script src="app.js?v=27"></script>
+<script src="app.js?v=28"></script>
 </body>
 </html>
