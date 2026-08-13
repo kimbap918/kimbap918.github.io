@@ -486,7 +486,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
   html += '<div class="mythic-shine" style="font-size:15px;">' + chosen.name + (zone.secondBox ? ' (미개봉)' : '') + '</div>';
   html += '</div>';
   html += '<p class="modal-desc">' + zone.name + ' 인던 ' + sinceLast.toLocaleString('ko-KR') + '회, ' + elapsed + ' 만에 획득했습니다!</p>';
-  html += '<p class="small">진행 상황(누적, 초기화 전까지 유지): ' + done.toLocaleString('ko-KR') + ' / ' + trials.toLocaleString('ko-KR') + '회</p>';
+  html += '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + trials.toLocaleString('ko-KR') + '회</p>';
   if (sinceLast <= 100) {
     html += '<p class="easter-egg">🍀 당신은 운이 아주 좋으시네요! <a href="#" id="mythicEasterEggLink">로얄 까러가보시는건 어떨까요?</a></p>';
   } else if (isFirstMythic && sinceLast >= 30000) {
