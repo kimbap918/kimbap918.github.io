@@ -63,6 +63,7 @@ input[type=text]:focus, select:focus{outline:none;border-color:var(--accent);}
 .title-row .row1{display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap;}
 .title-name{font-size:14px;font-weight:700;}
 .title-name.test{font-style:italic;}
+.title-name.outline{border:1px solid var(--border);border-radius:4px;padding:1px 7px;}
 .title-desc{font-size:12px;color:var(--muted);margin-top:3px;}
 .title-effect{font-size:11.5px;color:var(--accent);margin-top:5px;}
 .stat-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
@@ -299,11 +300,16 @@ function render() {
     const effectHtml = t.e.map(e => `<div class="title-effect">${cleanText(e)}</div>`).join("");
     const name = cleanText(t.n);
     const desc = cleanText(t.d);
+    // 검정에 가까운 타이틀(19종)은 어두운 패널 위에서 글자 자체가 거의
+    // 안 보인다 - 배경 칩은 원본 색 느낌을 해친다고 해서 안 쓰기로 했으니,
+    // 그 대신 얇은 테두리 하나만 둘러서 그 자리에 텍스트가 있다는 걸
+    // 표시한다(색은 그대로 검정).
+    const isNearBlack = r + g + b < 30;
     const row = document.createElement("div");
     row.className = "title-row";
     row.innerHTML = `
       <div class="row1">
-        <span class="title-name${isTestTitle(t) ? " test" : ""}" style="color:rgb(${r},${g},${b})">${name}</span>
+        <span class="title-name${isTestTitle(t) ? " test" : ""}${isNearBlack ? " outline" : ""}" style="color:rgb(${r},${g},${b})">${name}</span>
         ${testTag}
       </div>
       ${desc ? `<div class="title-desc">${desc}</div>` : ""}
