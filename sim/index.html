@@ -13,12 +13,13 @@
 </style>
 </head>
 <body>
-<nav class="site-tabs">
+<nav class="site-tabs" id="siteTabs">
   <a href="index.html" class="active">패션 시뮬레이터</a>
   <a href="../lookup.html">장비 강화·인챈트 조회</a>
   <a href="../gacha.html">확률 계산기</a>
   <a href="../title.html">타이틀 검색기</a>
 </nav>
+<script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
 <header class="topbar">
   <div class="title-block">
     <h1>LaTale 캐릭터 패션 시뮬레이터 Latte_1</h1>

@@ -113,12 +113,13 @@ footer{margin-top:20px;padding:14px 20px;font-size:11px;color:var(--muted);text-
 </style>
 </head>
 <body>
-<nav class="site-tabs">
+<nav class="site-tabs" id="siteTabs">
   <a href="sim/index.html">패션 시뮬레이터</a>
   <a href="lookup.html">장비 강화·인챈트 조회</a>
   <a href="gacha.html">확률 계산기</a>
   <a href="title.html" class="active">타이틀 검색기</a>
 </nav>
+<script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
 <header>
   <h1>타이틀 검색기</h1>
   <p class="lead">이름/설명으로 타이틀을 찾거나, 원하는 스탯을 골라 그 스탯을 가장 많이 주는 타이틀 순으로 봅니다. 전체 919종을 기준으로 합니다.</p>

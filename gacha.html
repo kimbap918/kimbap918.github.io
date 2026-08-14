@@ -111,12 +111,13 @@ tr.reward-row.best td{color:var(--best);}
 </style>
 </head>
 <body>
-<nav class="site-tabs">
+<nav class="site-tabs" id="siteTabs">
   <a href="sim/index.html">패션 시뮬레이터</a>
   <a href="lookup.html">장비 강화·인챈트 조회</a>
   <a href="gacha.html" class="active">확률 계산기</a>
   <a href="title.html">타이틀 검색기</a>
 </nav>
+<script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
 <div id="app">
   <header>
     <h1>확률형 상자 기대값 계산기 <span class="updateDate">최근 업데이트 2026.08.12</span></h1>
