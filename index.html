@@ -59,7 +59,14 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
   var OWNER_SECRET = "yrFKtdKQw746nYPr";
   var OWNER_FLAG = "vc_owner";
   var NS = "kimbap918-github-io-main";
-  var KEY = "visits";
+  var KEY_TOTAL = "visits";
+
+  function todayKey() {
+    var d = new Date();
+    var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return "visits-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  var KEY_DAILY = todayKey();
 
   try {
     var params = new URLSearchParams(location.search);
@@ -76,15 +83,20 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
   try { alreadyCounted = sessionStorage.getItem("vc_counted") === "1"; } catch (e) {}
 
   var base = "https://abacus.jasoncameron.dev/";
-  var url = base + (alreadyCounted ? "get/" : "hit/") + NS + "/" + KEY;
+  var mode = alreadyCounted ? "get/" : "hit/";
 
-  fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+  Promise.all([
+    fetch(base + mode + NS + "/" + KEY_DAILY).then(function (r) { return r.json(); }),
+    fetch(base + mode + NS + "/" + KEY_TOTAL).then(function (r) { return r.json(); })
+  ]).then(function (results) {
     if (!alreadyCounted) {
       try { sessionStorage.setItem("vc_counted", "1"); } catch (e) {}
     }
-    if (isOwner && typeof data.value === "number") {
+    var daily = results[0] && results[0].value;
+    var total = results[1] && results[1].value;
+    if (isOwner && typeof daily === "number" && typeof total === "number") {
       var el = document.createElement("div");
-      el.textContent = "방문자 " + data.value.toLocaleString();
+      el.textContent = "오늘 " + daily.toLocaleString() + " / 전체 " + total.toLocaleString();
       el.style.cssText = "position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,0.7);color:#fff;font:12px/1.4 monospace;padding:5px 10px;border-radius:6px;z-index:99999;pointer-events:none;";
       document.body.appendChild(el);
     }
