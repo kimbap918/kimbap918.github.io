@@ -106,9 +106,19 @@ footer{margin-top:20px;padding:14px 20px;font-size:11px;color:var(--muted);text-
   .controls{flex-direction:column;align-items:stretch;}
   .search-wrap, #statSelect, .toggle-btn{flex:none;width:100%;}
 }
+.site-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;background:#262f3d;border-bottom:1px solid #2a2f3a;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;}
+.site-tabs a{padding:8px 18px;border-radius:6px;background:#2f3a4a;color:#eaeef3;font-size:14px;text-decoration:none;}
+.site-tabs a:hover{background:#3c4a5e;}
+.site-tabs a.active{background:#5aa9e6;color:#10151d;font-weight:bold;}
 </style>
 </head>
 <body>
+<nav class="site-tabs">
+  <a href="sim/index.html">패션 시뮬레이터</a>
+  <a href="lookup.html">장비 강화·인챈트 조회</a>
+  <a href="gacha.html">확률 계산기</a>
+  <a href="title.html" class="active">타이틀 검색기</a>
+</nav>
 <header>
   <h1>타이틀 검색기</h1>
   <p class="lead">이름/설명으로 타이틀을 찾거나, 원하는 스탯을 골라 그 스탯을 가장 많이 주는 타이틀 순으로 봅니다. 전체 919종을 기준으로 합니다.</p>

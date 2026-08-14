@@ -104,10 +104,19 @@ tr.reward-row.best td{color:var(--best);}
   .calc-grid{grid-template-columns:1fr;}
   table{font-size:12px;}
 }
-
+.site-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;background:#262f3d;border-bottom:1px solid #2a2f3a;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;}
+.site-tabs a{padding:8px 18px;border-radius:6px;background:#2f3a4a;color:#eaeef3;font-size:14px;text-decoration:none;}
+.site-tabs a:hover{background:#3c4a5e;}
+.site-tabs a.active{background:#5aa9e6;color:#10151d;font-weight:bold;}
 </style>
 </head>
 <body>
+<nav class="site-tabs">
+  <a href="sim/index.html">패션 시뮬레이터</a>
+  <a href="lookup.html">장비 강화·인챈트 조회</a>
+  <a href="gacha.html" class="active">확률 계산기</a>
+  <a href="title.html">타이틀 검색기</a>
+</nav>
 <div id="app">
   <header>
     <h1>확률형 상자 기대값 계산기 <span class="updateDate">최근 업데이트 2026.08.12</span></h1>
