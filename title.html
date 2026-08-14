@@ -317,10 +317,12 @@ function render() {
     const effectHtml = t.e.map(e => `<div class="title-effect">${cleanText(e)}</div>`).join("");
     const name = cleanText(t.n);
     const desc = cleanText(t.d);
-    // 검정에 가까운 타이틀(19종)은 어두운 패널 위에서 글자 자체가 거의
-    // 안 보인다. 배경 없이 원본 색을 그대로 유지하는 원칙을 지키면서,
+    // 검정에 가까운 타이틀(19종)과, 증명의 탑/Survive·TimeAttack Master
+    // 계열에 쓰인 짙은 남색(58,1,171)은 어두운 패널 위에서 글자 자체가
+    // 거의 안 보인다. 배경 없이 원본 색을 그대로 유지하는 원칙을 지키면서,
     // 획에만 밝은 외곽선을 둘러 어두운 배경에서도 또렷하게 한다.
-    const isNearBlack = r + g + b < 30;
+    const isDeepIndigo = r === 58 && g === 1 && b === 171;
+    const isNearBlack = r + g + b < 30 || isDeepIndigo;
     const row = document.createElement("div");
     row.className = "title-row";
     row.innerHTML = `
