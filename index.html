@@ -54,5 +54,42 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
   });
 })();
 </script>
+<script>
+(function () {
+  var OWNER_SECRET = "yrFKtdKQw746nYPr";
+  var OWNER_FLAG = "vc_owner";
+  var NS = "kimbap918-github-io-main";
+  var KEY = "visits";
+
+  try {
+    var params = new URLSearchParams(location.search);
+    if (params.get("vc") === OWNER_SECRET) {
+      localStorage.setItem(OWNER_FLAG, "1");
+      history.replaceState(null, "", location.pathname + location.hash);
+    }
+  } catch (e) {}
+
+  var isOwner = false;
+  try { isOwner = localStorage.getItem(OWNER_FLAG) === "1"; } catch (e) {}
+
+  var alreadyCounted = false;
+  try { alreadyCounted = sessionStorage.getItem("vc_counted") === "1"; } catch (e) {}
+
+  var base = "https://abacus.jasoncameron.dev/";
+  var url = base + (alreadyCounted ? "get/" : "hit/") + NS + "/" + KEY;
+
+  fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+    if (!alreadyCounted) {
+      try { sessionStorage.setItem("vc_counted", "1"); } catch (e) {}
+    }
+    if (isOwner && typeof data.value === "number") {
+      var el = document.createElement("div");
+      el.textContent = "방문자 " + data.value.toLocaleString();
+      el.style.cssText = "position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,0.7);color:#fff;font:12px/1.4 monospace;padding:5px 10px;border-radius:6px;z-index:99999;pointer-events:none;";
+      document.body.appendChild(el);
+    }
+  }).catch(function () {});
+})();
+</script>
 </body>
 </html>
