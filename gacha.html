@@ -93,6 +93,12 @@ tr.reward-row.best td{color:var(--best);}
   color:var(--mythic-purple);font-weight:bold;animation:mythicShimmer 2.2s linear infinite;
 }
 @media (prefers-reduced-motion:reduce){.mythic-shine{animation:none;-webkit-text-fill-color:var(--mythic-purple);background:none;}}
+@keyframes mythicGlow{
+  0%,100%{box-shadow:0 0 0 1px var(--mythic-purple),0 0 18px 4px rgba(196,138,255,0.35);}
+  50%{box-shadow:0 0 0 2px var(--mythic-purple),0 0 34px 10px rgba(196,138,255,0.6);}
+}
+.modal-box.mythic-glow{border-color:var(--mythic-purple);animation:mythicGlow 1.8s ease-in-out infinite;}
+@media (prefers-reduced-motion:reduce){.modal-box.mythic-glow{animation:none;box-shadow:0 0 0 2px var(--mythic-purple),0 0 24px 6px rgba(196,138,255,0.45);}}
 @media (max-width:720px){
   #main{padding:14px;}
   .calc-grid{grid-template-columns:1fr;}
@@ -127,7 +133,8 @@ const main = document.getElementById('main');
 const modalOverlay = document.getElementById('modalOverlay');
 const modalBox = document.getElementById('modalBox');
 let pendingModalContinue = null; // 신화 아이템 획득 모달처럼, 어떻게 닫히든(버튼/바깥클릭) 반드시 재개돼야 하는 콜백
-function showModal(html) {
+function showModal(html, extraClass) {
+  modalBox.className = 'modal-box' + (extraClass ? ' ' + extraClass : '');
   modalBox.innerHTML = html;
   modalOverlay.classList.remove('hidden');
 }
@@ -497,7 +504,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
   }
   html += '<div class="modal-actions"><button id="mythicContinueBtn" class="confirm">이어하기</button></div>';
   pendingModalContinue = onContinue;
-  showModal(html);
+  showModal(html, 'mythic-glow');
   document.getElementById('mythicContinueBtn').onclick = hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
   if (eggLink) {
