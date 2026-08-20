@@ -19,7 +19,7 @@ header{padding:16px 56px 16px 20px;border-bottom:1px solid var(--border);positio
 h1{font-size:18px;margin:0 0 6px;}
 .updateDate{font-size:11px;color:var(--muted);font-weight:normal;margin-left:8px;}
 .lead{font-size:12px;color:var(--muted);margin:0 0 10px;}
-select{padding:8px 12px;font-size:14px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);max-width:420px;width:100%;}
+select{padding:8px 12px;font-size:14px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);max-width:420px;width:100%;margin-top:10px;}
 #main{padding:16px 20px;max-width:920px;margin:0 auto;}
 h2{font-size:15px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-top:26px;}
 table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px;}
@@ -537,7 +537,7 @@ function renderRoyalSim(box) {
   const cum = getRoyalCumulative(box);
 
   let html = '<div class="n-presets" id="royalTrialButtons">';
-  [1, 10, 50, 100, 1000, 10000].forEach(n => {
+  [1, 10, 50, 100, 500].forEach(n => {
     const bonus = Math.floor(n / 10);
     const label = n.toLocaleString('ko-KR') + '회' + (bonus > 0 ? ' (+' + bonus.toLocaleString('ko-KR') + ')' : '');
     html += '<button data-n="' + n + '" class="' + (royalTrials === n ? 'active' : '') + '"' + (royalAnimating ? ' disabled' : '') + '>' + label + '</button>';
