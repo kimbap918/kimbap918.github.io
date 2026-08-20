@@ -4,32 +4,59 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>kimbap918 - LaTale 도구 모음</title>
+<script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <style>
-:root { color-scheme: dark; }
+:root {
+  color-scheme: dark;
+  --bg:#1e2530; --panel:#262f3d; --border:#2a2f3a; --tab-bg:#2f3a4a; --tab-hover:#3c4a5e;
+  --text:#eaeef3; --accent:#5aa9e6;
+}
+:root[data-theme="light"] {
+  --bg:#f5f6f8; --panel:#ffffff; --border:#dde1e8; --tab-bg:#eef1f5; --tab-hover:#e3e8ef;
+  --text:#1b1f27; --accent:#2f6fed;
+}
+:root[data-theme="dark"] {
+  --bg:#1e2530; --panel:#262f3d; --border:#2a2f3a; --tab-bg:#2f3a4a; --tab-hover:#3c4a5e;
+  --text:#eaeef3; --accent:#5aa9e6;
+}
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
 .tab-shell { display: flex; flex-direction: column; height: 100%; }
 .tab-bar {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: #262f3d;
-  border-bottom: 1px solid #2a2f3a;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
 }
 .tab-bar button {
   padding: 8px 18px;
   border: none;
   border-radius: 6px;
-  background: #2f3a4a;
-  color: #eaeef3;
+  background: var(--tab-bg);
+  color: var(--text);
   font-size: 14px;
   cursor: pointer;
   font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
-.tab-bar button:hover { background: #3c4a5e; }
-.tab-bar button.active { background: #5aa9e6; color: #10151d; font-weight: bold; }
-.tab-frame { flex: 1; border: none; width: 100%; background: #fff; }
+.tab-bar button:hover { background: var(--tab-hover); }
+.tab-bar button.active { background: var(--accent); color: #10151d; font-weight: bold; }
+.tab-frame { flex: 1; border: none; width: 100%; background: var(--bg); }
+.theme-toggle {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1;
+}
+.theme-toggle:hover { border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -40,6 +67,7 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
     <button type="button" data-src="gacha.html">확률 계산기</button>
     <button type="button" data-src="title.html">타이틀 검색기</button>
     <button type="button" data-src="specialization.html">스킬 특화</button>
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환"></button>
   </nav>
   <iframe class="tab-frame" id="tabFrame" src="sim/index.html" title="LaTale 도구"></iframe>
 </div>
@@ -49,11 +77,38 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
   var frame = document.getElementById("tabFrame");
   bar.addEventListener("click", function (e) {
     var btn = e.target.closest("button");
-    if (!btn) return;
-    Array.prototype.forEach.call(bar.children, function (b) { b.classList.remove("active"); });
+    if (!btn || !btn.dataset.src) return;
+    Array.prototype.forEach.call(bar.querySelectorAll("[data-src]"), function (b) { b.classList.remove("active"); });
     btn.classList.add("active");
     frame.src = btn.dataset.src;
   });
+})();
+</script>
+<script>
+// 개별 도구 페이지(iframe으로 로드되는 sim/lookup/gacha/title/specialization)도
+// 전부 같은 origin의 localStorage['theme']를 읽어 자기 테마를 정하므로,
+// 여기서 토글하면 다음에 그 탭을 열 때(= iframe이 새로 로드될 때) 그대로
+// 반영된다 - 이미 열려 있는 iframe까지 실시간으로 바꾸려면 postMessage가
+// 필요한데, 탭 전환 자체가 항상 iframe을 다시 로드하므로 그 정도로 충분하다
+// 판단해 생략했다.
+(function () {
+  var btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  function current() {
+    var attr = document.documentElement.getAttribute('data-theme');
+    if (attr) return attr;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function sync() {
+    btn.textContent = current() === 'dark' ? '☀️' : '🌙';
+  }
+  sync();
+  btn.onclick = function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    sync();
+  };
 })();
 </script>
 <script>
