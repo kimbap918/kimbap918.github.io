@@ -58,6 +58,7 @@ html, body { margin: 0; height: 100%; background: #1e2530; overflow: hidden; }
 </script>
 <script>
 (function () {
+  if (window.top !== window.self) return;
   var OWNER_SECRET = "yrFKtdKQw746nYPr";
   var OWNER_FLAG = "vc_owner";
   var NS = "kimbap918-github-io-main";
