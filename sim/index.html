@@ -304,8 +304,20 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     });
   }
 
+  // 즉시 지우지 않고 runners_trash/로 옮긴 뒤 지운다 - 실수로 삭제해도
+  // 복구할 수 있게(사용자 지정, 2026-08-21: 관리 중 실수로 다른 사람의
+  // 등록을 지운 사고 이후). Realtime Database는 휴지통 개념이 없어서
+  // 직접 만들었다.
   function deleteMyRunner() {
-    return remove(ref(db, "runners/" + clientId));
+    var myRef = ref(db, "runners/" + clientId);
+    return get(myRef).then(function (snap) {
+      if (!snap.exists()) return;
+      var data = snap.val();
+      data.deletedAt = Date.now();
+      return set(ref(db, "runners_trash/" + clientId), data).then(function () {
+        return remove(myRef);
+      });
+    });
   }
 
   window.CharSimRunnerFirebase = { registerRunner: registerRunner, deleteMyRunner: deleteMyRunner };
