@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>kimbap918</title>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('hub_runner_enabled')==='0')document.documentElement.classList.add('runners-off');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -50,6 +51,9 @@
 *{box-sizing:border-box;}
 .theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:7px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:url("data:image/x-icon;base64,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") 0 0, pointer;font-size:14px;font-family:inherit;line-height:1;box-shadow:var(--shadow);}
 .theme-toggle:hover{border-color:var(--accent);}
+.runner-toggle{position:fixed;top:14px;right:64px;z-index:9999;padding:7px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;line-height:1;box-shadow:var(--shadow);opacity:1;transition:opacity .15s ease;}
+.runner-toggle:hover{border-color:var(--accent);}
+.runner-toggle[aria-pressed="false"]{opacity:.5;}
 html,body{
   cursor: url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAgAAAAIAgGAAAAc3p69AAACjFpQ0NQSUNDIFByb2ZpbGUAAHicnZZ3VFPZFofPvTe9UJIQipTQa2hSAkgNvUiRLioxCRBKwJAAIjZEVHBEUZGmCDIo4ICjQ5GxIoqFAVGx6wQZRNRxcBQblklkrRnfvHnvzZvfH/d+a5+9z91n733WugCQ/IMFwkxYCYAMoVgU4efFiI2LZ2AHAQzwAANsAOBws7NCFvhGApkCfNiMbJkT+Be9ug4g+fsq0z+MwQD/n5S5WSIxAFCYjOfy+NlcGRfJOD1XnCW3T8mYtjRNzjBKziJZgjJWk3PyLFt89pllDznzMoQ8GctzzuJl8OTcJ+ONORK+jJFgGRfnCPi5Mr4mY4N0SYZAxm/ksRl8TjYAKJLcLuZzU2RsLWOSKDKCLeN5AOBIyV/w0i9YzM8Tyw/FzsxaLhIkp4gZJlxTho2TE4vhz89N54vFzDAON40j4jHYmRlZHOFyAGbP/FkUeW0ZsiI72Dg5ODBtLW2+KNR/Xfybkvd2ll6Ef+4ZRB/4w/ZXfpkNALCmZbXZ+odtaRUAXesBULv9h81gLwCKsr51Dn1xHrp8XlLE4ixnK6vc3FxLAZ9rKS/o7/qfDn9DX3zPUr7d7+VhePOTOJJ0MUNeN25meqZExMjO4nD5DOafh/gfB/51HhYR/CS+iC+URUTLpkwgTJa1W8gTiAWZQoZA+J+a+A/D/qTZuZaJ2vgR0JZYAqUhGkB+HgAoKhEgCXtkK9DvfQvGRwP5zYvRmZid+8+C/n1XuEz+yBYkf45jR0QyuBJRzuya/FoCNCAARUAD6kAb6AMTwAS2wBG4AA/gAwJBKIgEcWAx4IIUkAFEIBcUgLWgGJSCrWAnqAZ1oBE0gzZwGHSBY+A0OAcugctgBNwBUjAOnoAp8ArMQBCEhcgQFVKHdCBDyByyhViQG+QDBUMRUByUCCVDQkgCFUDroFKoHKqG6qFm6FvoKHQaugANQ7egUWgS+hV6ByMwCabBWrARbAWzYE84CI6EF8HJ8DI4Hy6Ct8CVcAN8EO6ET8OX4BFYCj+BpxGAEBE6ooswERbCRkKReCQJESGrkBKkAmlA2pAepB+5ikiRp8hbFAZFRTFQTJQLyh8VheKilqFWoTajqlEHUJ2oPtRV1ChqCvURTUZros3RzugAdCw6GZ2LLkZXoJvQHeiz6BH0OPoVBoOhY4wxjhh/TBwmFbMCsxmzG9OOOYUZxoxhprFYrDrWHOuKDcVysGJsMbYKexB7EnsFO459gyPidHC2OF9cPE6IK8RV4FpwJ3BXcBO4GbwS3hDvjA/F8/DL8WX4RnwPfgg/jp8hKBOMCa6ESEIqYS2hktBGOEu4S3hBJBL1iE7EcKKAuIZYSTxEPE8cJb4lUUhmJDYpgSQhbSHtJ50i3SK9IJPJRmQPcjxZTN5CbiafId8nv1GgKlgqBCjwFFYr1Ch0KlxReKaIVzRU9FRcrJivWKF4RHFI8akSXslIia3EUVqlVKN0VOmG0rQyVdlGOVQ5Q3mzcovyBeVHFCzFiOJD4VGKKPsoZyhjVISqT2VTudR11EbqWeo4DUMzpgXQUmmltG9og7QpFYqKnUq0Sp5KjcpxFSkdoRvRA+jp9DL6Yfp1+jtVLVVPVb7qJtU21Suqr9XmqHmo8dVK1NrVRtTeqTPUfdTT1Lepd6nf00BpmGmEa+Rq7NE4q/F0Dm2OyxzunJI5h+fc1oQ1zTQjNFdo7tMc0JzW0tby08rSqtI6o/VUm67toZ2qvUP7hPakDlXHTUegs0PnpM5jhgrDk5HOqGT0MaZ0NXX9dSW69bqDujN6xnpReoV67Xr39An6LP0k/R36vfpTBjoGIQYFBq0Gtw3xhizDFMNdhv2Gr42MjWKMNhh1GT0yVjMOMM43bjW+a0I2cTdZZtJgcs0UY8oyTTPdbXrZDDazN0sxqzEbMofNHcwF5rvNhy3QFk4WQosGixtMEtOTmcNsZY5a0i2DLQstuyyfWRlYxVtts+q3+mhtb51u3Wh9x4ZiE2hTaNNj86utmS3Xtsb22lzyXN+5q+d2z31uZ27Ht9tjd9Oeah9iv8G+1/6Dg6ODyKHNYdLRwDHRsdbxBovGCmNtZp13Qjt5Oa12Oub01tnBWex82PkXF6ZLmkuLy6N5xvP48xrnjbnquXJc612lbgy3RLe9blJ3XXeOe4P7Aw99D55Hk8eEp6lnqudBz2de1l4irw6v12xn9kr2KW/E28+7xHvQh+IT5VPtc99XzzfZt9V3ys/eb4XfKX+0f5D/Nv8bAVoB3IDmgKlAx8CVgX1BpKAFQdVBD4LNgkXBPSFwSGDI9pC78w3nC+d3hYLQgNDtoffCjMOWhX0fjgkPC68JfxhhE1EQ0b+AumDJgpYFryK9Issi70SZREmieqMVoxOim6Nfx3jHlMdIY61iV8ZeitOIE8R1x2Pjo+Ob4qcX+izcuXA8wT6hOOH6IuNFeYsuLNZYnL74+BLFJZwlRxLRiTGJLYnvOaGcBs700oCltUunuGzuLu4TngdvB2+S78ov508kuSaVJz1Kdk3enjyZ4p5SkfJUwBZUC56n+qfWpb5OC03bn/YpPSa9PQOXkZhxVEgRpgn7MrUz8zKHs8yzirOky5yX7Vw2JQoSNWVD2Yuyu8U02c/UgMREsl4ymuOWU5PzJjc690iecp4wb2C52fJNyyfyffO/XoFawV3RW6BbsLZgdKXnyvpV0Kqlq3pX668uWj2+xm/NgbWEtWlrfyi0LiwvfLkuZl1PkVbRmqKx9X7rW4sVikXFNza4bKjbiNoo2Di4ae6mqk0fS3glF0utSytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/ukzFw5AAABbklEQVR4nM2VvVLDMAyAZV3K1q13dHXY6c7YzvSOmbKxdmHoyM/au7LwCGWGgYGFtTvlAcJIB6aylUGc3TrnOIHGbSqjOyWOrESfJNsRAECgLkQCAgiugoMQgoIBhIRA+yEEBLoGbggsMnJCoP1w0LuF+7dvVgh0DVfDO1YILDJyQqBruBn0Qe5LNgj8bYILAl1DLGsgm7HWdquzcwhc5+BCJBVDRK7hqA7wHDeyELCEgEEfeoe1FKKKHxiWcWrGjUwlZIWVwLKORRCT+fYQ6OPsQqh2bQsR/TU5Sz5ztvdZkm5RsyYMxKZrgozEpyN9n8yJzoev5CPqndW3wEcjnZU6eCyiy+tHeBmd6LHZfmVkPF1sVAlKrAp0Lh7SrMbThc7KV70r8PEFIOtLGjvzs9aeGnZhx0Kqf7ZYmR/79tRXcwCcwXMA3MEzACGCpwChgitV+9Uco10iegJmESprXYYAwTWA6UMowaDR/wPAD5k5Ir9KqZsAAAAAAElFTkSuQmCC") 0 0, auto;
 }
@@ -233,11 +237,24 @@ footer{
 }
 @media (max-width:480px){
   .masthead{flex-direction:column;align-items:flex-start;text-align:left;}
+  .page{padding:40px 18px 40px;}
+  .name{font-size:23px;}
+  .bio{font-size:15.5px;line-height:1.62;}
+  .visit-stats{font-size:13px;}
+  .section-head{margin:34px 0 12px;}
+  .section-head h2{font-size:16px;}
+  .tool-card{padding:16px;gap:14px;}
+  .tool-icon{width:44px;height:44px;}
+  .tool-icon img{width:30px;height:30px;}
+  .tool-text h3{font-size:15.5px;white-space:normal;}
+  .tool-text p{font-size:13.5px;-webkit-line-clamp:3;}
+  footer{font-size:12.5px;}
 }
 </style>
 </head>
 <body>
 <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" title="라이트/다크 모드 전환"></button>
+<button type="button" class="runner-toggle" id="runnerToggle" aria-pressed="true" aria-label="하단 러너 캐릭터 켜기/끄기" title="하단 러너 캐릭터 켜기/끄기">🏃</button>
 <div class="page">
   <header class="masthead">
     <div class="avatar-wrap">
@@ -258,8 +275,8 @@ footer{
     <a class="tool-card" href="https://kimbap918.github.io/sim/index.html">
       <span class="tool-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADjklEQVR4nO2bPWgUURDHZ4fXaXEp7PyIEAKBcDFoEq+wS8BK0ojFIRbhiI0p0pgmiKTRJoUf4BFSWKSQNGolaB/jGUKiEAhCIjYBi6TQNhF297/yxl3u3X4kh3O/5rFv571d+M+bnZ236x0dHZFmmJTDpBwm5ZiiJl7YoEzBpTZAHh0DTMrx8noK1JYO/ImG+0v+8UhP0F8+5TZ+83fQrn4L2k9fD/x2oVoq1BOYlONl9QAof2+81JLirh4xPbvitx/mK4V4ApNyTNHKL2zYx1jb0flqML4Zo9Mr/vUuXu7DuFw8gkk5XqsxwFV5rOFmMQEeUhuwx4GnrwOPwfVkf1ZPYFKOaXXAztqW35arlZaUl8rivKvysJd2WWFSjnE1RBTOC6mkzACRUUpPyivPAEzKMa5Rf36uYq3NpLWOYxnd5RrGPACKowXyOjhGLKKEWOQKk3JMqwMQlbFmKeGtD8rLTFDOk/S0wPxRG57HW2ZeMCnHpB0IJVw9ISut1hdcYVKOaWaAaLvaX4lVoiwyOdd3ANeKUN51BgmTckwzA1RiokzwTsVSHsjndFLOHsWMhPoA8gDXOkFWmJRjXA2TPEFG+WZrVXpObaAU6zFJ+UMnD2iXqvBo6Am3Ejwhr7fDJA9YPlu1+uf2l1JVhpiUY9IOTIoJaXeEmikvuXHlnN++/fyDssCkHJN1AukJl7688fsb4fnN7/t+e7hcjx3PNyft47D9+OBxbH2gMRjYly90Zb1163pq8fLaHW6MzfgTDb1/FHRMvbDOL75bt5S9+vC+305cH7QnenI3sO+1PQPAHvNNbNc7+wLt9YXIlK18Y2vXXrOh8jjG+chzBLAb6uu2lEdMQexJu3vMpBwv7+8Eo1gQKoY13RibibWP7EBoP9tlZ3rdZ04H9uv1XPcImZRj8p4Qz325ptG/+/OX387dvhY7HsrvPXtu9Z8X+YAkbSxgUo4pamKseekJUHYRecB2PfbpITPAomBSjlfU1+KLvZPWxPJdALVAZISIDfAQVw/APKhed2JAu8SAiTBHj74gDftRLxjpCRUeDzzjMKwD7IkqsSSpiryzlu4+mZRjqE34W+0tOSn+z95kSpiUY4q+AKLzcLi3mJYk5V+9zPYtMZNyvOP6a0zuI2T9nyCr8oBJOd5x/zfo6glJioO8/h9gUo53Un+OtvrlaeePkf/NA9oFJuUwKYdP+gZOmj8Q0n8BnfCO5wAAAABJRU5ErkJggg==" alt=""></span>
       <span class="tool-text">
-        <h3>패션 시뮬레이터</h3>
-        <p>장비를 입혀보고 코디를 미리 확인</p>
+        <h3>패션 시뮬레이터 & 홈 러너</h3>
+        <p>코디 미리보기 · 홈 러너 등록</p>
       </span>
     </a>
     <a class="tool-card" href="https://kimbap918.github.io/lookup.html">
@@ -303,15 +320,42 @@ footer{
       pointer-events:none;
       image-rendering:pixelated;
     }
+    .community-runner{
+      position:fixed;
+      bottom:14px;
+      height:156px;
+      z-index:4;
+      pointer-events:none;
+      image-rendering:pixelated;
+    }
     @media (prefers-reduced-motion: reduce){
-      .runner{display:none;}
+      .runner, .community-runner{display:none;}
+    }
+    .runners-off #runnerDock{display:none;}
+    @media (max-width:480px){
+      .runner-dock{position:relative;overflow-x:hidden;margin-top:20px;}
+      .runner, .community-runner{position:absolute;}
     }
   </style>
-  <img class="runner" id="runnerImg" src="" alt="">
+  <div class="runner-dock" id="runnerDock">
+    <img class="runner" id="runnerImg" src="" alt="">
+    <div id="communityRunners"></div>
+  </div>
   <script>
   (function () {
     var el = document.getElementById('runnerImg');
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function hubIsMobileDock() {
+      return window.matchMedia('(max-width:480px)').matches;
+    }
+    function hubTrackWidth() {
+      var dock = document.getElementById('runnerDock');
+      if (hubIsMobileDock() && dock) return dock.clientWidth;
+      return window.innerWidth;
+    }
+    window.__hubTrackWidth = hubTrackWidth;
+
     var IDLE_SRC = 'runner/idle.gif';
     var RUN_SRC = 'runner/run.gif';
     var SPEED = 45; // px/s - 짧게 끊어 뛰어도 속도感은 일정하게
@@ -326,7 +370,7 @@ footer{
       setTimeout(runPhase, 1500 + Math.random() * 3500);
     }
     function runPhase() {
-      var maxLeft = window.innerWidth - 20;
+      var maxLeft = hubTrackWidth() - 20;
       var hop = 70 + Math.random() * 160; // 한 번에 조금씩만 이동
       var movingRight = dir > 0; // 클램프로 dir이 바뀌기 전에 "지금 이동 방향"을 먼저 고정
       var target = pos + dir * hop;
@@ -401,7 +445,7 @@ footer{
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 (function () {
   if (window.top !== window.self) return;
   var firebaseConfig = {
@@ -433,6 +477,191 @@ import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "http
     var n = snap.exists() ? Object.keys(snap.val()).length : 0;
     if (onlineEl) onlineEl.textContent = n.toLocaleString();
   });
+
+  // webapp/frontend(패션 시뮬레이터)의 "홈 러너로 등록"으로 저장된
+  // idle/run 프레임(무기 제외, 알파 바운딩 박스로 크롭+통일된 크기)을
+  // 읽어와 프로필 러너와 같은 방식(idle↔run 상태머신, 화면 끝에서 방향
+  // 전환)으로 하단에 뛰어다니게 한다. 실시간 반영은 하지 않고 페이지 로드
+  // 시 한 번만 가져온다 - 등록/삭제가 잦은 이벤트가 아니라 onValue로
+  // 계속 구독할 필요가 없고, 새로고침 한 번이면 최신 목록이 반영된다.
+  //
+  // 등록 인원이 표시 인원(PC 20명/모바일 5명)보다 많아지면, 초과분을
+  // 지우는 대신 30분 단위 시간창을 시드로 쓰는 결정적 셔플로 그 시간
+  // 동안 보여줄 인원을 무작위로 뽑는다(사용자 지정, 2026-08-21) - 같은
+  // 30분 창 안에 있는 방문자는 전부 같은 조합을 보고, 창이 바뀌면(30분마다)
+  // 다른 조합이 뽑힌다. 480px 이하를 모바일로 본다(이 페이지의 다른
+  // @media 브레이크포인트와 동일).
+  var RUNNER_DISPLAY_ROTATE_MS = 30 * 60 * 1000;
+  var isMobileViewport = window.matchMedia("(max-width:480px)").matches;
+  var RUNNER_DISPLAY_CAP = isMobileViewport ? 5 : 20;
+
+  // 시드 기반 PRNG(mulberry32) - Math.random()은 시드를 못 주므로, 같은
+  // 30분 창의 모든 방문자가 같은 순서로 셔플되게 하려면 필요하다.
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0;
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function seededShuffle(arr, seed) {
+    var rng = mulberry32(seed);
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  var container = document.getElementById("communityRunners");
+  if (container && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    get(ref(db, "runners")).then(function (snap) {
+      if (!snap.exists()) return;
+      var all = snap.val();
+      var epoch = Math.floor(Date.now() / RUNNER_DISPLAY_ROTATE_MS);
+      var selected = seededShuffle(Object.keys(all), epoch).slice(0, RUNNER_DISPLAY_CAP);
+      selected.forEach(function (key) {
+        var entry = all[key];
+        startCommunityRunner(container, entry && entry.frames);
+      });
+    }).catch(function () {});
+  }
+
+  // 러너 등록은 더 이상 인원 상한에서 자동으로 지워지지 않으므로(위
+  // 표시 로테이션 참고), 계속 쌓이는 걸 사이트 주인이 직접 정리할 수
+  // 있어야 한다 - 이미 있는 vc_owner 플래그(?vc=<시크릿> 접속 시
+  // localStorage에 저장됨, 위쪽 방문자 카운터 스크립트에서 설정)를
+  // 그대로 재사용한다(사용자 지정, 2026-08-21).
+  var isOwner = false;
+  try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
+  if (isOwner) renderRunnerAdminPanel();
+
+  function renderRunnerAdminPanel() {
+    var panel = document.createElement("div");
+    panel.id = "runnerAdminPanel";
+    panel.style.cssText = "position:fixed;left:10px;bottom:10px;width:240px;max-height:320px;" +
+      "overflow-y:auto;background:rgba(0,0,0,0.85);color:#fff;font:11px/1.4 monospace;" +
+      "padding:8px;border-radius:8px;z-index:99999;";
+    document.body.appendChild(panel);
+
+    function refresh() {
+      get(ref(db, "runners")).then(function (snap) {
+        panel.innerHTML = "";
+        var count = snap.exists() ? Object.keys(snap.val()).length : 0;
+        var title = document.createElement("div");
+        title.textContent = "⚙️ 러너 관리 (" + count + "명)";
+        title.style.cssText = "font-weight:bold;margin-bottom:6px;";
+        panel.appendChild(title);
+        if (!snap.exists()) return;
+        var all = snap.val();
+        Object.keys(all)
+          .sort(function (a, b) { return (all[b].createdAt || 0) - (all[a].createdAt || 0); })
+          .forEach(function (key) {
+            var entry = all[key];
+            var row = document.createElement("div");
+            row.style.cssText = "display:flex;align-items:center;gap:6px;margin-bottom:4px;";
+            var thumb = document.createElement("img");
+            var idleFrames = entry.frames && entry.frames.idle;
+            thumb.src = idleFrames && idleFrames[0] ? idleFrames[0].d : "";
+            thumb.style.cssText = "height:36px;image-rendering:pixelated;background:#222;border-radius:3px;";
+            var delBtn = document.createElement("button");
+            delBtn.textContent = "삭제";
+            delBtn.style.cssText = "background:#7a3535;color:#fff;border:none;border-radius:4px;" +
+              "padding:3px 8px;cursor:pointer;font:11px monospace;";
+            delBtn.onclick = function () {
+              if (!confirm("이 러너를 삭제할까요?")) return;
+              if (!confirm("정말 삭제할까요? 되돌릴 수 없습니다.")) return;
+              remove(ref(db, "runners/" + key)).then(refresh);
+            };
+            row.appendChild(thumb);
+            row.appendChild(delBtn);
+            panel.appendChild(row);
+          });
+      }).catch(function () {});
+    }
+    refresh();
+  }
+
+  function startCommunityRunner(container, frames) {
+    if (!frames || !frames.idle || !frames.idle.length || !frames.run || !frames.run.length) return;
+
+    var el = document.createElement("img");
+    el.className = "community-runner";
+    el.alt = "";
+    container.appendChild(el);
+
+    // 러너마다 속도/멈춤 시간/보폭을 서로 다르게 뽑는다 - 다 같은 범위를
+    // 쓰면 여럿이 한꺼번에 등록됐을 때 마치 대열을 맞춘 것처럼 보이므로
+    // (사용자 피드백, 2026-08-21), 각자 다른 "성격"으로 움직이게 해서
+    // 오히려 정신없이 제각각 뛰어다니는 느낌을 낸다.
+    var speed = 28 + Math.random() * 40; // 프로필 러너(45)보다 느리거나 빠를 수 있음
+    var idleMin = 600 + Math.random() * 1800;
+    var idleSpread = 1200 + Math.random() * 4000;
+    var hopMin = 40 + Math.random() * 60;
+    var hopSpread = 80 + Math.random() * 200;
+
+    var MIN_LEFT = -110;
+    var dir = Math.random() < 0.5 ? 1 : -1;
+    var pos = MIN_LEFT + Math.random() * ((window.__hubTrackWidth ? window.__hubTrackWidth() : window.innerWidth) - 20 - MIN_LEFT); // 시작 위치도 화면 전체에 흩어지도록
+    var frameTimer = null;
+
+    function playFrames(list) {
+      if (frameTimer) clearTimeout(frameTimer);
+      var idx = 0;
+      (function step() {
+        el.src = list[idx].d;
+        var wait = Math.max(list[idx].t || 0.1, 0.02) * 1000;
+        frameTimer = setTimeout(function () {
+          idx = (idx + 1) % list.length;
+          step();
+        }, wait);
+      })();
+    }
+
+    // 원본 프레임이 기본적으로 왼쪽을 보는 자세라(webapp/frontend의
+    // facingScale과 동일한 이유), 오른쪽 이동일 때 scaleX(-1)로 뒤집어야
+    // 오른쪽을 본다 - 미리 만들어둔 프로필 러너 GIF(오른쪽 이동=scaleX(1))와
+    // 반대다.
+    function idlePhase() {
+      el.style.transition = "none";
+      el.style.transform = dir > 0 ? "scaleX(-1)" : "scaleX(1)";
+      playFrames(frames.idle);
+      setTimeout(runPhase, idleMin + Math.random() * idleSpread);
+    }
+    function runPhase() {
+      // 화면 끝에 닿을 때만 방향을 바꾸면 계속 한쪽으로만 가다가 튕기는
+      // 모양이라 규칙적으로 보인다 - 화면 중간에서도 가끔 마음대로
+      // 방향을 바꾸게 한다(사용자 피드백, 2026-08-21).
+      if (Math.random() < 0.35) dir = -dir;
+
+      var maxLeft = (window.__hubTrackWidth ? window.__hubTrackWidth() : window.innerWidth) - 20;
+      var hop = hopMin + Math.random() * hopSpread;
+      var movingRight = dir > 0;
+      var target = pos + dir * hop;
+      if (target >= maxLeft) { target = maxLeft; dir = -1; }
+      else if (target <= MIN_LEFT) { target = MIN_LEFT; dir = 1; }
+
+      playFrames(frames.run);
+      el.style.transform = movingRight ? "scaleX(-1)" : "scaleX(1)";
+      var duration = Math.max(1, Math.abs(target - pos) / speed);
+      el.style.transition = "none";
+      el.getBoundingClientRect();
+      requestAnimationFrame(function () {
+        el.style.transition = "left " + duration + "s linear";
+        el.style.left = target + "px";
+      });
+      pos = target;
+      setTimeout(idlePhase, duration * 1000);
+    }
+
+    el.style.left = pos + "px";
+    // 첫 동작 시작 시점도 서로 어긋나게(전부 로드 직후 동시에 움직이기
+    // 시작하면 그 순간만은 여전히 대열처럼 보인다).
+    setTimeout(idlePhase, Math.random() * 2000);
+  }
 })();
 </script>
 <script>
@@ -450,6 +679,28 @@ import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "http
     var next = current() === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
+    sync();
+  };
+})();
+</script>
+<script>
+(function () {
+  var btn = document.getElementById('runnerToggle');
+  if (!btn) return;
+  var KEY = 'hub_runner_enabled';
+  function isOn() {
+    try { return localStorage.getItem(KEY) !== '0'; } catch (e) { return true; }
+  }
+  function sync() {
+    var on = isOn();
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on ? '하단 러너 캐릭터 끄기' : '하단 러너 캐릭터 켜기';
+  }
+  sync();
+  btn.onclick = function () {
+    var next = !isOn();
+    try { localStorage.setItem(KEY, next ? '1' : '0'); } catch (e) {}
+    document.documentElement.classList.toggle('runners-off', !next);
     sync();
   };
 })();
