@@ -116,6 +116,31 @@ body{
   max-width:44ch;
 }
 .bio strong{color:var(--text);font-weight:700;}
+.visit-stats{
+  margin:10px 0 0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12.5px;
+  color:var(--text-muted);
+}
+.visit-stats .dot{
+  flex:none;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#4fbf72;
+  box-shadow:0 0 0 0 rgba(79,191,114,.55);
+  animation:visit-pulse 2.2s ease-out infinite;
+}
+@keyframes visit-pulse{
+  0%{box-shadow:0 0 0 0 rgba(79,191,114,.55);}
+  70%{box-shadow:0 0 0 7px rgba(79,191,114,0);}
+  100%{box-shadow:0 0 0 0 rgba(79,191,114,0);}
+}
+@media (prefers-reduced-motion: reduce){
+  .visit-stats .dot{animation:none;}
+}
 .section-head{
   margin:44px 0 14px;
   display:flex;
@@ -220,6 +245,7 @@ footer{
     <div class="masthead-body">
       <h1 class="name">kimbap918</h1>
       <p class="bio">틈틈이 흥미로 만든 도구를 모아두는 <strong>개인 블로그</strong>입니다.<br>정보 제공을 목적으로 운영하는 사이트는 아닙니다.</p>
+      <p class="visit-stats"><span class="dot"></span>온라인 <span id="statOnline">-</span>명 · 오늘 <span id="statDaily">-</span>명 다녀감 · 누적 <span id="statTotal">-</span>명</p>
     </div>
   </header>
 
@@ -308,12 +334,10 @@ footer{
     }
     var daily = results[0] && results[0].value;
     var total = results[1] && results[1].value;
-    if (isOwner && typeof daily === "number" && typeof total === "number") {
-      var el = document.createElement("div");
-      el.textContent = "오늘 " + daily.toLocaleString() + " / 전체 " + total.toLocaleString();
-      el.style.cssText = "position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,0.7);color:#fff;font:12px/1.4 monospace;padding:5px 10px;border-radius:6px;z-index:99999;pointer-events:none;";
-      document.body.appendChild(el);
-    }
+    var dailyEl = document.getElementById("statDaily");
+    var totalEl = document.getElementById("statTotal");
+    if (dailyEl && typeof daily === "number") dailyEl.textContent = daily.toLocaleString();
+    if (totalEl && typeof total === "number") totalEl.textContent = total.toLocaleString();
   }).catch(function () {});
 })();
 </script>
@@ -346,18 +370,10 @@ import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "http
   onDisconnect(myConnRef).remove();
   window.addEventListener("pagehide", function () { remove(myConnRef).catch(function () {}); });
 
-  var isOwner = false;
-  try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
-  if (!isOwner) return;
-
-  var el = document.createElement("div");
-  el.style.cssText = "position:fixed;right:10px;bottom:40px;background:rgba(0,0,0,0.7);color:#5f5;font:12px/1.4 monospace;padding:5px 10px;border-radius:6px;z-index:99999;pointer-events:none;";
-  el.textContent = "실시간 -명";
-  document.body.appendChild(el);
-
+  var onlineEl = document.getElementById("statOnline");
   onValue(presenceRoot, function (snap) {
     var n = snap.exists() ? Object.keys(snap.val()).length : 0;
-    el.textContent = "실시간 " + n + "명";
+    if (onlineEl) onlineEl.textContent = n.toLocaleString();
   });
 })();
 </script>
