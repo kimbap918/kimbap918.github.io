@@ -280,5 +280,49 @@ details.dummy-block .effect-card h3{color:var(--muted);}
   }).catch(function () {});
 })();
 </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+(function () {
+  if (window.top !== window.self) return;
+  var firebaseConfig = {
+    apiKey: "AIzaSyDlPJ9fYaOdsGlHDyXgyv_lgs3H0RAtZ2E",
+    authDomain: "lataletkit-presence.firebaseapp.com",
+    databaseURL: "https://lataletkit-presence-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lataletkit-presence",
+    storageBucket: "lataletkit-presence.firebasestorage.app",
+    messagingSenderId: "849796620478",
+    appId: "1:849796620478:web:75d646dbc423c17bd27eef"
+  };
+  var app = initializeApp(firebaseConfig);
+  var db = getDatabase(app);
+  var presenceRoot = ref(db, "presence");
+
+  var clientId = "";
+  try { clientId = localStorage.getItem("vc_client_id") || ""; } catch (e) {}
+  if (!clientId) {
+    clientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { localStorage.setItem("vc_client_id", clientId); } catch (e) {}
+  }
+  var myConnRef = push(ref(db, "presence/" + clientId));
+  set(myConnRef, true).catch(function () {});
+  onDisconnect(myConnRef).remove();
+  window.addEventListener("pagehide", function () { remove(myConnRef).catch(function () {}); });
+
+  var isOwner = false;
+  try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
+  if (!isOwner) return;
+
+  var el = document.createElement("div");
+  el.style.cssText = "position:fixed;right:10px;bottom:40px;background:rgba(0,0,0,0.7);color:#5f5;font:12px/1.4 monospace;padding:5px 10px;border-radius:6px;z-index:99999;pointer-events:none;";
+  el.textContent = "실시간 -명";
+  document.body.appendChild(el);
+
+  onValue(presenceRoot, function (snap) {
+    var n = snap.exists() ? Object.keys(snap.val()).length : 0;
+    el.textContent = "실시간 " + n + "명";
+  });
+})();
+</script>
 </body>
 </html>
