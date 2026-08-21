@@ -333,7 +333,13 @@ footer{
     }
     .runners-off #runnerDock{display:none;}
     @media (max-width:480px){
-      .runner-dock{position:relative;overflow-x:hidden;margin-top:20px;}
+      /* 자식(.runner/.community-runner)이 전부 position:absolute라 dock의
+         실제 높이가 0으로 찌그러진다 - overflow-x만 지정해도 스펙상
+         overflow-y가 auto로 취급되어(CSS Overflow 상호운용 규칙), 높이
+         0인 박스 밖으로 나가는 러너가 전부 잘려서 안 보이던 원인이었다
+         (세로 화면에서만 안 보임, 사용자 지적 2026-08-21) - 러너가
+         들어갈 만큼 명시적 높이를 준다. */
+      .runner-dock{position:relative;overflow-x:hidden;margin-top:20px;height:170px;}
       .runner, .community-runner{position:absolute;}
     }
   </style>
@@ -516,18 +522,32 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     return a;
   }
 
+  // 등록 인원이 표시 인원보다 많아져도 방문자 1명당 다운로드량이
+  // 등록자 수에 비례해서 늘어나면 안 된다(Firebase 무료 다운로드
+  // 한도 월 10GB - 실측 방문자 수 기준 계산해보니 등록자 20명만 돼도
+  // 한도를 넘길 수 있었다, 사용자 지적 2026-08-21). 그래서 전체
+  // runners를 한 번에 받는 대신:
+  //   1) ?shallow=true로 키 목록만 가볍게 받는다(프레임 데이터 없이
+  //      존재 여부만 - 등록자가 몇백 명이어도 몇 KB 수준)
+  //   2) 그 키들을 셔플해서 표시 인원만큼만 뽑는다
+  //   3) 뽑힌 사람의 데이터만 각각 따로 받는다
+  // 이렇게 하면 방문자 1명당 다운로드량이 항상 "표시 인원(PC 20/모바일
+  // 5)만큼"으로 고정되고, 등록자가 아무리 늘어도 늘지 않는다.
   var container = document.getElementById("communityRunners");
   if (container && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    get(ref(db, "runners")).then(function (snap) {
-      if (!snap.exists()) return;
-      var all = snap.val();
-      var epoch = Math.floor(Date.now() / RUNNER_DISPLAY_ROTATE_MS);
-      var selected = seededShuffle(Object.keys(all), epoch).slice(0, RUNNER_DISPLAY_CAP);
-      selected.forEach(function (key) {
-        var entry = all[key];
-        startCommunityRunner(container, entry && entry.frames);
-      });
-    }).catch(function () {});
+    fetch(firebaseConfig.databaseURL + "/runners.json?shallow=true")
+      .then(function (r) { return r.json(); })
+      .then(function (allKeys) {
+        if (!allKeys) return;
+        var epoch = Math.floor(Date.now() / RUNNER_DISPLAY_ROTATE_MS);
+        var selected = seededShuffle(Object.keys(allKeys), epoch).slice(0, RUNNER_DISPLAY_CAP);
+        selected.forEach(function (key) {
+          get(ref(db, "runners/" + key)).then(function (snap) {
+            if (!snap.exists()) return;
+            startCommunityRunner(container, snap.val().frames);
+          }).catch(function () {});
+        });
+      }).catch(function () {});
   }
 
   // 러너 등록은 더 이상 인원 상한에서 자동으로 지워지지 않으므로(위
@@ -539,22 +559,47 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
   try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
   if (isOwner) renderRunnerAdminPanel();
 
+  // 삭제는 바로 지우지 않고 runners_trash/로 옮긴다 - 관리 중 실수로
+  // 남의 등록을 지운 사고 이후(사용자 지적, 2026-08-21) 추가한 안전장치.
+  // Realtime Database에는 휴지통이 없어서 직접 만들었다 - 휴지통 탭에서
+  // 복구하거나 완전삭제할 수 있다.
   function renderRunnerAdminPanel() {
     var panel = document.createElement("div");
     panel.id = "runnerAdminPanel";
-    panel.style.cssText = "position:fixed;left:10px;bottom:10px;width:240px;max-height:320px;" +
+    panel.style.cssText = "position:fixed;left:10px;bottom:10px;width:240px;max-height:360px;" +
       "overflow-y:auto;background:rgba(0,0,0,0.85);color:#fff;font:11px/1.4 monospace;" +
       "padding:8px;border-radius:8px;z-index:99999;";
     document.body.appendChild(panel);
 
+    var showTrash = false;
+
+    function makeBtn(label, bg, onClick) {
+      var btn = document.createElement("button");
+      btn.textContent = label;
+      btn.style.cssText = "background:" + bg + ";color:#fff;border:none;border-radius:4px;" +
+        "padding:3px 8px;cursor:pointer;font:11px monospace;";
+      btn.onclick = onClick;
+      return btn;
+    }
+
     function refresh() {
-      get(ref(db, "runners")).then(function (snap) {
+      var sourcePath = showTrash ? "runners_trash" : "runners";
+      get(ref(db, sourcePath)).then(function (snap) {
         panel.innerHTML = "";
         var count = snap.exists() ? Object.keys(snap.val()).length : 0;
+
+        var header = document.createElement("div");
+        header.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:6px;";
         var title = document.createElement("div");
-        title.textContent = "⚙️ 러너 관리 (" + count + "명)";
-        title.style.cssText = "font-weight:bold;margin-bottom:6px;";
-        panel.appendChild(title);
+        title.textContent = showTrash ? ("🗑️ 휴지통 (" + count + "명)") : ("⚙️ 러너 관리 (" + count + "명)");
+        title.style.fontWeight = "bold";
+        header.appendChild(title);
+        header.appendChild(makeBtn(showTrash ? "목록으로" : "휴지통", "#444", function () {
+          showTrash = !showTrash;
+          refresh();
+        }));
+        panel.appendChild(header);
+
         if (!snap.exists()) return;
         var all = snap.val();
         Object.keys(all)
@@ -567,17 +612,31 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
             var idleFrames = entry.frames && entry.frames.idle;
             thumb.src = idleFrames && idleFrames[0] ? idleFrames[0].d : "";
             thumb.style.cssText = "height:36px;image-rendering:pixelated;background:#222;border-radius:3px;";
-            var delBtn = document.createElement("button");
-            delBtn.textContent = "삭제";
-            delBtn.style.cssText = "background:#7a3535;color:#fff;border:none;border-radius:4px;" +
-              "padding:3px 8px;cursor:pointer;font:11px monospace;";
-            delBtn.onclick = function () {
-              if (!confirm("이 러너를 삭제할까요?")) return;
-              if (!confirm("정말 삭제할까요? 되돌릴 수 없습니다.")) return;
-              remove(ref(db, "runners/" + key)).then(refresh);
-            };
             row.appendChild(thumb);
-            row.appendChild(delBtn);
+
+            if (showTrash) {
+              row.appendChild(makeBtn("복구", "#2f6f4f", function () {
+                var data = Object.assign({}, entry);
+                delete data.deletedAt;
+                set(ref(db, "runners/" + key), data)
+                  .then(function () { return remove(ref(db, "runners_trash/" + key)); })
+                  .then(refresh);
+              }));
+              row.appendChild(makeBtn("완전삭제", "#7a3535", function () {
+                if (!confirm("휴지통에서 완전히 삭제할까요? 복구할 수 없습니다.")) return;
+                remove(ref(db, "runners_trash/" + key)).then(refresh);
+              }));
+            } else {
+              row.appendChild(makeBtn("삭제", "#7a3535", function () {
+                if (!confirm("이 러너를 삭제할까요? (휴지통으로 이동)")) return;
+                if (!confirm("정말 삭제할까요?")) return;
+                var data = Object.assign({}, entry);
+                data.deletedAt = Date.now();
+                set(ref(db, "runners_trash/" + key), data)
+                  .then(function () { return remove(ref(db, "runners/" + key)); })
+                  .then(refresh);
+              }));
+            }
             panel.appendChild(row);
           });
       }).catch(function () {});
