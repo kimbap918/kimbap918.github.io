@@ -293,6 +293,63 @@ footer{
   </nav>
 
   <footer>kimbap918.github.io<br>© 2006 Actoz Soft., All rights reserved.</footer>
+  <style>
+    .runner{
+      position:fixed;
+      bottom:14px;
+      left:-110px;
+      width:100px;
+      z-index:5;
+      pointer-events:none;
+      image-rendering:pixelated;
+    }
+    @media (prefers-reduced-motion: reduce){
+      .runner{display:none;}
+    }
+  </style>
+  <img class="runner" id="runnerImg" src="" alt="">
+  <script>
+  (function () {
+    var el = document.getElementById('runnerImg');
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var IDLE_SRC = 'runner/idle.gif';
+    var RUN_SRC = 'runner/run.gif';
+    var SPEED = 45; // px/s - 짧게 끊어 뛰어도 속도感은 일정하게
+    var MIN_LEFT = -110;
+    var dir = 1; // 1: 오른쪽, -1: 왼쪽
+    var pos = MIN_LEFT;
+
+    function idlePhase() {
+      el.style.transition = 'none';
+      el.style.transform = dir > 0 ? 'scaleX(1)' : 'scaleX(-1)';
+      el.src = IDLE_SRC;
+      setTimeout(runPhase, 1500 + Math.random() * 3500);
+    }
+    function runPhase() {
+      var maxLeft = window.innerWidth - 20;
+      var hop = 70 + Math.random() * 160; // 한 번에 조금씩만 이동
+      var movingRight = dir > 0; // 클램프로 dir이 바뀌기 전에 "지금 이동 방향"을 먼저 고정
+      var target = pos + dir * hop;
+      if (target >= maxLeft) { target = maxLeft; dir = -1; }
+      else if (target <= MIN_LEFT) { target = MIN_LEFT; dir = 1; }
+
+      el.src = RUN_SRC;
+      el.style.transform = movingRight ? 'scaleX(1)' : 'scaleX(-1)';
+      var duration = Math.max(1, Math.abs(target - pos) / SPEED);
+      el.style.transition = 'none';
+      el.getBoundingClientRect(); // 강제 리플로우 - transition 누락 방지
+      requestAnimationFrame(function () {
+        el.style.transition = 'left ' + duration + 's linear';
+        el.style.left = target + 'px';
+      });
+      pos = target;
+      setTimeout(idlePhase, duration * 1000);
+    }
+
+    el.style.left = pos + 'px';
+    idlePhase();
+  })();
+  </script>
 </div>
 <script>
 (function () {
