@@ -1232,10 +1232,17 @@ import { getDatabase, ref, push, set, remove, onDisconnect, onValue } from "http
   var app = initializeApp(firebaseConfig);
   var db = getDatabase(app);
   var presenceRoot = ref(db, "presence");
-  var myRef = push(presenceRoot);
-  set(myRef, true).catch(function () {});
-  onDisconnect(myRef).remove();
-  window.addEventListener("pagehide", function () { remove(myRef).catch(function () {}); });
+
+  var clientId = "";
+  try { clientId = localStorage.getItem("vc_client_id") || ""; } catch (e) {}
+  if (!clientId) {
+    clientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { localStorage.setItem("vc_client_id", clientId); } catch (e) {}
+  }
+  var myConnRef = push(ref(db, "presence/" + clientId));
+  set(myConnRef, true).catch(function () {});
+  onDisconnect(myConnRef).remove();
+  window.addEventListener("pagehide", function () { remove(myConnRef).catch(function () {}); });
 
   var isOwner = false;
   try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
