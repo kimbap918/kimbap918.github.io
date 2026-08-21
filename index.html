@@ -491,15 +491,15 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
   // 시 한 번만 가져온다 - 등록/삭제가 잦은 이벤트가 아니라 onValue로
   // 계속 구독할 필요가 없고, 새로고침 한 번이면 최신 목록이 반영된다.
   //
-  // 등록 인원이 표시 인원(PC 20명/모바일 5명)보다 많아지면, 초과분을
-  // 지우는 대신 30분 단위 시간창을 시드로 쓰는 결정적 셔플로 그 시간
-  // 동안 보여줄 인원을 무작위로 뽑는다(사용자 지정, 2026-08-21) - 같은
-  // 30분 창 안에 있는 방문자는 전부 같은 조합을 보고, 창이 바뀌면(30분마다)
-  // 다른 조합이 뽑힌다. 480px 이하를 모바일로 본다(이 페이지의 다른
-  // @media 브레이크포인트와 동일).
-  var RUNNER_DISPLAY_ROTATE_MS = 30 * 60 * 1000;
+  // 등록 인원이 표시 인원(PC 10명/모바일 5명)보다 많아지면, 초과분을
+  // 지우는 대신 1시간 단위 시간창을 시드로 쓰는 결정적 셔플로 그 시간
+  // 동안 보여줄 인원을 무작위로 뽑는다(사용자 지정, 2026-08-21/2026-08-22) -
+  // 같은 1시간 창 안에 있는 방문자는 전부 같은 조합을 보고, 창이
+  // 바뀌면(1시간마다) 다른 조합이 뽑힌다. 480px 이하를 모바일로 본다
+  // (이 페이지의 다른 @media 브레이크포인트와 동일).
+  var RUNNER_DISPLAY_ROTATE_MS = 60 * 60 * 1000;
   var isMobileViewport = window.matchMedia("(max-width:480px)").matches;
-  var RUNNER_DISPLAY_CAP = isMobileViewport ? 5 : 20;
+  var RUNNER_DISPLAY_CAP = isMobileViewport ? 5 : 10;
 
   // 시드 기반 PRNG(mulberry32) - Math.random()은 시드를 못 주므로, 같은
   // 30분 창의 모든 방문자가 같은 순서로 셔플되게 하려면 필요하다.
@@ -531,7 +531,7 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
   //      존재 여부만 - 등록자가 몇백 명이어도 몇 KB 수준)
   //   2) 그 키들을 셔플해서 표시 인원만큼만 뽑는다
   //   3) 뽑힌 사람의 데이터만 각각 따로 받는다
-  // 이렇게 하면 방문자 1명당 다운로드량이 항상 "표시 인원(PC 20/모바일
+  // 이렇게 하면 방문자 1명당 다운로드량이 항상 "표시 인원(PC 10/모바일
   // 5)만큼"으로 고정되고, 등록자가 아무리 늘어도 늘지 않는다.
   var container = document.getElementById("communityRunners");
   if (container && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
