@@ -600,8 +600,39 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     panel.id = "runnerAdminPanel";
     panel.style.cssText = "position:fixed;left:10px;bottom:10px;width:240px;max-height:360px;" +
       "overflow-y:auto;background:rgba(0,0,0,0.85);color:#fff;font:11px/1.4 monospace;" +
-      "padding:8px;border-radius:8px;z-index:99999;";
+      "padding:8px;border-radius:8px;z-index:99999;cursor:move;";
     document.body.appendChild(panel);
+
+    // 패널이 화면 요소를 가려서 불편하다는 피드백(사용자 지적, 2026-08-26)
+    // - 드래그로 옮길 수 있게 한다. refresh()가 innerHTML을 통째로
+    // 갈아끼우므로 리스너는 자식이 아니라 panel 자신에 한 번만 건다.
+    // 버튼/썸네일 위에서 시작한 mousedown은 원래 클릭 동작이 있어야 하니
+    // 드래그를 시작하지 않는다. 드래그 시작 시 bottom 앵커를 버리고
+    // top/left로 고정해야 이후 좌표 계산이 일관된다.
+    (function enableDrag() {
+      var dragging = false, startX, startY, startLeft, startTop;
+      panel.addEventListener("mousedown", function (e) {
+        if (e.target.closest("button") || e.target.tagName === "IMG") return;
+        dragging = true;
+        var rect = panel.getBoundingClientRect();
+        panel.style.top = rect.top + "px";
+        panel.style.left = rect.left + "px";
+        panel.style.bottom = "auto";
+        startX = e.clientX;
+        startY = e.clientY;
+        startLeft = rect.left;
+        startTop = rect.top;
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        var maxLeft = window.innerWidth - panel.offsetWidth;
+        var maxTop = window.innerHeight - panel.offsetHeight;
+        panel.style.left = Math.min(Math.max(0, startLeft + (e.clientX - startX)), maxLeft) + "px";
+        panel.style.top = Math.min(Math.max(0, startTop + (e.clientY - startY)), maxTop) + "px";
+      });
+      document.addEventListener("mouseup", function () { dragging = false; });
+    })();
 
     var showTrash = false;
 
