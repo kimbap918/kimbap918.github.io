@@ -13,14 +13,14 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaTale 캐릭터 패션 시뮬레이터 Latte_1</title>
+<title>LaTale 캐릭터 코디 시뮬레이터 Latte_1</title>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 <nav class="site-tabs" id="siteTabs">
   <a href="../" class="home">홈</a>
-  <a href="index.html" class="active">패션 시뮬레이터</a>
+  <a href="index.html" class="active">코디 시뮬레이터</a>
   <a href="../lookup.html">장비 강화·인챈트 조회</a>
   <a href="../gacha.html">확률 계산기</a>
   <a href="../title.html">타이틀 검색기</a>
@@ -29,7 +29,7 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
 <header class="topbar">
   <div class="title-block">
-    <h1>LaTale 캐릭터 패션 시뮬레이터 Latte_1</h1>
+    <h1>LaTale 캐릭터 코디 시뮬레이터 Latte_1</h1>
     <span class="version-tag">v1.1.7 · chipok</span>
     <span class="version-tag">최근 업데이트 2026.08.26</span>
   </div>
@@ -133,7 +133,7 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
         <button id="saveImageBtn">이미지 저장</button>
         <button id="saveTextBtn">TXT 저장</button>
         <button id="runnerRegisterBtn" class="runner-register-btn" type="button">홈 러너로 등록</button>
-        <button id="runnerDeleteBtn" class="runner-delete-btn" type="button">내 러너 삭제</button>
+        <button id="runnerManageBtn" class="runner-delete-btn" type="button">내 러너 관리</button>
         <button id="undressAllBtn" class="undress-btn">모두 탈의</button>
       </div>
     </div>
@@ -189,6 +189,17 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
     <div class="runner-confirm-actions">
       <button id="runnerConfirmCancel" type="button">취소</button>
       <button id="runnerConfirmOk" type="button" class="runner-confirm-ok-btn">등록</button>
+    </div>
+  </div>
+</div>
+
+<div id="runnerManageModal" class="damage-skin-modal hidden">
+  <div class="damage-skin-modal-inner runner-manage-inner">
+    <h3>내 홈 러너 관리</h3>
+    <p>이 브라우저에서 등록한 러너 목록입니다. 등록마다 독립적으로 남으니, 새로 등록해도 이전 러너는 지워지지 않습니다.</p>
+    <div id="runnerManageList" class="presets-list"></div>
+    <div class="runner-confirm-actions">
+      <button id="runnerManageClose" type="button">닫기</button>
     </div>
   </div>
 </div>
@@ -293,39 +304,60 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
   // 방식으로 바꾸면서(사용자 지정, 2026-08-21) 등록 자체는 지우지 않는다 -
   // "표시 안 되는 것"과 "삭제되는 것"을 분리했다. 무한정 쌓이는 건
   // hub/index.html의 관리자 패널(?vc=오너 시크릿)에서 직접 정리한다.
+  //
+  // **2026-08-26 변경**: 원래 clientId를 그대로 러너 키로 써서(브라우저당
+  // 1개), 재등록하면 같은 경로를 덮어써 이전 등록이 흔적도 없이 사라지는
+  // 문제가 있었다(사용자 지적: "다른 사람의 소중한 코디가 삭제되지 않게" -
+  // 실제로는 같은 브라우저 재등록이 원인이었지만, 애초에 "재등록=덮어쓰기"
+  // 자체가 의도를 벗어난 동작이었다). push()로 매번 새 키를 발급해 등록마다
+  // 독립된 항목으로 남긴다 - clientId는 이제 presence(접속 표시)에만 쓴다.
+  // "내 러너"를 어떤 브라우저가 등록했는지는 서버가 모르므로(clientId와
+  // 러너 키가 더 이상 연결 안 됨), 클라이언트가 자기가 등록한 키 목록을
+  // localStorage에 직접 기억해뒀다가(app.src.js) 그 목록으로만 관리/삭제
+  // 화면을 보여준다.
   function registerRunner(frames, nickname) {
-    var myRef = ref(db, "runners/" + clientId);
-    return get(myRef).then(function (mySnap) {
-      var now = Date.now();
-      var data = {
-        createdAt: mySnap.exists() ? mySnap.val().createdAt : now,
-        updatedAt: now,
-        frames: frames,
-      };
-      // 닉네임은 선택 입력이라, 빈 값이면 필드 자체를 안 넣는다(Firebase는
-      // undefined 값을 쓰려고 하면 에러를 낸다 - null도 아니고 아예 생략).
-      if (nickname) data.nickname = nickname;
-      return set(myRef, data);
-    });
+    var newRef = push(ref(db, "runners"));
+    var now = Date.now();
+    var data = { createdAt: now, updatedAt: now, frames: frames };
+    // 닉네임은 선택 입력이라, 빈 값이면 필드 자체를 안 넣는다(Firebase는
+    // undefined 값을 쓰려고 하면 에러를 낸다 - null도 아니고 아예 생략).
+    if (nickname) data.nickname = nickname;
+    return set(newRef, data).then(function () { return newRef.key; });
   }
 
   // 즉시 지우지 않고 runners_trash/로 옮긴 뒤 지운다 - 실수로 삭제해도
   // 복구할 수 있게(사용자 지정, 2026-08-21: 관리 중 실수로 다른 사람의
   // 등록을 지운 사고 이후). Realtime Database는 휴지통 개념이 없어서
-  // 직접 만들었다.
-  function deleteMyRunner() {
-    var myRef = ref(db, "runners/" + clientId);
+  // 직접 만들었다. runnerId를 인자로 받도록 바뀜(위 registerRunner 주석
+  // 참고) - "내 러너 하나"가 아니라 특정 러너 하나를 지정해서 지운다.
+  function deleteRunner(runnerId) {
+    var myRef = ref(db, "runners/" + runnerId);
     return get(myRef).then(function (snap) {
       if (!snap.exists()) return;
       var data = snap.val();
       data.deletedAt = Date.now();
-      return set(ref(db, "runners_trash/" + clientId), data).then(function () {
+      return set(ref(db, "runners_trash/" + runnerId), data).then(function () {
         return remove(myRef);
       });
     });
   }
 
-  window.CharSimRunnerFirebase = { registerRunner: registerRunner, deleteMyRunner: deleteMyRunner };
+  // 관리 모달(app.src.js)이 localStorage에 기억해둔 내 러너 키 목록으로
+  // 각각의 현재 상태(존재 여부/닉네임/썸네일)를 조회한다 - 이미 다른
+  // 곳에서 삭제됐거나(예: 사이트 주인이 관리자 패널로 정리) 존재하지 않는
+  // 키는 결과에서 빠진다.
+  function getRunners(ids) {
+    return Promise.all(ids.map(function (id) {
+      return get(ref(db, "runners/" + id)).then(function (snap) {
+        if (!snap.exists()) return null;
+        var v = snap.val();
+        var thumb = v.frames && v.frames.idle && v.frames.idle[0] ? v.frames.idle[0].d : "";
+        return { id: id, nickname: v.nickname || "", thumb: thumb };
+      }).catch(function () { return null; });
+    })).then(function (list) { return list.filter(Boolean); });
+  }
+
+  window.CharSimRunnerFirebase = { registerRunner: registerRunner, deleteRunner: deleteRunner, getRunners: getRunners };
 
   var isOwner = false;
   try { isOwner = localStorage.getItem("vc_owner") === "1"; } catch (e) {}
