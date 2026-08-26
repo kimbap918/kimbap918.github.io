@@ -185,6 +185,7 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
   <div class="damage-skin-modal-inner runner-confirm-inner">
     <h3>홈 러너로 등록</h3>
     <p>홈 화면 러너로 등록하시겠습니까?</p>
+    <input id="runnerNicknameInput" class="runner-nickname-input" type="text" maxlength="12" placeholder="닉네임 (선택, 홈 화면에 캐릭터 클릭 시 표시)">
     <div class="runner-confirm-actions">
       <button id="runnerConfirmCancel" type="button">취소</button>
       <button id="runnerConfirmOk" type="button" class="runner-confirm-ok-btn">등록</button>
@@ -292,15 +293,19 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
   // 방식으로 바꾸면서(사용자 지정, 2026-08-21) 등록 자체는 지우지 않는다 -
   // "표시 안 되는 것"과 "삭제되는 것"을 분리했다. 무한정 쌓이는 건
   // hub/index.html의 관리자 패널(?vc=오너 시크릿)에서 직접 정리한다.
-  function registerRunner(frames) {
+  function registerRunner(frames, nickname) {
     var myRef = ref(db, "runners/" + clientId);
     return get(myRef).then(function (mySnap) {
       var now = Date.now();
-      return set(myRef, {
+      var data = {
         createdAt: mySnap.exists() ? mySnap.val().createdAt : now,
         updatedAt: now,
         frames: frames,
-      });
+      };
+      // 닉네임은 선택 입력이라, 빈 값이면 필드 자체를 안 넣는다(Firebase는
+      // undefined 값을 쓰려고 하면 에러를 낸다 - null도 아니고 아예 생략).
+      if (nickname) data.nickname = nickname;
+      return set(myRef, data);
     });
   }
 
