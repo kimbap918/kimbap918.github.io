@@ -372,6 +372,18 @@ footer{
     var el = document.getElementById('runnerImg');
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    // 프로필 러너(사이트 주인 캐릭터)는 Firebase 커뮤니티 러너 목록과
+    // 무관한 고정 캐릭터라 러너 관리 패널에는 안 잡히지만, 클릭 시
+    // 이름표가 뜨는 건 다른 러너들과 동일해야 한다(사용자 지적,
+    // 2026-08-26). showRunnerNameLabel은 커뮤니티 러너 스크립트에서
+    // window.__showRunnerLabel로 노출해둔다.
+    el.style.pointerEvents = 'auto';
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (window.__showRunnerLabel) window.__showRunnerLabel(el, '치폭');
+    });
+
     function hubIsMobileDock() {
       return window.matchMedia('(max-width:480px)').matches;
     }
@@ -689,6 +701,7 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     document.body.appendChild(label);
     activeRunnerLabel = { el: label, timer: setTimeout(hideRunnerLabel, 3000) };
   }
+  window.__showRunnerLabel = showRunnerNameLabel;
 
   function startCommunityRunner(container, frames, nickname) {
     if (!frames || !frames.idle || !frames.idle.length || !frames.run || !frames.run.length) return;
