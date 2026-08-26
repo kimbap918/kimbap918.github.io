@@ -335,6 +335,19 @@ footer{
       pointer-events:none;
       image-rendering:pixelated;
     }
+    .runner-name-label{
+      position:fixed;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,0.75);
+      color:#fff;
+      font-size:12px;
+      line-height:1.4;
+      padding:4px 10px;
+      border-radius:12px;
+      white-space:nowrap;
+      z-index:20;
+      pointer-events:none;
+    }
     @media (prefers-reduced-motion: reduce){
       .runner, .community-runner{display:none;}
     }
@@ -551,7 +564,7 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
         selected.forEach(function (key) {
           get(ref(db, "runners/" + key)).then(function (snap) {
             if (!snap.exists()) return;
-            startCommunityRunner(container, snap.val().frames);
+            startCommunityRunner(container, snap.val().frames, snap.val().nickname);
           }).catch(function () {});
         });
       }).catch(function () {});
@@ -651,12 +664,46 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     refresh();
   }
 
-  function startCommunityRunner(container, frames) {
+  // 러너에 닉네임이 있으면 클릭 시 "OO님의 캐릭터" 말풍선을 잠깐 띄운다
+  // (사용자 지정, 2026-08-26) - 한 번에 하나만 띄우고, 몇 초 뒤 자동으로
+  // 또는 다른 곳을 클릭하면 사라진다. .community-runner는 기본
+  // pointer-events:none(등록 안 한 러너까지 클릭을 가로채 하단 UI 조작을
+  // 방해하지 않기 위함)이라, 닉네임이 있는 러너에만 개별적으로
+  // pointer-events:auto를 준다.
+  var activeRunnerLabel = null;
+  function hideRunnerLabel() {
+    if (!activeRunnerLabel) return;
+    clearTimeout(activeRunnerLabel.timer);
+    activeRunnerLabel.el.remove();
+    activeRunnerLabel = null;
+  }
+  document.addEventListener("click", hideRunnerLabel);
+  function showRunnerNameLabel(runnerEl, nickname) {
+    hideRunnerLabel();
+    var rect = runnerEl.getBoundingClientRect();
+    var label = document.createElement("div");
+    label.className = "runner-name-label";
+    label.textContent = nickname + "님의 캐릭터";
+    label.style.left = (rect.left + rect.width / 2) + "px";
+    label.style.bottom = (window.innerHeight - rect.top + 6) + "px";
+    document.body.appendChild(label);
+    activeRunnerLabel = { el: label, timer: setTimeout(hideRunnerLabel, 3000) };
+  }
+
+  function startCommunityRunner(container, frames, nickname) {
     if (!frames || !frames.idle || !frames.idle.length || !frames.run || !frames.run.length) return;
 
     var el = document.createElement("img");
     el.className = "community-runner";
     el.alt = "";
+    if (nickname) {
+      el.style.pointerEvents = "auto";
+      el.style.cursor = "pointer";
+      el.addEventListener("click", function (e) {
+        e.stopPropagation();
+        showRunnerNameLabel(el, nickname);
+      });
+    }
     container.appendChild(el);
 
     // 러너마다 속도/멈춤 시간/보폭을 서로 다르게 뽑는다 - 다 같은 범위를
