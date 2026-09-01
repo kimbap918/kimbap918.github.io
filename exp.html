@@ -177,7 +177,11 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 table.t{width:100%;border-collapse:collapse;font-size:12.5px}
 table.t th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--line)}
 table.t td{padding:6px 8px;border-bottom:1px solid var(--line)}
-table.t td.n{font-family:var(--mono);text-align:right;white-space:nowrap;color:var(--ink-2)}
+table.t th.n,table.t td.n{font-family:var(--mono);text-align:right;white-space:nowrap;color:var(--ink-2)}
+table.t th.n{font-family:inherit}
+/* 첫 열(이름)이 남는 폭을 다 먹어 숫자 열들이 오른쪽에 바싹 모이도록 */
+table.t th:first-child,table.t td:first-child{width:100%}
+table.t th:not(:first-child),table.t td:not(:first-child){white-space:nowrap}
 table.t tr:last-child td{border-bottom:0}
 table.t tfoot td{font-weight:700;color:var(--ink);border-top:1px solid var(--line-2)}
 .twrap{overflow-x:auto}
@@ -739,7 +743,7 @@ function select(i, userOpen){
   const mobRow = m => `<tr><td>${esc(m.name)}</td><td class="n">${m.lv||"-"}</td>
     <td class="n">${nf.format(Math.round(m.xp*mult*st.rate))}</td><td class="n">×${m.count}</td>
     <td class="n">${unit(m.xp*m.count*mult*st.rate)}</td></tr>`;
-  const mobHead = `<tr><th>몹</th><th>Lv</th><th>경험치</th><th>수</th><th>소계</th></tr>`;
+  const mobHead = `<tr><th>몹</th><th class="n">Lv</th><th class="n">경험치</th><th class="n">수</th><th class="n">소계</th></tr>`;
   const useRooms = d.tier_kind!=="phase" && Array.isArray(d.rooms) && d.rooms.length>1;
   const tierMobs = t.mobs || d.mobs;
   const farmNote = d.farm
@@ -791,7 +795,7 @@ function renderMulti(){
         </div>` : "";
     return `<tr>
       <td><button class="mrm" data-rm="${o.i}" title="묶음에서 제거" aria-label="묶음에서 제거">✕</button>${esc(o.d.name)}${o.d.lv?` <span style="color:var(--ink-3)">${esc(o.d.lv)}</span>`:""}${seg}</td>
-      <td><span class="mstep" data-i="${o.i}"><button data-act="dec">−</button><span>${o.cnt}회</span><button data-act="inc">＋</button></span></td>
+      <td class="n"><span class="mstep" data-i="${o.i}"><button data-act="dec">−</button><span>${o.cnt}회</span><button data-act="inc">＋</button></span></td>
       <td class="n">${unit(e)}</td>
       <td class="n">${unit(line)}</td>
     </tr>`;
@@ -821,7 +825,7 @@ function renderMulti(){
     <div class="section">
       <h3>인던별 · 완주 횟수</h3>
       <div class="twrap"><table class="t">
-        <tr><th>인던</th><th>횟수</th><th>1회 XP</th><th>소계</th></tr>
+        <tr><th>인던</th><th class="n">횟수</th><th class="n">1회 XP</th><th class="n">소계</th></tr>
         ${rows}
         <tfoot><tr><td>합계 (${totalRuns}회)</td><td></td><td class="n">—</td><td class="n">${unit(sum)}</td></tr></tfoot>
       </table></div>
