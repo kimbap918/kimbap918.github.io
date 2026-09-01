@@ -40,7 +40,7 @@
 html,body{height:100%}
 body{background:var(--ground);color:var(--ink);
   font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
-  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
@@ -130,7 +130,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
   letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line);background:var(--surface-2)}
 .listhead .clr{text-transform:none;letter-spacing:0;color:var(--accent);font-size:11px;font-weight:600}
 .listscroll{max-height:calc(100vh - 190px);overflow-y:auto}
-@media(max-width:900px){.listscroll{max-height:none}}
+@media(max-width:900px){.listscroll{max-height:62vh}}
 .row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;width:100%;
   padding:9px 12px;border-bottom:1px solid var(--line);transition:background .12s}
 .row:hover{background:var(--surface-2)}
@@ -150,6 +150,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 
 .detail{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-height:360px}
 @media(min-width:901px){.detail{max-height:calc(100vh - 190px);overflow-y:auto;position:sticky;top:12px}}
+.dbar{display:none}
 .detail .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:360px;gap:10px;color:var(--ink-3);text-align:center;padding:20px}
 .dhead{padding:20px 22px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),transparent)}
 .dhead .dname{font-weight:900;font-size:clamp(21px,3vw,30px);line-height:1.05;text-wrap:balance}
@@ -184,6 +185,21 @@ table.t tfoot td{font-weight:700;color:var(--ink);border-top:1px solid var(--lin
 footer.pg{margin-top:24px;font-size:11.5px;color:var(--ink-3);line-height:1.7}
 footer.pg b.w{color:var(--warn)}
 
+/* ---- 모바일: 상세를 전체화면 시트로 (목록 맨 아래로 밀리는 문제 해결) ---- */
+@media(max-width:900px){
+  body.modal-open{overflow:hidden}
+  .detail{position:fixed;inset:0;z-index:200;border:0;border-radius:0;box-shadow:none;min-height:100%;
+    max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transform:translateY(100%);transition:transform .22s ease;visibility:hidden}
+  .detail.open{transform:none;visibility:visible}
+  .detail .ph{display:none}
+  .dbar{display:flex;position:sticky;top:0;z-index:2;align-items:center;gap:10px;
+    padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .dbar button{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;
+    border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-weight:600;font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){.detail{transition:none}}
+
 @media(max-width:640px){
   body{font-size:14px}
   .site-tabs{gap:6px;padding:8px 12px}.site-tabs a{padding:6px 12px;font-size:13px}
@@ -192,6 +208,9 @@ footer.pg b.w{color:var(--warn)}
   .search{flex:1 1 100%}
   .big{grid-template-columns:1fr}
   .kv{grid-template-columns:1fr 1fr}
+  .section{padding:14px 15px}
+  .dhead{padding:16px 15px 14px}
+  .seg.tierseg{max-width:100%;overflow-x:auto}
   /* 레벨 종류 6칸이 좁은 폭에서 한 줄에 안 들어가 마지막만 튀는 문제 → 3열 그리드로 균일하게 */
   .field:has(#catseg){flex:1 1 100%}
   #catseg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:none;border:0;overflow:visible}
@@ -643,7 +662,7 @@ listEl.addEventListener("click", e=>{
   const row = e.target.closest(".row"); if(!row) return;
   const i = +row.dataset.i;
   if(e.target.closest('[data-act="pick"]')){ togglePick(i); }
-  else { select(i); }
+  else { select(i, true); }
 });
 listEl.addEventListener("contextmenu", e=>{
   const row = e.target.closest(".row"); if(!row) return;
@@ -651,7 +670,7 @@ listEl.addEventListener("contextmenu", e=>{
 });
 document.getElementById("pickinfo").addEventListener("click", e=>{
   if(e.target.id==="clrpick"){ e.stopPropagation(); clearAll(); return; }
-  if(e.target.id==="viewpick" || e.target.closest("#viewpick")){ renderMulti(); }
+  if(e.target.id==="viewpick" || e.target.closest("#viewpick")){ renderMulti(); openDetail(); }
 });
 function togglePick(i){
   if(!(i>=0 && i<ALL.length)) return;
@@ -666,13 +685,19 @@ function togglePick(i){
 }
 function showPlaceholderOrSel(){
   if(st.sel!=null && ALL[st.sel]) select(st.sel);
-  else detailEl.innerHTML = detailPH;
+  else { detailEl.innerHTML = detailPH; closeDetail(); }
 }
 
 /* ---- detail ---- */
 const detailEl = document.getElementById("detail");
 const detailPH = detailEl.innerHTML;
+const isMobile = () => matchMedia("(max-width:900px)").matches;
+const DBAR = `<div class="dbar"><button type="button" class="dclose">← 목록으로</button></div>`;
+function openDetail(){ if(isMobile()){ detailEl.classList.add("open"); document.body.classList.add("modal-open"); detailEl.scrollTop = 0; } }
+function closeDetail(){ detailEl.classList.remove("open"); document.body.classList.remove("modal-open"); }
+addEventListener("resize", ()=>{ if(!isMobile()) closeDetail(); });
 detailEl.addEventListener("click", e=>{
+  if(e.target.closest(".dclose")){ closeDetail(); return; }
   const rm = e.target.closest("[data-rm]");
   if(rm){ togglePick(+rm.dataset.rm); return; }
   const step = e.target.closest(".mstep button");
@@ -688,7 +713,7 @@ detailEl.addEventListener("click", e=>{
   if(ctxSeg){ st.tier[+ctxSeg.dataset.ctx] = +btn.dataset.n; renderMulti(); renderList(); }
   else if(st.sel!=null){ st.tier[st.sel] = +btn.dataset.n; select(st.sel); }
 });
-function select(i){
+function select(i, userOpen){
   st.sel = i;
   document.querySelectorAll(".row").forEach(r=>r.setAttribute("aria-current",(+r.dataset.i===i)+""));
   const d = ALL[i]; if(!d) return;
@@ -725,6 +750,7 @@ function select(i){
         <div class="twrap"><table class="t">${mobHead}${rm.mobs.map(mobRow).join("")}</table></div>`).join("")
     : `<div class="twrap"><table class="t">${mobHead}${tierMobs.map(mobRow).join("")}</table></div>${farmNote}`;
   detailEl.innerHTML = `
+    ${DBAR}
     <div class="dhead">
       <div class="dname">${esc(d.name)}</div>
       <div class="dmeta">${tags.join("")}</div>
@@ -747,8 +773,8 @@ function select(i){
       <h3>${useRooms ? "구역별 구성 몹" : "구성 몹 (경험치 기여순)"}</h3>
       ${mobBlk}
     </div>`;
-  if(matchMedia("(max-width:900px)").matches) detailEl.scrollIntoView({block:"nearest",behavior:"smooth"});
-  else detailEl.scrollTop = 0;
+  if(userOpen || detailEl.classList.contains("open")) openDetail();
+  detailEl.scrollTop = 0;
 }
 
 /* ---- detail (묶음) ---- */
@@ -774,6 +800,7 @@ function renderMulti(){
   const runs = (()=>{ const c=nextCost(); return (c>0 && sum>0) ? Math.ceil(c/sum) : 0; })();
 
   detailEl.innerHTML = `
+    ${DBAR}
     <div class="dhead">
       <div class="dname">묶음 계산 · ${items.length}개 인던</div>
       <div class="dmeta">
@@ -800,7 +827,6 @@ function renderMulti(){
       </table></div>
       <p class="note" style="margin-top:10px">각 인던의 완주 횟수를 조절할 수 있고, 이름 아래 버튼으로 단계를 바꿉니다. 이름 앞 <b>✕</b> 또는 왼쪽 목록 우클릭으로 묶음에서 뺍니다. "현재 묶음 저장"으로 이 구성을 템플릿으로 남깁니다.</p>
     </div>`;
-  detailEl.scrollTop = 0;
 }
 
 /* ---- controls ---- */
