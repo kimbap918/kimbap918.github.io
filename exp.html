@@ -262,8 +262,8 @@ footer.pg b.w{color:var(--warn)}
       </div>
       <div class="field">
         <span>경험치 획득량 %</span>
-        <input id="ratein" class="rate num" type="text" inputmode="decimal" value="100" autocomplete="off" spellcheck="false">
-        <span class="rng">0 입력 시 100% · 소수점 1자리</span>
+        <input id="ratein" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
+        <span class="rng">캐릭터창 수치 그대로 · 0 = 기본(×1) · 소수점 1자리</span>
       </div>
       <div class="readout" id="readout"></div>
     </div>
@@ -308,8 +308,8 @@ footer.pg b.w{color:var(--warn)}
   </div>
 
   <footer class="pg">
-    "1회 완주 경험치"는 그 인던 스테이지에 배치된 몹을 한 번씩 다 잡았을 때의 합에 경험치 획득량 %를 곱한 값입니다.
-    경험치 획득량은 0% 입력 시 100%(기본, ×1배)로 계산하고, 100%마다 기본값의 1배씩 적용됩니다.
+    "1회 완주 경험치"는 그 인던 스테이지에 배치된 몹을 한 번씩 다 잡았을 때의 기본 경험치 합에 배수를 곱한 값입니다.
+    배수 = 1 + (경험치 획득량 % ÷ 100). 캐릭터창의 경험치 획득량 수치를 그대로 넣으면 되고, 0%면 ×1(기본), 100%면 ×2, 794.6%면 ×8.946 입니다.
     표준 8인 인던은 <b>1~5단</b>(배율 60/70/85/100/140%), 신비한 숲의 신전·~상급 던전은 <b>1~4단계</b>(단계별 몹 수 차이)로 나눠 볼 수 있고,
     라이티티아는 1~4구역을 토글로 골라 <b>15초마다 전멸 후 리젠</b>을 제한시간만큼 반복한다고 가정해 계산합니다.
     레벨 상승은 <b>일반 Lv</b> / <b>초월(ULv·SLv)</b> / <b>각성(각성·각성2)</b> 세 갈래로 나눠 갈래 안에서만 이어서 계산하며, 각성·각성2는 1레벨 상승까지 필요한 세트 수를 보여줍니다.
@@ -412,7 +412,7 @@ function gainStr(p, xp){
 }
 
 /* ---- state ---- */
-const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1, sel:null, tier:{},
+const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1, ratePct:0, sel:null, tier:{},
   multi:new Set(),        // 유효 선택(파생) - 렌더에서 참조
   counts:{},              // 인던별 완주 횟수
   presets:new Set(),      // 활성 템플릿 이름
@@ -591,10 +591,13 @@ function readCond(){
   }
   st.lv = (!isNaN(v) && !bad) ? normPos(st.cat, st.cat==="slv" ? Math.round(v*100)/100 : v) : null;
 
+  // 게임 캐릭터창의 "경험치 획득량 %" 를 그대로 입력. 배수 = 1 + %/100.
+  //   0% → ×1(기본), 100% → ×2, 794.6% → ×8.946.
   let rr = parseFloat((ratein.value||"").replace(/[^\d.]/g,""));
-  if(isNaN(rr) || rr <= 0) rr = 100;   // 0%·빈칸 → 100%(기본). 100%당 기본값 ×1 배.
+  if(isNaN(rr) || rr < 0) rr = 0;
   rr = Math.round(rr*10)/10;
-  st.rate = rr/100;
+  st.ratePct = rr;
+  st.rate = 1 + rr/100;
 
   const parts = [];
   if(st.lv){
@@ -604,7 +607,7 @@ function readCond(){
   } else {
     parts.push(`레벨을 입력하면 레벨 상승을 계산합니다`);
   }
-  parts.push(`경험치 획득량 <b>${trim(st.rate*100)}%</b> 적용`);
+  parts.push(`경험치 획득량 <b>${trim(st.ratePct)}%</b> → 배수 <b>×${trim(st.rate)}</b>`);
   readout.innerHTML = parts.join("<br>");
   renderList();
   if(st.multi.size) renderMulti(); else if(st.sel!=null) select(st.sel);
@@ -763,7 +766,7 @@ function select(i, userOpen){
     <div class="section">
       <h3>${d.farm ? esc(t.label)+" · 리젠 팜" : "1회 완주"+(d.tier_kind!=="none"?` · ${esc(t.label)}`:"")}</h3>
       <div class="big">
-        <div><div class="k">${d.farm?"제한시간 획득 경험치":"획득 경험치"} <small>(×${trim(st.rate*100)}%)</small></div><div class="v g">${unit(e)}<small> (${nf.format(Math.round(e))})</small></div></div>
+        <div><div class="k">${d.farm?"제한시간 획득 경험치":"획득 경험치"} <small>(×${trim(st.rate)})</small></div><div class="v g">${unit(e)}<small> (${nf.format(Math.round(e))})</small></div></div>
         ${gainBlk}
       </div>
       <div class="kv" style="margin-top:12px">
@@ -809,7 +812,7 @@ function renderMulti(){
       <div class="dname">묶음 계산 · ${items.length}개 인던</div>
       <div class="dmeta">
         ${[...st.presets].map(n=>`<span class="tag kind">${esc(n)}</span>`).join("")}
-        <span class="tag">1세트 = 총 ${totalRuns}회 완주</span><span class="tag">획득량 ×${trim(st.rate*100)}%</span>
+        <span class="tag">1세트 = 총 ${totalRuns}회 완주</span><span class="tag">획득량 ${trim(st.ratePct)}% · ×${trim(st.rate)}</span>
       </div>
     </div>
     <div class="section">
