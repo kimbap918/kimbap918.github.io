@@ -263,7 +263,12 @@ footer.pg b.w{color:var(--warn)}
       <div class="field">
         <span>경험치 획득량 %</span>
         <input id="ratein" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
-        <span class="rng">캐릭터창 수치 그대로 · 0 = 기본(×1) · 소수점 1자리</span>
+        <span class="rng">캐릭터창 수치 그대로 · 0 = 기본 · 소수점 1자리</span>
+      </div>
+      <div class="field">
+        <span>추가 %</span>
+        <input id="ratebonus" class="rate num" type="text" inputmode="decimal" value="50" autocomplete="off" spellcheck="false">
+        <span class="rng">이벤트·프리미엄 등 캐릭터창에 안 잡히는 보너스</span>
       </div>
       <div class="readout" id="readout"></div>
     </div>
@@ -309,7 +314,9 @@ footer.pg b.w{color:var(--warn)}
 
   <footer class="pg">
     "1회 완주 경험치"는 그 인던 스테이지에 배치된 몹을 한 번씩 다 잡았을 때의 기본 경험치 합에 배수를 곱한 값입니다.
-    배수 = 1 + (경험치 획득량 % ÷ 100). 캐릭터창의 경험치 획득량 수치를 그대로 넣으면 되고, 0%면 ×1(기본), 100%면 ×2, 794.6%면 ×8.946 입니다.
+    배수 = 1 + (경험치 획득량 % + 추가 %) ÷ 100. "경험치 획득량"엔 캐릭터창 수치를 그대로,
+    "추가 %"엔 캐릭터창에 안 잡히는 보너스(상시 이벤트 경험치 등, 기본값 50)를 넣습니다.
+    예: 캐릭터창 794.6% + 추가 50% → ×9.446.
     표준 8인 인던은 <b>1~5단</b>(배율 60/70/85/100/140%), 신비한 숲의 신전·~상급 던전은 <b>1~4단계</b>(단계별 몹 수 차이)로 나눠 볼 수 있고,
     라이티티아는 1~4구역을 토글로 골라 <b>15초마다 전멸 후 리젠</b>을 제한시간만큼 반복한다고 가정해 계산합니다.
     레벨 상승은 <b>일반 Lv</b> / <b>초월(ULv·SLv)</b> / <b>각성(각성·각성2)</b> 세 갈래로 나눠 갈래 안에서만 이어서 계산하며, 각성·각성2는 1레벨 상승까지 필요한 세트 수를 보여줍니다.
@@ -412,7 +419,7 @@ function gainStr(p, xp){
 }
 
 /* ---- state ---- */
-const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1, ratePct:0, sel:null, tier:{},
+const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, sel:null, tier:{},
   multi:new Set(),        // 유효 선택(파생) - 렌더에서 참조
   counts:{},              // 인던별 완주 횟수
   presets:new Set(),      // 활성 템플릿 이름
@@ -569,8 +576,8 @@ function gainLevels(p, xp){                 // 정렬용: 오른 하위레벨 �
 
 /* ---- 조건 바 ---- */
 const catseg = document.getElementById("catseg"), lvin = document.getElementById("lvin"),
-      ratein = document.getElementById("ratein"), lvrng = document.getElementById("lvrng"),
-      readout = document.getElementById("readout");
+      ratein = document.getElementById("ratein"), ratebonus = document.getElementById("ratebonus"),
+      lvrng = document.getElementById("lvrng"), readout = document.getElementById("readout");
 function applyCat(cat){
   st.cat = cat;
   catseg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.cat===cat)+""));
@@ -591,13 +598,18 @@ function readCond(){
   }
   st.lv = (!isNaN(v) && !bad) ? normPos(st.cat, st.cat==="slv" ? Math.round(v*100)/100 : v) : null;
 
-  // 게임 캐릭터창의 "경험치 획득량 %" 를 그대로 입력. 배수 = 1 + %/100.
-  //   0% → ×1(기본), 100% → ×2, 794.6% → ×8.946.
+  // 배수 = 1 + (경험치 획득량% + 추가%) / 100.
+  //   경험치 획득량% = 캐릭터창 수치 그대로. 추가% = 이벤트·프리미엄 등 캐릭터창에 안 잡히는 보너스(기본 50).
+  //   예: 캐릭터창 794.6% + 이벤트 50% → ×9.446.
   let rr = parseFloat((ratein.value||"").replace(/[^\d.]/g,""));
   if(isNaN(rr) || rr < 0) rr = 0;
   rr = Math.round(rr*10)/10;
+  let rb = parseFloat((ratebonus.value||"").replace(/[^\d.]/g,""));
+  if(isNaN(rb) || rb < 0) rb = 0;
+  rb = Math.round(rb*10)/10;
   st.ratePct = rr;
-  st.rate = 1 + rr/100;
+  st.rateBonus = rb;
+  st.rate = 1 + (rr + rb)/100;
 
   const parts = [];
   if(st.lv){
@@ -607,7 +619,7 @@ function readCond(){
   } else {
     parts.push(`레벨을 입력하면 레벨 상승을 계산합니다`);
   }
-  parts.push(`경험치 획득량 <b>${trim(st.ratePct)}%</b> → 배수 <b>×${trim(st.rate)}</b>`);
+  parts.push(`획득량 <b>${trim(st.ratePct)}%</b>${st.rateBonus?` + 추가 <b>${trim(st.rateBonus)}%</b>`:""} → 배수 <b>×${trim(st.rate)}</b>`);
   readout.innerHTML = parts.join("<br>");
   renderList();
   if(st.multi.size) renderMulti(); else if(st.sel!=null) select(st.sel);
@@ -615,9 +627,11 @@ function readCond(){
 catseg.addEventListener("click", e=>{ const b=e.target.closest("button"); if(b) applyCat(b.dataset.cat); });
 lvin.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_lv",st.cat+":"+lvin.value);}catch(e){} });
 ratein.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_rate",ratein.value);}catch(e){} });
+ratebonus.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_ratebonus",ratebonus.value);}catch(e){} });
 try{
   const sv=localStorage.getItem("exp_lv"); if(sv){ const [c,val]=sv.split(":"); if(CAT[c]){ st.cat=c; lvin.value=val; } }
   const sr=localStorage.getItem("exp_rate"); if(sr) ratein.value=sr;
+  const sb=localStorage.getItem("exp_ratebonus"); if(sb!==null && sb!==undefined) ratebonus.value=sb;
 }catch(e){}
 
 /* ---- list ---- */
