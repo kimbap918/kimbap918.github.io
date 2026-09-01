@@ -261,6 +261,11 @@ footer.pg b.w{color:var(--warn)}
         <span class="rng" id="lvrng">1 ~ 235</span>
       </div>
       <div class="field">
+        <span>현재 경험치 %</span>
+        <input id="curexp" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
+        <span class="rng">현재 레벨 안에서 채운 % · 0 = 레벨 시작</span>
+      </div>
+      <div class="field">
         <span>경험치 획득량 %</span>
         <input id="ratein" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
         <span class="rng">캐릭터창 수치 그대로 · 0 = 기본 · 소수점 1자리</span>
@@ -320,6 +325,7 @@ footer.pg b.w{color:var(--warn)}
     표준 8인 인던은 <b>1~5단</b>(배율 60/70/85/100/140%), 신비한 숲의 신전·~상급 던전은 <b>1~4단계</b>(단계별 몹 수 차이)로 나눠 볼 수 있고,
     라이티티아는 1~4구역을 토글로 골라 <b>15초마다 전멸 후 리젠</b>을 제한시간만큼 반복한다고 가정해 계산합니다.
     레벨 상승은 <b>일반 Lv</b> / <b>초월(ULv·SLv)</b> / <b>각성(각성·각성2)</b> 세 갈래로 나눠 갈래 안에서만 이어서 계산하며, 각성·각성2는 1레벨 상승까지 필요한 세트 수를 보여줍니다.
+    "현재 경험치 %"에 지금 레벨에서 채운 경험치 비율을 넣으면 거기서부터 다음 목표까지 계산합니다(예: 각성2 79레벨 48.9% → 80레벨까지).
     <br><b class="w">※ 주의</b> · 파티 분배 등은 반영하지 않았습니다.
     부정확할 수 있으며 실제 게임과 다를 수 있습니다. 참고용으로만 봐 주세요.
   </footer>
@@ -392,14 +398,16 @@ function nextLabel(p){
   if(t.cat==="awk")  return "각성 Lv " + t.v;
   return "각성2 Lv " + t.v;
 }
-/* 시작 pos 에서 경험치 xp 를 부어 도달하는 pos + 남은 진행률(0~1) */
-function addXp(p, xp){
-  let {cat, v} = p, frac = 0, guard = 0;
+/* 시작 pos 에서 경험치 xp 를 부어 도달하는 pos + 남은 진행률(0~1).
+   startFrac = 시작 레벨 안에서 이미 채운 비율(0~1). */
+function addXp(p, xp, startFrac){
+  let {cat, v} = p, frac = 0, guard = 0, sf = Math.min(Math.max(startFrac || 0, 0), 0.999999);
   while(xp > 1e-6 && guard++ < 3e6){
     const cost = stepCost(cat, v);
     if(cost <= 0) break;                    // 데이터 한계 → 정지
-    if(xp < cost){ frac = xp / cost; xp = 0; break; }
-    xp -= cost;
+    const need = cost * (1 - sf);           // 이번 레벨 남은 경험치
+    if(xp < need){ frac = sf + xp / cost; xp = 0; break; }
+    xp -= need; sf = 0;
     // 갈래 안에서만 이어짐: 일반은 235에서 멈춤, 초월2 SLv 는 100에서 멈춤. ULv→SLv, 각성→각성2 만 연결.
     if(cat==="lv"){ v += 1; if(v >= LV_CAP){ v = LV_CAP; break; } }
     else if(cat==="ulv"){ v += 1; if(v > ULV_CAP){ cat="slv"; v=0; } }
@@ -411,15 +419,16 @@ function addXp(p, xp){
 }
 function gainStr(p, xp){
   if(!p || xp<=0) return "";
-  const r = addXp(p, xp);
+  const sf = (st.curPct||0)/100;
+  const r = addXp(p, xp, sf);
   const end = r.pos, pct = Math.min(Math.round(r.frac*100), 99);
-  if(end.cat===p.cat && end.v===p.v && pct===0) return "레벨 변화 없음";
-  const tail = pct ? ` (+${pct}%)` : "";
-  return posLabel(p) + " → " + posLabel(end) + tail;
+  if(end.cat===p.cat && end.v===p.v && Math.round(sf*100)===pct) return "레벨 변화 없음";
+  const tail = pct ? ` (${pct}%)` : "";
+  return posLabel(p)+(sf?` (${trim(st.curPct)}%)`:"") + " → " + posLabel(end) + tail;
 }
 
 /* ---- state ---- */
-const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, sel:null, tier:{},
+const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, curPct:0, sel:null, tier:{},
   multi:new Set(),        // 유효 선택(파생) - 렌더에서 참조
   counts:{},              // 인던별 완주 횟수
   presets:new Set(),      // 활성 템플릿 이름
@@ -550,7 +559,9 @@ function nextCost(){
   } else {
     for(let x = p.v; x < t.v; x++) c += DB.exp_delta[x-1] || 0;
   }
-  return c;
+  // 현재 레벨에서 이미 채운 진행분 제외
+  c -= stepCost(p.cat, p.v) * (st.curPct||0)/100;
+  return Math.max(c, 0);
 }
 function runsFor(xp){ const c = nextCost(); const e = effXp(xp); return (c>0 && e>0) ? Math.ceil(c/e) : 0; }
 /* 인던 레벨대 → 정렬키. 일반 Lv < 초월 ULv < 초월2 SLv, 높을수록 앞. 표기 없으면 0. */
@@ -564,7 +575,7 @@ function lvKey(d){
 }
 function gainLevels(p, xp){                 // 정렬용: 오른 하위레벨 수(근사)
   if(!p) return 0;
-  const r = addXp(p, xp);
+  const r = addXp(p, xp, (st.curPct||0)/100);
   let d = 0, a=p, b=r.pos;
   const idx = q => q.cat==="lv"   ? q.v
     : q.cat==="ulv"  ? LV_CAP + q.v
@@ -576,6 +587,7 @@ function gainLevels(p, xp){                 // 정렬용: 오른 하위레벨 �
 
 /* ---- 조건 바 ---- */
 const catseg = document.getElementById("catseg"), lvin = document.getElementById("lvin"),
+      curexp = document.getElementById("curexp"),
       ratein = document.getElementById("ratein"), ratebonus = document.getElementById("ratebonus"),
       lvrng = document.getElementById("lvrng"), readout = document.getElementById("readout");
 function applyCat(cat){
@@ -598,6 +610,12 @@ function readCond(){
   }
   st.lv = (!isNaN(v) && !bad) ? normPos(st.cat, st.cat==="slv" ? Math.round(v*100)/100 : v) : null;
 
+  // 현재 레벨 안에서 이미 채운 경험치 % (0~99.99)
+  let cp = parseFloat((curexp.value||"").replace(/[^\d.]/g,""));
+  if(isNaN(cp) || cp < 0) cp = 0;
+  if(cp > 99.99) cp = 99.99;
+  st.curPct = Math.round(cp*100)/100;
+
   // 배수 = 1 + (경험치 획득량% + 추가%) / 100.
   //   경험치 획득량% = 캐릭터창 수치 그대로. 추가% = 이벤트·프리미엄 등 캐릭터창에 안 잡히는 보너스(기본 50).
   //   예: 캐릭터창 794.6% + 이벤트 50% → ×9.446.
@@ -613,7 +631,7 @@ function readCond(){
 
   const parts = [];
   if(st.lv){
-    parts.push(`${posLabel(st.lv)} → <b>${esc(nextLabel(st.lv))}</b> 까지: <b>${unit(nextCost())}</b>`);
+    parts.push(`${posLabel(st.lv)}${st.curPct?` <b>${trim(st.curPct)}%</b>`:""} → <b>${esc(nextLabel(st.lv))}</b> 까지: <b>${unit(nextCost())}</b>`);
   } else if(lvin.value.trim()){
     parts.push(`<span class="bad">${esc(bad||"레벨 값을 확인하세요")}</span>`);
   } else {
@@ -626,10 +644,12 @@ function readCond(){
 }
 catseg.addEventListener("click", e=>{ const b=e.target.closest("button"); if(b) applyCat(b.dataset.cat); });
 lvin.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_lv",st.cat+":"+lvin.value);}catch(e){} });
+curexp.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_curexp",curexp.value);}catch(e){} });
 ratein.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_rate",ratein.value);}catch(e){} });
 ratebonus.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_ratebonus",ratebonus.value);}catch(e){} });
 try{
   const sv=localStorage.getItem("exp_lv"); if(sv){ const [c,val]=sv.split(":"); if(CAT[c]){ st.cat=c; lvin.value=val; } }
+  const sc=localStorage.getItem("exp_curexp"); if(sc!==null && sc!==undefined) curexp.value=sc;
   const sr=localStorage.getItem("exp_rate"); if(sr) ratein.value=sr;
   const sb=localStorage.getItem("exp_ratebonus"); if(sb!==null && sb!==undefined) ratebonus.value=sb;
 }catch(e){}
