@@ -165,29 +165,40 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
 .hpviz .lab{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:7px}
 .hpviz .lab .big{font-family:var(--mono);font-size:15px;color:var(--gold);letter-spacing:0}
 
-/* 단계별 체력 비교 미터 - 칸(--cell) 위에 비율만큼 채워지고, 단계 전환 시 슬라이드 */
-.hpmeter{position:relative;height:22px;border-radius:6px;overflow:hidden;
-  background:var(--surface-3);border:1px solid var(--line-2)}
+/* 단계별 체력 비교 미터 - 4단=100% 기준. 1/2/3단은 비율만큼, 5단은 폭 꽉 차되 칸이 촘촘.
+   단계 전환 시 폭·칸밀도가 슬라이드. */
+@property --cell{syntax:"<percentage>";inherits:true;initial-value:4%}
+.hpmeter{position:relative;height:22px;border-radius:6px;overflow:hidden;--cell:4%;
+  background:var(--surface-3);border:1px solid var(--line-2);
+  transition:box-shadow .4s ease}
 .hpmeter-fill{position:absolute;top:0;bottom:0;left:0;width:0;
   background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 62%,#000),var(--gold));
   box-shadow:0 0 14px -2px var(--gold);
   transition:width .55s cubic-bezier(.22,1,.36,1)}
-.hpmeter-fill.t5{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 62%,#000),var(--gold) 78%,var(--accent))}
+.hpmeter-fill.t5{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 55%,#000),var(--gold) 70%,var(--accent))}
 .hpmeter-grid{position:absolute;inset:0;pointer-events:none;
   background-image:linear-gradient(90deg,color-mix(in srgb,var(--ground) 62%,transparent) 1px,transparent 1px);
-  background-size:var(--cell,4%) 100%}
+  background-size:var(--cell) 100%;
+  transition:background-size .55s cubic-bezier(.22,1,.36,1)}
 .hpmeter-sheen{position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.20),transparent 46%,rgba(0,0,0,.14))}
 .hpmeter-edge{position:absolute;top:-1px;bottom:-1px;width:2px;transform:translateX(-1px);
   background:color-mix(in srgb,var(--gold) 70%,#fff);box-shadow:0 0 8px 1px var(--gold);
   transition:left .55s cubic-bezier(.22,1,.36,1)}
+.hpmeter.over{box-shadow:0 0 0 1px var(--accent),0 0 16px -3px var(--accent)}
+.hpmeter.over .hpmeter-fill{animation:hpover 1.5s ease-in-out infinite alternate}
+@keyframes hpover{to{filter:brightness(1.14)}}
 .hpticks{position:relative;height:15px;margin-top:5px}
 .hpticks b{position:absolute;top:0;transform:translateX(-50%);
   font-family:var(--mono);font-size:9px;font-weight:500;color:var(--ink-3);white-space:nowrap}
 .hpticks b::before{content:"";position:absolute;left:50%;top:-6px;width:1px;height:4px;background:var(--line-2)}
 .hpticks b.cur{color:var(--gold);font-weight:700}
 .hpticks b.cur::before{background:var(--gold);height:5px;top:-7px}
-@media (prefers-reduced-motion:reduce){.hpmeter-fill,.hpmeter-edge{transition:none}}
+.hpticks .hpover{position:absolute;right:0;top:-2px;font-family:var(--mono);font-size:8.5px;
+  font-weight:600;color:var(--ink-3);border:1px solid var(--line-2);border-radius:4px;
+  padding:0 4px;line-height:13px}
+.hpticks .hpover.cur{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.hpmeter-fill,.hpmeter-edge,.hpmeter-grid{transition:none}.hpmeter.over .hpmeter-fill{animation:none}}
 
 .section{padding:16px 22px;border-bottom:1px solid var(--line)}
 .section:last-child{border-bottom:0}
@@ -361,7 +372,7 @@ const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"
 
 /* ---- state ---- */
 const st = { q:"", sort:"id", desc:true, tier:4, sel:null };
-let _meterBoss = null, _meterPct = null;   // 체력 미터 애니메이션용(이전 채움 %)
+let _meterBoss = null, _meterPct = null, _meterCell = null;   // 체력 미터 애니메이션용(이전 채움 %/칸밀도)
 
 /* 체력 미터 칸(--cell) 조밀도: 절대 체력이 낮은 보스일수록 칸 간격을 느슨하게
    (칸 수를 적게) 한다. 기준점 = [1e7, 수록 보스 최대 HP] 를 로그 스케일로 매핑.
@@ -505,26 +516,30 @@ function select(id){
   const d5mark = (b.is8 && tier!==4) ? ` <span style="color:var(--accent);font-size:11px">· ${tier}단 적용</span>` : "";
 
   // ---- 단계별 체력 미터 ----
-  // maxMul = 이 보스가 가질 수 있는 최고 단계 배율(4단=1.0, 5단 인던=b.d5.hp).
-  // 현재 단계 체력을 그 최고치 대비 비율로 그린다 → 1단↔5단이 눈에 확 띄게 다름.
-  const maxMul  = b.is8 ? (b.d5 ? b.d5.hp : 1) : 1;
-  const maxHp   = Math.round(b.hp * maxMul);
-  const hpRatio = maxHp ? Math.min(E.hp / maxHp, 1) : 1;
-  const hpPct   = Math.max(hpRatio * 100, 1.5);
-  // 칸 조밀도: 절대 체력(최고 단계 기준)이 클수록 촘촘, 낮은 보스는 느슨. 단계 전환에도 고정.
-  const nCells  = hpCells(maxHp);
-  const tierTicks = tiersOK.map(n=>{
-    const mm  = n===5 ? b.d5.hp : DIFF[n].hp;
-    const pos = maxMul ? mm / maxMul * 100 : 100;
+  // 4단(표준) = 100% 기준. 1/2/3단은 10/30/60% 로 채워지고, 5단은 폭은 꽉 차되
+  // 칸(--cell)이 ×1.4 로 촘촘해져서 "피통이 더 빽빽하다"는 걸 보여준다.
+  const mul     = m.hp;                              // 0.1 / 0.3 / 0.6 / 1 / 1.4 (비-8인=1)
+  const over    = mul > 1;                           // 5단(초과)
+  const fillPct = Math.max(Math.min(mul, 1) * 100, 1.5);
+  // 칸 조밀도: 절대 체력(4단 기준)이 클수록 촘촘, 낮은 보스는 느슨.
+  const baseCells = hpCells(b.hp);
+  const nShown  = over ? Math.round(baseCells * mul) : baseCells;
+  const cellPct = (100 / nShown).toFixed(3) + "%";
+  const hasOver = b.is8 && !!b.d5;
+  // 5단 칩이 있으면 4단 눈금은 생략 - 4단=꽉 찬 바 자체라 자명하고 칩과 겹침
+  const tks = tiersOK.filter(n => n <= (hasOver ? 3 : 4)).map(n=>{
+    const pos = Math.min(DIFF[n].hp * 100, 100);
     return `<b class="${n===tier?"cur":""}" style="left:${pos}%">${n}단</b>`;
   }).join("");
+  const overChip = hasOver
+    ? `<span class="hpover${tier===5?" cur":""}">5단 ×${b.d5.hp}</span>` : "";
   const meterHTML =
-      `<div class="hpmeter" style="--cell:${(100/nCells).toFixed(3)}%">`
-    +   `<div class="hpmeter-fill${tier===5?" t5":""}" style="width:${hpPct}%"></div>`
+      `<div class="hpmeter${over?" over":""}" style="--cell:${cellPct}">`
+    +   `<div class="hpmeter-fill${over?" t5":""}" style="width:${fillPct}%"></div>`
     +   `<div class="hpmeter-grid"></div><div class="hpmeter-sheen"></div>`
-    +   `<div class="hpmeter-edge" style="left:${hpPct}%"></div>`
+    +   `<div class="hpmeter-edge" style="left:${fillPct}%"></div>`
     + `</div>`
-    + (tierTicks ? `<div class="hpticks">${tierTicks}</div>` : "");
+    + ((tks || overChip) ? `<div class="hpticks">${tks}${overChip}</div>` : "");
 
   const tags = [];
   tags.push(`<span class="tag lv">Lv ${b.level||"?"}</span>`);
@@ -608,20 +623,26 @@ function select(id){
       <div class="chips">${rc.join("")}</div>
     </div>`;
 
-  // 체력 미터: 같은 보스에서 단계만 바꾸면 이전 채움 %에서 슬라이드, 새 보스면 0에서 채움
+  // 체력 미터: 같은 보스에서 단계만 바꾸면 이전 값에서 슬라이드(폭·칸밀도), 새 보스면 0에서 채움
+  const meterEl = detailEl.querySelector(".hpmeter");
   const fillEl = detailEl.querySelector(".hpmeter-fill");
   const edgeEl = detailEl.querySelector(".hpmeter-edge");
   if(fillEl){
-    const from = (_meterBoss === id && _meterPct != null) ? _meterPct : 0;
-    fillEl.style.width = from + "%";
-    if(edgeEl) edgeEl.style.left = from + "%";
-    requestAnimationFrame(()=>{
-      fillEl.style.width = hpPct + "%";
-      if(edgeEl) edgeEl.style.left = hpPct + "%";
-    });
+    const same = (_meterBoss === id && _meterPct != null);
+    const fromPct = same ? _meterPct : 0;
+    const fromCell = (same && _meterCell) ? _meterCell : cellPct;
+    // 시작값 세팅 → 강제 리플로우 → 목표값 (rAF 없이도 트랜지션 발동, 백그라운드 탭 안전)
+    fillEl.style.width = fromPct + "%";
+    if(edgeEl) edgeEl.style.left = fromPct + "%";
+    if(meterEl) meterEl.style.setProperty("--cell", fromCell);
+    void fillEl.offsetWidth;
+    fillEl.style.width = fillPct + "%";
+    if(edgeEl) edgeEl.style.left = fillPct + "%";
+    if(meterEl) meterEl.style.setProperty("--cell", cellPct);
   }
   _meterBoss = id;
-  _meterPct = hpPct;
+  _meterPct = fillPct;
+  _meterCell = cellPct;
 
   if(matchMedia("(max-width:900px)").matches) detailEl.scrollIntoView({block:"nearest",behavior:"smooth"});
   else detailEl.scrollTop = 0;
