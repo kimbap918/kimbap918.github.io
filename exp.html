@@ -284,6 +284,11 @@ footer.pg b.w{color:var(--warn)}
         <input id="ratebonus" class="rate num" type="text" inputmode="decimal" value="50" autocomplete="off" spellcheck="false">
         <span class="rng">이벤트·프리미엄 등<br>스탯에 안 잡히는 보너스</span>
       </div>
+      <div class="field">
+        <span>파티 인원</span>
+        <input id="party" class="rate num" type="text" inputmode="numeric" value="1" autocomplete="off" spellcheck="false">
+        <span class="rng">1~8인 · 인원 많을수록<br>1인당 경험치 적어짐</span>
+      </div>
       <div class="readout" id="readout"></div>
     </div>
   </div>
@@ -328,10 +333,10 @@ footer.pg b.w{color:var(--warn)}
   </div>
 
   <footer class="pg">
-    1회 완주 경험치 = 인던에 배치된 몹을 한 번씩 잡은 기본 경험치 합 × (획득량&nbsp;% + 추가&nbsp;%). "추가&nbsp;%"는 캐릭터창에 안 뜨는 이벤트 경험치 등(기본 50).
+    1회 완주 경험치 = 인던에 배치된 몹을 한 번씩 잡은 기본 경험치 합 × (획득량&nbsp;% + 추가&nbsp;%) × 파티 배분. "추가&nbsp;%"는 캐릭터창에 안 뜨는 이벤트 경험치 등(기본 50). 파티 배분은 1인 100% / 4인 70% / 8인 30% 로 1인당 줄어듭니다.
     단계 배율은 던전마다 다르고(표준 8인 인던 1~4단 60/70/85/100%), 라이티티아는 15초마다 리젠 팜 가정.
     <br>레벨 상승은 <b>일반 / 초월(ULv·SLv) / 각성(1·2)</b> 세 갈래를 따로 계산. 입장 판정은 일반·초월 레벨 기준이라 각성 레벨은 생략, 못 가는 인던은 🔒.
-    <br><b class="w">※</b> 파티 분배 등 미반영 · 실제와 다를 수 있는 참고용.
+    <br><b class="w">※</b> 실제와 다를 수 있는 참고용.
   </footer>
 </div>
 
@@ -432,7 +437,7 @@ function gainStr(p, xp){
 }
 
 /* ---- state ---- */
-const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, curPct:0, onlyEnter:false, sel:null, tier:{},
+const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, curPct:0, party:1, onlyEnter:false, sel:null, tier:{},
   multi:new Set(),        // 유효 선택(파생) - 렌더에서 참조
   counts:{},              // 인던별 완주 횟수
   presets:new Set(),      // 활성 템플릿 이름
@@ -446,8 +451,8 @@ const PRESETS = [
     fromLv:"에기르 유적", toLv:"고드름 감옥",
     exclude:["미지의 숲","미지의 도서관 상급","황혼의 성당"],
     counts:{ "고드름 감옥":2 } },
-  { name:"천오전시", built:true,
-    desc:"천공성 콜로세움 · 신비의 전당 · 오로라의 정원 · 리베라 시청",
+  { name:"천오시전", built:true,
+    desc:"천공성 콜로세움 · 오로라의 정원 · 리베라 시청 · 신비의 전당",
     picks:["천공성 콜로세움","신비의 전당","오로라의 정원","리베라 시청"] },
   { name:"석뒤초", built:true,
     desc:"석양의 숲 · 뒤틀린 세계수 · 초코가든",
@@ -547,7 +552,10 @@ document.getElementById("tsavebtn").addEventListener("click", ()=>{
 
 function maxTier(d){ return d.tiers.reduce((a,t)=>t.xp>a.xp?t:a, d.tiers[0]); }
 function curTier(d,i){ const w = st.tier[i]; return d.tiers.find(t=>t.n===w) || maxTier(d); }
-function effXp(xp){ return xp * st.rate; }
+/* 파티 인원별 경험치 배분 계수 (1~8인). 8인 파티면 몹 경험치의 30%씩 받음. */
+const TEAM_EXP = [100, 90, 80, 70, 60, 50, 40, 30];
+function teamFactor(){ return (TEAM_EXP[Math.max(1, Math.min(8, st.party||1)) - 1] || 100) / 100; }
+function effXp(xp){ return xp * st.rate * teamFactor(); }
 function nextCost(){
   if(!st.lv) return 0;
   const p = st.lv, t = nextMilestone(p);
@@ -617,7 +625,7 @@ function gainLevels(p, xp){                 // 정렬용: 오른 하위레벨 �
 
 /* ---- 조건 바 ---- */
 const catseg = document.getElementById("catseg"), lvin = document.getElementById("lvin"),
-      curexp = document.getElementById("curexp"),
+      curexp = document.getElementById("curexp"), party = document.getElementById("party"),
       ratein = document.getElementById("ratein"), ratebonus = document.getElementById("ratebonus"),
       lvrng = document.getElementById("lvrng"), readout = document.getElementById("readout");
 function applyCat(cat){
@@ -659,6 +667,11 @@ function readCond(){
   st.rateBonus = rb;
   st.rate = 1 + (rr + rb)/100;
 
+  let pn = parseInt((party.value||"").replace(/[^\d]/g,""), 10);
+  if(isNaN(pn) || pn < 1) pn = 1;
+  if(pn > 8) pn = 8;
+  st.party = pn;
+
   const parts = [];
   if(st.lv){
     parts.push(`${posLabel(st.lv)}${st.curPct?` <b>${trim(st.curPct)}%</b>`:""} → <b>${esc(nextLabel(st.lv))}</b> 까지: <b>${unit(nextCost())}</b>`);
@@ -667,7 +680,7 @@ function readCond(){
   } else {
     parts.push(`레벨을 입력하면 레벨 상승을 계산합니다`);
   }
-  parts.push(`경험치 획득량 <b>${trim(st.ratePct)}%</b>${st.rateBonus?` + 추가 <b>${trim(st.rateBonus)}%</b>`:""} 적용`);
+  parts.push(`경험치 획득량 <b>${trim(st.ratePct)}%</b>${st.rateBonus?` + 추가 <b>${trim(st.rateBonus)}%</b>`:""}${st.party>1?` · <b>${st.party}인 파티</b>(1인당 ${TEAM_EXP[st.party-1]}%)`:""} 적용`);
   readout.innerHTML = parts.join("<br>");
   renderList();
   if(st.multi.size) renderMulti(); else if(st.sel!=null) select(st.sel);
@@ -677,11 +690,13 @@ lvin.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_l
 curexp.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_curexp",curexp.value);}catch(e){} });
 ratein.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_rate",ratein.value);}catch(e){} });
 ratebonus.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_ratebonus",ratebonus.value);}catch(e){} });
+party.addEventListener("input", ()=>{ readCond(); try{localStorage.setItem("exp_party",party.value);}catch(e){} });
 try{
   const sv=localStorage.getItem("exp_lv"); if(sv){ const [c,val]=sv.split(":"); if(CAT[c]){ st.cat=c; lvin.value=val; } }
   const sc=localStorage.getItem("exp_curexp"); if(sc!==null && sc!==undefined) curexp.value=sc;
   const sr=localStorage.getItem("exp_rate"); if(sr) ratein.value=sr;
   const sb=localStorage.getItem("exp_ratebonus"); if(sb!==null && sb!==undefined) ratebonus.value=sb;
+  const sp=localStorage.getItem("exp_party"); if(sp) party.value=sp;
 }catch(e){}
 
 /* ---- list ---- */
@@ -841,7 +856,7 @@ function select(i, userOpen){
     <div class="section">
       <h3>${d.farm ? esc(t.label)+" · 리젠 팜" : "1회 완주"+(d.tier_kind!=="none"?` · ${esc(t.label)}`:"")}</h3>
       <div class="big">
-        <div><div class="k">${d.farm?"제한시간 획득 경험치":"획득 경험치"} <small>(획득량 ${trim(st.ratePct)}%${st.rateBonus?` +${trim(st.rateBonus)}%`:""})</small></div><div class="v g">${unit(e)}<small> (${nf.format(Math.round(e))})</small></div></div>
+        <div><div class="k">${d.farm?"제한시간 획득 경험치":"획득 경험치"} <small>(획득량 ${trim(st.ratePct)}%${st.rateBonus?` +${trim(st.rateBonus)}%`:""}${st.party>1?` · ${st.party}인`:""})</small></div><div class="v g">${unit(e)}<small> (${nf.format(Math.round(e))})</small></div></div>
         ${gainBlk}
       </div>
       <div class="kv" style="margin-top:12px">
@@ -902,7 +917,7 @@ function renderMulti(){
       <div class="dname">묶음 계산 · ${items.length}개 인던</div>
       <div class="dmeta">
         ${[...st.presets].map(n=>`<span class="tag kind">${esc(n)}</span>`).join("")}
-        <span class="tag">1세트 = 총 ${totalRuns}회 완주</span><span class="tag">획득량 ${trim(st.ratePct)}%${st.rateBonus?` +${trim(st.rateBonus)}%`:""}</span>
+        <span class="tag">1세트 = 총 ${totalRuns}회 완주</span><span class="tag">획득량 ${trim(st.ratePct)}%${st.rateBonus?` +${trim(st.rateBonus)}%`:""}${st.party>1?` · ${st.party}인`:""}</span>
       </div>
     </div>
     <div class="section">
