@@ -152,6 +152,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
 @media(min-width:901px){.detail{max-height:calc(100vh - 120px);overflow-y:auto;position:sticky;top:12px}}
 .detail .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:400px;gap:10px;color:var(--ink-3);text-align:center;padding:20px}
 .detail .placeholder svg{width:40px;height:40px;stroke:var(--line-2);fill:none}
+.dbar{display:none}
 
 .dhead{padding:20px 22px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),transparent)}
 .dhead .dname{font-weight:900;font-size:clamp(22px,3.2vw,32px);line-height:1.05;text-wrap:balance}
@@ -243,7 +244,19 @@ footer.pg code{font-family:var(--mono);background:var(--surface-2);padding:1px 5
 /* ---------- mobile ---------- */
 @media(max-width:900px){
   .listscroll{max-height:60vh}
+  /* 상세를 전체화면 시트(모달)로 - 목록 아래로 밀려나 스크롤하는 문제 해결 */
+  body.modal-open{overflow:hidden}
+  .detail{position:fixed;inset:0;z-index:200;border:0;border-radius:0;box-shadow:none;min-height:100%;
+    max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transform:translateY(100%);transition:transform .22s ease;visibility:hidden}
+  .detail.open{transform:none;visibility:visible}
+  .detail .placeholder{display:none}
+  .dbar{display:flex;position:sticky;top:0;z-index:2;align-items:center;gap:10px;
+    padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .dbar button{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;
+    border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-weight:600;font-size:13px}
 }
+@media (prefers-reduced-motion:reduce){.detail{transition:none}}
 @media(max-width:640px){
   body{font-size:14px}
   .site-tabs{gap:6px;padding:8px 12px}
@@ -484,8 +497,14 @@ listEl.addEventListener("click", e=>{
 
 /* ---- detail ---- */
 const detailEl = document.getElementById("detail");
+const isMobile = () => matchMedia("(max-width:900px)").matches;
+const DBAR = `<div class="dbar"><button type="button" class="dclose">← 목록으로</button></div>`;
+function openDetail(){ if(isMobile()){ detailEl.classList.add("open"); document.body.classList.add("modal-open"); detailEl.scrollTop = 0; } }
+function closeDetail(){ detailEl.classList.remove("open"); document.body.classList.remove("modal-open"); }
+addEventListener("resize", ()=>{ if(!isMobile()) closeDetail(); });
 function kvItem(k,v,cls){ return `<div><div class="k">${k}</div><div class="v ${cls||""}">${v}</div></div>`; }
 detailEl.addEventListener("click", e=>{
+  if(e.target.closest(".dclose")){ closeDetail(); return; }
   const t = e.target.closest(".tierseg button"); if(!t) return;
   st.tier = +t.dataset.tier;
   if(st.sel!=null) select(st.sel);
@@ -558,6 +577,7 @@ function select(id){
   if(!rc.length) rc.push(`<span class="chip none">면역·상태이상 저항 없음</span>`);
 
   detailEl.innerHTML = `
+    ${DBAR}
     <div class="dhead">
       <div class="dname">${esc(b.disp||b.name)}</div>
       ${b.description ? `<p class="note" style="margin-top:8px">${esc(b.description)}</p>` : ""}
@@ -645,8 +665,8 @@ function select(id){
   _meterPct = fillPct;
   _meterCell = cellPct;
 
-  if(matchMedia("(max-width:900px)").matches) detailEl.scrollIntoView({block:"nearest",behavior:"smooth"});
-  else detailEl.scrollTop = 0;
+  openDetail();
+  detailEl.scrollTop = 0;
 }
 
 /* ---- stats header ---- */
