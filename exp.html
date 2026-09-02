@@ -122,6 +122,8 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 .search input{width:100%;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;
   padding:9px 12px 9px 34px;color:var(--ink);font:inherit}
 .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.chk input{accent-color:var(--accent);width:14px;height:14px}
 
 .grid{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:16px;align-items:start}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
@@ -136,6 +138,8 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 .row:hover{background:var(--surface-2)}
 .row[aria-current="true"]{background:var(--surface-3);box-shadow:inset 3px 0 0 var(--accent)}
 .row.picked{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.row.locked .nm,.row.locked .sub{opacity:.45}
+.row.locked .xp.lock{color:var(--ink-3);font-size:11px}
 .row .pick{width:20px;height:20px;flex:none;border:1.5px solid var(--line-2);border-radius:6px;
   display:grid;place-items:center;color:transparent;font-size:12px;line-height:1}
 .row .pick:hover{border-color:var(--accent)}
@@ -295,6 +299,7 @@ footer.pg b.w{color:var(--warn)}
       <button data-sort="gain">레벨 상승</button>
       <button data-sort="name">이름</button>
     </div>
+    <label class="chk"><input type="checkbox" id="onlyenter"> 입장 가능만</label>
   </div>
 
   <div class="tmplbar" id="tmplbar">
@@ -330,6 +335,7 @@ footer.pg b.w{color:var(--warn)}
     라이티티아는 1~4구역을 토글로 골라 <b>15초마다 전멸 후 리젠</b>을 제한시간만큼 반복한다고 가정해 계산합니다.
     레벨 상승은 <b>일반 Lv</b> / <b>초월(ULv·SLv)</b> / <b>각성(각성·각성2)</b> 세 갈래로 나눠 갈래 안에서만 이어서 계산하며, 각성·각성2는 1레벨 상승까지 필요한 세트 수를 보여줍니다.
     "현재 경험치 %"에 지금 레벨에서 채운 경험치 비율을 넣으면 거기서부터 다음 목표까지 계산합니다(예: 각성2 79레벨 48.9% → 80레벨까지).
+    현재 레벨을 넣으면 입장 레벨이 안 되는 인던은 🔒 로 표시하고, 묶음 계산에선 입장 요구 낮은 순으로 돌며 앞 인던으로 레벨업해 뒤 인던이 해금되는지까지 따집니다(초월>일반, 각성>초월 순으로 봄).
     <br><b class="w">※ 주의</b> · 파티 분배 등은 반영하지 않았습니다.
     부정확할 수 있으며 실제 게임과 다를 수 있습니다. 참고용으로만 봐 주세요.
   </footer>
@@ -432,7 +438,7 @@ function gainStr(p, xp){
 }
 
 /* ---- state ---- */
-const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, curPct:0, sel:null, tier:{},
+const st = { q:"", sort:"xp", cat:"lv", lv:null, rate:1.5, ratePct:0, rateBonus:50, curPct:0, onlyEnter:false, sel:null, tier:{},
   multi:new Set(),        // 유효 선택(파생) - 렌더에서 참조
   counts:{},              // 인던별 완주 횟수
   presets:new Set(),      // 활성 템플릿 이름
@@ -568,6 +574,31 @@ function nextCost(){
   return Math.max(c, 0);
 }
 function runsFor(xp){ const c = nextCost(); const e = effXp(xp); return (c>0 && e>0) ? Math.ceil(c/e) : 0; }
+
+/* ---- 입장 가능 레벨 판정 ----
+   모든 레벨 종류를 하나의 순위(rank)로 환산: 일반 Lv < 초월 ULv < 초월2 SLv < 각성 < 각성2. */
+const RANK_ULV = LV_CAP, RANK_SLV = LV_CAP + ULV_CAP, RANK_AWK = LV_CAP + ULV_CAP + 10000;
+function posRank(p, frac){
+  if(!p) return Infinity;
+  frac = frac || 0;
+  if(p.cat==="lv")   return p.v + frac;
+  if(p.cat==="ulv")  return RANK_ULV + p.v + frac;
+  if(p.cat==="slv")  return RANK_SLV + p.v*100 + frac;
+  if(p.cat==="awk")  return RANK_AWK + p.v + frac;
+  return RANK_AWK + AWK_CAP + p.v + frac;
+}
+function reqRank(lvStr){        // 인던 입장 요구 레벨 → rank (표기 없으면 0 = 제한 없음)
+  if(!lvStr) return 0;
+  const s = String(lvStr).replace(/\s+/g,"");
+  let m;
+  if((m = s.match(/SLv\.?(\d+(?:\.\d+)?)/i))) return RANK_SLV + parseFloat(m[1])*100;
+  if((m = s.match(/ULv\.?(\d+)/i)))           return RANK_ULV + parseInt(m[1],10);
+  if((m = s.match(/Lv\.?(\d+)/i)))            return parseInt(m[1],10);
+  return 0;
+}
+function userRank(){ return st.lv ? posRank(st.lv, (st.curPct||0)/100) : Infinity; }
+function locked(d){ return reqRank(d.lv) > userRank() + 1e-6; }
+
 /* 인던 레벨대 → 정렬키. 일반 Lv < 초월 ULv < 초월2 SLv, 높을수록 앞. 표기 없으면 0. */
 function lvKey(d){
   const s = d.lv || "";
@@ -666,6 +697,7 @@ function view(){
     const query = st.q.trim().toLowerCase();
     r = r.filter(o => ((o.d.name||"")+" "+(o.d.raw_name||"")+" "+(o.d.kind||"")+" "+(o.d.lv||"")).toLowerCase().includes(query));
   }
+  if(st.onlyEnter && st.lv) r = r.filter(o => !locked(o.d));
   r.sort((A,B)=>{
     const a=A.d, b=B.d;
     if(st.sort==="name") return a.name.localeCompare(b.name,"ko");
@@ -681,12 +713,15 @@ function rowHTML(o){
   const d=o.d, i=o.i, t=maxTier(d), e=effXp(t.xp);
   const cur = st.sel===i ? ' aria-current="true"' : "";
   const pk = st.multi.has(i) ? " picked" : "";
+  const lk = st.lv && locked(d);
   const sub = [d.kind, d.lv, d.member?d.member+"인":""].filter(Boolean).join(" · ");
   const runs = runsFor(t.xp);
-  const rt = st.lv
-    ? `<span class="xp">${unit(e)}</span><span class="rn">${runs?nextLabel(st.lv)+" "+nf.format(runs)+"회":"—"}</span>`
-    : `<span class="xp">${unit(e)}</span>`;
-  return `<div class="row${pk}" role="option" data-i="${i}"${cur}>
+  const rt = lk
+    ? `<span class="xp lock">🔒 입장 불가</span>`
+    : st.lv
+      ? `<span class="xp">${unit(e)}</span><span class="rn">${runs?nextLabel(st.lv)+" "+nf.format(runs)+"회":"—"}</span>`
+      : `<span class="xp">${unit(e)}</span>`;
+  return `<div class="row${pk}${lk?" locked":""}" role="option" data-i="${i}"${cur}>
     <button class="pick" data-act="pick" aria-label="묶음 담기">✓</button>
     <button class="open" data-act="open">
       <span class="nm">${esc(d.name)}</span><span class="sub">${esc(sub)}</span>
@@ -764,12 +799,14 @@ function select(i, userOpen){
   const d = ALL[i]; if(!d) return;
   const t = curTier(d,i), e = effXp(t.xp), runs = runsFor(t.xp);
 
+  const isLocked = st.lv && locked(d);
   const tags = [];
   if(d.kind)   tags.push(`<span class="tag kind">${esc(d.kind)}</span>`);
   if(d.lv)     tags.push(`<span class="tag lv">${esc(d.lv)}</span>`);
   if(d.member) tags.push(`<span class="tag">${d.member}인</span>`);
   if(d.limit_time)  tags.push(`<span class="tag">제한 ${d.limit_time}초</span>`);
   if(d.limit_count) tags.push(`<span class="tag">${d.reset_type===1?"일주일":"1일"} ${d.limit_count}회</span>`);
+  if(isLocked) tags.push(`<span class="tag" style="border-color:var(--warn);color:var(--warn)">🔒 입장 불가 (필요 ${esc(d.lv)})</span>`);
 
   const showSeg = d.tier_kind!=="none" && d.tiers.length>1;
   const seg = showSeg ? `<div class="seg tierseg" role="group" aria-label="단계">
@@ -825,25 +862,39 @@ function select(i, userOpen){
 
 /* ---- detail (묶음) ---- */
 function renderMulti(){
-  const order = [...st.multi].sort((a,b)=>lvKey(ALL[b])-lvKey(ALL[a]));
+  // 입장 요구 레벨 낮은 순으로 돌면서, 앞 인던 경험치로 레벨업해 뒤 인던이 해금되는지 순차 계산.
+  const order = st.lv
+    ? [...st.multi].sort((a,b)=> reqRank(ALL[a].lv)-reqRank(ALL[b].lv) || lvKey(ALL[b])-lvKey(ALL[a]))
+    : [...st.multi].sort((a,b)=> lvKey(ALL[b])-lvKey(ALL[a]));
   const items = order.map(i=>({i, d:ALL[i], t:curTier(ALL[i],i), cnt:st.counts[i]||1}));
-  let sum = 0, totalRuns = 0;
+  const sf = (st.curPct||0)/100;
+  let sum = 0, totalRuns = 0, accXp = 0;
+  const lockedNow = [];
   const rows = items.map(o=>{
     const e = effXp(o.t.xp), line = e * o.cnt;
-    sum += line; totalRuns += o.cnt;
+    let lk = false;
+    if(st.lv){
+      const simR = posRank(addXp(st.lv, accXp, sf).pos, 0);
+      lk = reqRank(o.d.lv) > simR + 1e-6;
+    }
+    if(!lk){ sum += line; accXp += line; totalRuns += o.cnt; }
+    else lockedNow.push(o.d.name);
     const seg = o.d.tier_kind!=="none" && o.d.tiers.length>1
       ? `<div class="seg tierseg" data-ctx="${o.i}" style="margin-top:6px">
           ${o.d.tiers.map(x=>`<button data-n="${x.n}" aria-pressed="${x.n===o.t.n}">${esc(x.label)}</button>`).join("")}
         </div>` : "";
-    return `<tr>
-      <td><button class="mrm" data-rm="${o.i}" title="묶음에서 제거" aria-label="묶음에서 제거">✕</button>${esc(o.d.name)}${o.d.lv?` <span style="color:var(--ink-3)">${esc(o.d.lv)}</span>`:""}${seg}</td>
+    return `<tr${lk?' style="opacity:.5"':''}>
+      <td><button class="mrm" data-rm="${o.i}" title="묶음에서 제거" aria-label="묶음에서 제거">✕</button>${esc(o.d.name)}${o.d.lv?` <span style="color:var(--ink-3)">${esc(o.d.lv)}</span>`:""}${lk?' <span style="color:var(--warn)">🔒</span>':''}${seg}</td>
       <td class="n"><span class="mstep" data-i="${o.i}"><button data-act="dec">−</button><span>${o.cnt}회</span><button data-act="inc">＋</button></span></td>
       <td class="n">${unit(e)}</td>
-      <td class="n">${unit(line)}</td>
+      <td class="n">${lk?'—':unit(line)}</td>
     </tr>`;
   }).join("");
   const setGain = st.lv ? gainStr(st.lv, sum) : "";
   const runs = (()=>{ const c=nextCost(); return (c>0 && sum>0) ? Math.ceil(c/sum) : 0; })();
+  const lockNote = (st.lv && lockedNow.length)
+    ? `<p class="note" style="margin-top:8px;color:var(--warn)">🔒 <b>${lockedNow.map(esc).join(", ")}</b> — 이번 세트로는 입장 레벨이 안 됩니다. 합계·레벨 상승에서 제외했어요. (앞 인던으로 먼저 레벨업하면 다음 세트엔 가능)</p>`
+    : "";
 
   detailEl.innerHTML = `
     ${DBAR}
@@ -871,12 +922,14 @@ function renderMulti(){
         ${rows}
         <tfoot><tr><td>합계 (${totalRuns}회)</td><td></td><td class="n">—</td><td class="n">${unit(sum)}</td></tr></tfoot>
       </table></div>
+      ${lockNote}
       <p class="note" style="margin-top:10px">각 인던의 완주 횟수를 조절할 수 있고, 이름 아래 버튼으로 단계를 바꿉니다. 이름 앞 <b>✕</b> 또는 왼쪽 목록 우클릭으로 묶음에서 뺍니다. "현재 묶음 저장"으로 이 구성을 템플릿으로 남깁니다.</p>
     </div>`;
 }
 
 /* ---- controls ---- */
 document.getElementById("q").addEventListener("input", e=>{ st.q=e.target.value; renderList(); });
+document.getElementById("onlyenter").addEventListener("change", e=>{ st.onlyEnter=e.target.checked; renderList(); });
 document.querySelectorAll(".controls .seg button").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     st.sort = btn.dataset.sort;
