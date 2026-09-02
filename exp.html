@@ -62,31 +62,34 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 .brand .sub{color:var(--ink-2);font-size:13px;margin-top:6px;max-width:60ch}
 
 /* ---- 조건 입력 바 ---- */
-.condbar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0 12px}
-.condrow{display:flex;flex-wrap:wrap;gap:16px 18px;align-items:flex-start}
-.field{display:flex;flex-direction:column;gap:6px}
-.field > span:first-child{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
-.seg{display:flex;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
-.seg button{padding:8px 13px;font-size:12.5px;color:var(--ink-2);border-right:1px solid var(--line-2);white-space:nowrap}
+.condbar{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:16px 0 12px}
+.condrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px 16px;align-items:start}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field > span:first-child{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.field.full{grid-column:1/-1}
+.field.w2{grid-column:span 2}
+.field input{width:100%;height:40px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;
+  padding:0 12px;color:var(--ink);font:inherit;font-size:15px;font-variant-numeric:tabular-nums}
+.field input:focus-visible{border-color:var(--accent);outline:none}
+.field .rng{font-size:10px;color:var(--ink-3);line-height:1.35;opacity:.9}
+
+.seg{display:flex;height:40px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+.seg button{flex:1;min-width:0;padding:0 6px;font-size:12px;color:var(--ink-2);border-right:1px solid var(--line-2);white-space:nowrap;transition:background .12s}
 .seg button:last-child{border-right:0}
-.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.seg button:hover{background:var(--surface-3)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
 /* 레벨 종류 토글: 종류별 색 (일반=주황 / 초월=보라 / 초월2=파랑 / 각성=보라 / 각성2=파랑) */
-#catseg{flex-wrap:wrap}
 #catseg button[aria-pressed="true"]{color:#fff}
 #catseg button[data-cat="lv"][aria-pressed="true"]{background:#d9822b}
 #catseg button[data-cat="ulv"][aria-pressed="true"]{background:#9163d8}
 #catseg button[data-cat="slv"][aria-pressed="true"]{background:#3f97dd}
 #catseg button[data-cat="awk"][aria-pressed="true"]{background:#9163d8}
 #catseg button[data-cat="awk2"][aria-pressed="true"]{background:#3f97dd}
-#partyseg button{padding:8px 0;min-width:27px;text-align:center}
-.field input{background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;
-  padding:9px 12px;color:var(--ink);font:inherit;font-variant-numeric:tabular-nums;height:38px}
-.field input.lv,.field input.rate{width:132px}
-.field .rng{font-size:10.5px;color:var(--ink-3);line-height:1.35;min-height:2.7em;
-  width:132px;white-space:normal;overflow-wrap:break-word}
-.condrow .readout{margin-left:auto;text-align:right;font-size:12.5px;color:var(--ink-2);line-height:1.5}
-.condrow .readout b{color:var(--gold);font-family:var(--mono)}
-.condrow .readout .bad{color:var(--warn)}
+#partyseg button{padding:0}
+.readout{grid-column:1/-1;margin-top:2px;padding:11px 14px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:10px;font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.readout b{color:var(--gold);font-family:var(--mono);font-weight:600}
+.readout .bad{color:var(--warn)}
 
 .controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
   background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px}
@@ -213,22 +216,20 @@ footer.pg b.w{color:var(--warn)}
   body{font-size:14px}
   .site-tabs{gap:6px;padding:8px 12px}.site-tabs a{padding:6px 12px;font-size:13px}
   .wrap{padding:16px 13px 48px}
-  .condrow .readout{margin-left:0;width:100%;text-align:left}
   .search{flex:1 1 100%}
   .big{grid-template-columns:1fr}
   .kv{grid-template-columns:1fr 1fr}
   .section{padding:14px 15px}
   .dhead{padding:16px 15px 14px}
   .seg.tierseg{max-width:100%;overflow-x:auto}
-  /* 조건 입력칸: 좁은 폭에서 2열로 균일하게 */
-  .condrow{gap:14px 12px}
-  .field:not(:has(#catseg)){flex:1 1 44%}
-  .field input.lv,.field input.rate{width:100%}
-  .field .rng{width:auto;min-height:2.4em}
-  /* 레벨 종류 6칸이 좁은 폭에서 한 줄에 안 들어가 마지막만 튀는 문제 → 3열 그리드로 균일하게 */
-  .field:has(#catseg){flex:1 1 100%}
-  #catseg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:none;border:0;overflow:visible}
-  #catseg button{border:1px solid var(--line-2);border-right:1px solid var(--line-2);border-radius:8px;text-align:center}
+  /* 조건 입력바: 2열 그리드, 토글은 폭 꽉 채움 */
+  .condbar{padding:14px}
+  .condrow{grid-template-columns:1fr 1fr;gap:12px}
+  .field.full,.field.w2{grid-column:1/-1}
+  #catseg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:none;border:0;height:auto;overflow:visible}
+  #catseg button{height:38px;border:1px solid var(--line-2);border-radius:9px}
+  #partyseg button{font-size:13px}
+  .readout{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -255,7 +256,7 @@ footer.pg b.w{color:var(--warn)}
 
   <div class="condbar">
     <div class="condrow">
-      <div class="field">
+      <div class="field full">
         <span>레벨 종류</span>
         <div class="seg" role="group" aria-label="레벨 종류" id="catseg">
           <button data-cat="lv"   aria-pressed="true">일반 Lv</button>
@@ -273,24 +274,24 @@ footer.pg b.w{color:var(--warn)}
       <div class="field">
         <span>현재 경험치 %</span>
         <input id="curexp" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
-        <span class="rng">지금 레벨에서 채운 %<br>(0 = 레벨 시작)</span>
+        <span class="rng">지금 레벨에서 채운 %</span>
       </div>
       <div class="field">
         <span>경험치 획득량 %</span>
         <input id="ratein" class="rate num" type="text" inputmode="decimal" value="0" autocomplete="off" spellcheck="false">
-        <span class="rng">캐릭터창 수치 그대로<br>(소수점 1자리)</span>
+        <span class="rng">캐릭터창 수치 그대로</span>
       </div>
       <div class="field">
         <span>추가 %</span>
         <input id="ratebonus" class="rate num" type="text" inputmode="decimal" value="50" autocomplete="off" spellcheck="false">
-        <span class="rng">이벤트·프리미엄 등<br>스탯에 안 잡히는 보너스</span>
+        <span class="rng">이벤트·프리미엄 보너스</span>
       </div>
-      <div class="field">
+      <div class="field w2">
         <span>파티 인원</span>
         <div class="seg" id="partyseg" role="group" aria-label="파티 인원">
           <button data-p="1" aria-pressed="true">1</button><button data-p="2" aria-pressed="false">2</button><button data-p="3" aria-pressed="false">3</button><button data-p="4" aria-pressed="false">4</button><button data-p="5" aria-pressed="false">5</button><button data-p="6" aria-pressed="false">6</button><button data-p="7" aria-pressed="false">7</button><button data-p="8" aria-pressed="false">8</button>
         </div>
-        <span class="rng">인원 많을수록<br>1인당 경험치 적어짐</span>
+        <span class="rng">인원 많을수록 1인당 경험치 적어짐</span>
       </div>
       <div class="readout" id="readout"></div>
     </div>
@@ -336,8 +337,10 @@ footer.pg b.w{color:var(--warn)}
   </div>
 
   <footer class="pg">
-    1회 완주 경험치 = 인던에 배치된 몹을 한 번씩 잡은 기본 경험치 합 × (획득량&nbsp;% + 추가&nbsp;%) × 파티 배분. "추가&nbsp;%"는 캐릭터창에 안 뜨는 이벤트 경험치 등(기본 50). 파티 배분은 1인 100% / 4인 70% / 8인 30% 로 1인당 줄어듭니다.
-    단계 배율은 던전마다 다르고(표준 8인 인던 1~4단 60/70/85/100%), 라이티티아는 15초마다 리젠 팜 가정.
+    1회 완주 경험치 = 인던에 배치된 몹을 한 번씩 잡은 기본 경험치 합 × (획득량&nbsp;% + 추가&nbsp;%) × 파티 배분.
+    "추가&nbsp;%"는 캐릭터창에 안 뜨는 이벤트 경험치 등(기본 50). 파티 배분은 1인 100% / 4인 70% / 8인 30% 로 1인당 줄어듭니다.
+    <br>단계 배율은 던전마다 다릅니다 (표준 8인 인던은 1~4단 60/70/85/100%).
+    라이티티아는 <b>15초마다 몹이 리젠된다고 가정</b>하고 1~4구역 중 하나를 골라 제한시간만큼 반복 계산합니다.
     <br>레벨 상승은 <b>일반 / 초월(ULv·SLv) / 각성(1·2)</b> 세 갈래를 따로 계산. 입장 판정은 일반·초월 레벨 기준이라 각성 레벨은 생략, 못 가는 인던은 🔒.
     <br><b class="w">※</b> 실제와 다를 수 있는 참고용.
   </footer>
@@ -880,7 +883,7 @@ function select(i, userOpen){
     </div>
     ${d.wave_est?`<div class="section" style="padding-top:14px;padding-bottom:14px"><p class="note" style="margin:0"><b class="w">※ 추정치</b> · 웨이브가 계속 재생성되는 인던인데 그 구성이 게임 파일에 없어, 해당 레벨대 몹을 스테이지별로 1회씩 처치한다고 가정해 어림잡았습니다. 실제와 차이가 클 수 있습니다.</p></div>`:""}
     <div class="section">
-      <h3>${d.farm ? esc(t.label)+" · 리젠 팜" : "1회 완주"+(d.tier_kind!=="none"?` · ${esc(t.label)}`:"")}</h3>
+      <h3>${d.farm ? esc(t.label)+" · 15초 리젠 반복" : "1회 완주"+(d.tier_kind!=="none"?` · ${esc(t.label)}`:"")}</h3>
       <div class="big">
         <div><div class="k">${d.farm?"제한시간 획득 경험치":"획득 경험치"} <small>(획득량 ${trim(st.ratePct)}%${st.rateBonus?` +${trim(st.rateBonus)}%`:""}${partyFor(d)>1?` · ${partyFor(d)}인`:""})</small></div><div class="v g">${unit(e)}<small> (${nf.format(Math.round(e))})</small></div></div>
         ${gainBlk}
