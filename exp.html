@@ -328,16 +328,10 @@ footer.pg b.w{color:var(--warn)}
   </div>
 
   <footer class="pg">
-    "1회 완주 경험치"는 그 인던 스테이지에 배치된 몹을 한 번씩 다 잡았을 때의 기본 경험치 합에
-    (경험치 획득량 % + 추가 %) 를 적용한 값입니다. "경험치 획득량"엔 캐릭터창 수치를 그대로,
-    "추가 %"엔 캐릭터창에 안 잡히는 보너스(상시 이벤트 경험치 등, 기본값 50)를 넣습니다.
-    표준 8인 인던은 <b>1~5단</b>(배율 60/70/85/100/140%), 신비한 숲의 신전·~상급 던전은 <b>1~4단계</b>(단계별 몹 수 차이)로 나눠 볼 수 있고,
-    라이티티아는 1~4구역을 토글로 골라 <b>15초마다 전멸 후 리젠</b>을 제한시간만큼 반복한다고 가정해 계산합니다.
-    레벨 상승은 <b>일반 Lv</b> / <b>초월(ULv·SLv)</b> / <b>각성(각성·각성2)</b> 세 갈래로 나눠 갈래 안에서만 이어서 계산하며, 각성·각성2는 1레벨 상승까지 필요한 세트 수를 보여줍니다.
-    "현재 경험치 %"에 지금 레벨에서 채운 경험치 비율을 넣으면 거기서부터 다음 목표까지 계산합니다(예: 각성2 79레벨 48.9% → 80레벨까지).
-    현재 레벨을 넣으면 입장 레벨이 안 되는 인던은 🔒 로 표시하고, 묶음 계산에선 입장 요구 낮은 순으로 돌며 앞 인던으로 레벨업해 뒤 인던이 해금되는지까지 따집니다(초월>일반, 각성>초월 순으로 봄).
-    <br><b class="w">※ 주의</b> · 파티 분배 등은 반영하지 않았습니다.
-    부정확할 수 있으며 실제 게임과 다를 수 있습니다. 참고용으로만 봐 주세요.
+    1회 완주 경험치 = 인던에 배치된 몹을 한 번씩 잡은 기본 경험치 합 × (획득량&nbsp;% + 추가&nbsp;%). "추가&nbsp;%"는 캐릭터창에 안 뜨는 이벤트 경험치 등(기본 50).
+    단계 배율은 던전마다 다르고(표준 8인 인던 1~4단 60/70/85/100%), 라이티티아는 15초마다 리젠 팜 가정.
+    <br>레벨 상승은 <b>일반 / 초월(ULv·SLv) / 각성(1·2)</b> 세 갈래를 따로 계산. 입장 판정은 일반·초월 레벨 기준이라 각성 레벨은 생략, 못 가는 인던은 🔒.
+    <br><b class="w">※</b> 파티 분배 등 미반영 · 실제와 다를 수 있는 참고용.
   </footer>
 </div>
 
@@ -576,16 +570,15 @@ function nextCost(){
 function runsFor(xp){ const c = nextCost(); const e = effXp(xp); return (c>0 && e>0) ? Math.ceil(c/e) : 0; }
 
 /* ---- 입장 가능 레벨 판정 ----
-   모든 레벨 종류를 하나의 순위(rank)로 환산: 일반 Lv < 초월 ULv < 초월2 SLv < 각성 < 각성2. */
-const RANK_ULV = LV_CAP, RANK_SLV = LV_CAP + ULV_CAP, RANK_AWK = LV_CAP + ULV_CAP + 10000;
-function posRank(p, frac){
+   던전 입장은 일반 Lv → 초월 ULv → 초월2 SLv 축으로만 걸림. 각성/각성2 는 별개 시스템이라
+   그걸로는 초월 레벨을 알 수 없어 입장 판정을 하지 않는다. */
+const RANK_ULV = LV_CAP, RANK_SLV = LV_CAP + ULV_CAP;
+function posRank(p){                     // 입장 판정용 — 정수 레벨 기준(진행률 무시, 보수적)
   if(!p) return Infinity;
-  frac = frac || 0;
-  if(p.cat==="lv")   return p.v + frac;
-  if(p.cat==="ulv")  return RANK_ULV + p.v + frac;
-  if(p.cat==="slv")  return RANK_SLV + p.v*100 + frac;
-  if(p.cat==="awk")  return RANK_AWK + p.v + frac;
-  return RANK_AWK + AWK_CAP + p.v + frac;
+  if(p.cat==="lv")   return p.v;
+  if(p.cat==="ulv")  return RANK_ULV + p.v;
+  if(p.cat==="slv")  return RANK_SLV + Math.floor(p.v*100);
+  return Infinity;                       // 각성/각성2 → 판정 불가
 }
 function reqRank(lvStr){        // 인던 입장 요구 레벨 → rank (표기 없으면 0 = 제한 없음)
   if(!lvStr) return 0;
@@ -596,8 +589,10 @@ function reqRank(lvStr){        // 인던 입장 요구 레벨 → rank (표기 
   if((m = s.match(/Lv\.?(\d+)/i)))            return parseInt(m[1],10);
   return 0;
 }
-function userRank(){ return st.lv ? posRank(st.lv, (st.curPct||0)/100) : Infinity; }
-function locked(d){ return reqRank(d.lv) > userRank() + 1e-6; }
+/* 입장 판정이 가능한 상태인가 = 현재 레벨이 일반/초월/초월2 중 하나 */
+function entryKnown(){ return !!st.lv && (st.lv.cat==="lv"||st.lv.cat==="ulv"||st.lv.cat==="slv"); }
+function userRank(){ return entryKnown() ? posRank(st.lv) : Infinity; }
+function locked(d){ return entryKnown() && reqRank(d.lv) > userRank() + 1e-6; }
 
 /* 인던 레벨대 → 정렬키. 일반 Lv < 초월 ULv < 초월2 SLv, 높을수록 앞. 표기 없으면 0. */
 function lvKey(d){
@@ -697,7 +692,7 @@ function view(){
     const query = st.q.trim().toLowerCase();
     r = r.filter(o => ((o.d.name||"")+" "+(o.d.raw_name||"")+" "+(o.d.kind||"")+" "+(o.d.lv||"")).toLowerCase().includes(query));
   }
-  if(st.onlyEnter && st.lv) r = r.filter(o => !locked(o.d));
+  if(st.onlyEnter && entryKnown()) r = r.filter(o => !locked(o.d));
   r.sort((A,B)=>{
     const a=A.d, b=B.d;
     if(st.sort==="name") return a.name.localeCompare(b.name,"ko");
@@ -730,6 +725,10 @@ function rowHTML(o){
   </div>`;
 }
 function renderList(){
+  const oe = document.getElementById("onlyenter");
+  oe.disabled = !entryKnown();
+  oe.parentElement.style.opacity = entryKnown() ? "" : ".4";
+  oe.parentElement.title = entryKnown() ? "" : "입장 판정은 일반/초월 레벨을 넣어야 됩니다";
   const rows = view();
   document.getElementById("lcount").textContent = "· " + rows.length;
   const pi = document.getElementById("pickinfo");
@@ -863,7 +862,8 @@ function select(i, userOpen){
 /* ---- detail (묶음) ---- */
 function renderMulti(){
   // 입장 요구 레벨 낮은 순으로 돌면서, 앞 인던 경험치로 레벨업해 뒤 인던이 해금되는지 순차 계산.
-  const order = st.lv
+  const chkEntry = entryKnown();
+  const order = chkEntry
     ? [...st.multi].sort((a,b)=> reqRank(ALL[a].lv)-reqRank(ALL[b].lv) || lvKey(ALL[b])-lvKey(ALL[a]))
     : [...st.multi].sort((a,b)=> lvKey(ALL[b])-lvKey(ALL[a]));
   const items = order.map(i=>({i, d:ALL[i], t:curTier(ALL[i],i), cnt:st.counts[i]||1}));
@@ -873,8 +873,8 @@ function renderMulti(){
   const rows = items.map(o=>{
     const e = effXp(o.t.xp), line = e * o.cnt;
     let lk = false;
-    if(st.lv){
-      const simR = posRank(addXp(st.lv, accXp, sf).pos, 0);
+    if(chkEntry){
+      const simR = posRank(addXp(st.lv, accXp, sf).pos);
       lk = reqRank(o.d.lv) > simR + 1e-6;
     }
     if(!lk){ sum += line; accXp += line; totalRuns += o.cnt; }
