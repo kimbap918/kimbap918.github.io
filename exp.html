@@ -371,7 +371,7 @@ const CAT = {
 };
 function stepCost(cat, v){                 // (cat,v) → 다음 하위레벨까지 필요 경험치
   if(cat==="lv")   return DB.exp_delta[Math.max(v-1,0)]  || 0;  // Lv v → v+1
-  if(cat==="ulv")  return 40e9 + v*0.1e9;                        // ULv v → v+1
+  if(cat==="ulv")  return 40e9 + (v-1)*0.1e9;                    // ULv v → v+1 (LIMIT_EXP: 40억+ (v-1)×1억)
   if(cat==="slv"){ const k = Math.round(v*100)+1; return 20e12 + k*3e9; } // SLv v → v+0.01
   if(cat==="awk")  return DB.awk_delta[Math.max(v-1,0)]  || 0;   // 각성 Lv v → v+1
   if(cat==="awk2") return DB.awk2_delta[Math.max(v-1,0)] || 0;   // 각성2 Lv v → v+1
@@ -555,7 +555,7 @@ function nextCost(){
   if(p.cat==="slv"){
     for(let x = Math.round(p.v*100); x < Math.round(t.v*100); x++) c += 20e12 + (x+1)*3e9;
   } else if(p.cat==="ulv"){
-    for(let x = p.v; x < t.v; x++) c += 40e9 + x*0.1e9;
+    for(let x = p.v; x < t.v; x++) c += 40e9 + (x-1)*0.1e9;
   } else if(p.cat==="awk"){
     for(let x = p.v; x < t.v; x++) c += DB.awk_delta[x-1] || 0;
   } else if(p.cat==="awk2"){
