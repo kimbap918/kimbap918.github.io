@@ -86,6 +86,9 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 #catseg button[data-cat="awk"][aria-pressed="true"]{background:#9163d8}
 #catseg button[data-cat="awk2"][aria-pressed="true"]{background:#3f97dd}
 #partyseg button{padding:0}
+/* 정렬 토글: 검색바에 밀려 글자가 잘리지 않도록 줄지 않고 내용 폭 유지 */
+#sortseg{flex:0 0 auto}
+#sortseg button{flex:0 0 auto;padding:0 14px}
 .readout{grid-column:1/-1;margin-top:2px;padding:11px 14px;background:var(--surface-2);border:1px solid var(--line);
   border-radius:10px;font-size:12.5px;color:var(--ink-2);line-height:1.65}
 .readout b{color:var(--gold);font-family:var(--mono);font-weight:600}
@@ -122,7 +125,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
   font-size:12px;font-weight:700;color:var(--ink-2);margin:16px 0 6px}
 .rmh:first-child{margin-top:0}
 .rmh span{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--gold)}
-.search{position:relative;flex:1;min-width:220px}
+.search{position:relative;flex:1 1 150px;min-width:110px}
 .search input{width:100%;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;
   padding:9px 12px 9px 34px;color:var(--ink);font:inherit}
 .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none}
@@ -217,6 +220,8 @@ footer.pg b.w{color:var(--warn)}
   .site-tabs{gap:6px;padding:8px 12px}.site-tabs a{padding:6px 12px;font-size:13px}
   .wrap{padding:16px 13px 48px}
   .search{flex:1 1 100%}
+  #sortseg{flex:1 1 100%}
+  #sortseg button{flex:1;padding:0 4px}
   .big{grid-template-columns:1fr}
   .kv{grid-template-columns:1fr 1fr}
   .section{padding:14px 15px}
@@ -302,7 +307,7 @@ footer.pg b.w{color:var(--warn)}
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="인던 이름 검색  (예: 리키모, 이카로스, 신비한 숲)" autocomplete="off">
     </label>
-    <div class="seg" role="group" aria-label="정렬">
+    <div class="seg" id="sortseg" role="group" aria-label="정렬">
       <button data-sort="xp" aria-pressed="true">경험치</button>
       <button data-sort="lv">레벨</button>
       <button data-sort="gain">레벨 상승</button>
