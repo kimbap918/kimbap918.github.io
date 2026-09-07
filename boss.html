@@ -332,12 +332,464 @@ body,button,.theme-toggle,.toggle input{cursor:url("data:image/x-icon;base64,AAA
   <a href="exp.html">경험치 인던 (beta)</a>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+<!-- LKShare v1 — 4개 도구 공통 공유 키트 (_shared/share_kit.html) -->
+<style>
+.lk-sb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;width:24px;height:24px;border-radius:6px;vertical-align:middle;
+  color:var(--muted,var(--ink-3,#8b95a5));transition:color .12s,background .12s}
+.lk-sb:hover{color:var(--accent,#3b82f6);background:color-mix(in srgb,currentColor 14%,transparent)}
+.lk-sb:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+.lk-sb svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.lk-menu{position:fixed;z-index:99999;min-width:158px;padding:5px;font-size:13px;
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  color:var(--text,var(--ink,#e7e9ef));
+  border:1px solid var(--border,var(--line,#333));border-radius:10px;
+  box-shadow:0 14px 36px -12px rgba(0,0,0,.5)}
+.lk-menu button{all:unset;box-sizing:border-box;display:flex;width:100%;gap:9px;align-items:center;
+  padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13px;
+  color:var(--text,var(--ink,#e7e9ef))}
+.lk-menu button:hover{background:color-mix(in srgb,var(--accent,#3b82f6) 16%,transparent)}
+.lk-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:100000;
+  background:var(--text,var(--ink,#111));color:var(--panel,var(--surface,var(--bg,#fff)));
+  padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:600;
+  box-shadow:0 12px 30px -8px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:no-preference){
+  .lk-toast{animation:lk-tin .18s ease-out}
+  @keyframes lk-tin{from{opacity:0;transform:translateX(-50%) translateY(6px)}}
+}
+</style>
+<script>
+window.LKShare=(function(){
+  var BASE="https://kimbap918.github.io/";
+  function url(s){return BASE+s.page+(s.params?("?"+s.params):"");}
+  function toast(m){
+    var o=document.querySelector(".lk-toast");if(o)o.remove();
+    var t=document.createElement("div");t.className="lk-toast";t.textContent=m;
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2400);
+  }
+  function copyText(x){
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(x);
+    return new Promise(function(res,rej){try{var a=document.createElement("textarea");
+      a.value=x;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);
+      a.select();document.execCommand("copy");a.remove();res();}catch(e){rej(e);}});
+  }
+  function summary(s){
+    var t=s.title+(s.lines&&s.lines[0]?(" ("+s.lines[0]+")"):"");
+    return t+" · "+(s.subtitle||"라테일 도구 모음")+String.fromCharCode(10)+url(s);
+  }
+  function hexA(h,a){h=(h||"#74acff").replace("#","");
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    return "rgba("+parseInt(h.substr(0,2),16)+","+parseInt(h.substr(2,2),16)+","+parseInt(h.substr(4,2),16)+","+a+")";}
+  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+  function wrap(c,t,mw,mx){var w=String(t).split(/ +/),ls=[],ln="";
+    for(var i=0;i<w.length;i++){var tt=ln?ln+" "+w[i]:w[i];
+      if(c.measureText(tt).width>mw&&ln){ls.push(ln);ln=w[i];}else ln=tt;}
+    if(ln)ls.push(ln);
+    if(mx&&ls.length>mx){ls=ls.slice(0,mx);var L=ls[mx-1];
+      while(L.length&&c.measureText(L+"…").width>mw)L=L.slice(0,-1);ls[mx-1]=L+"…";}
+    return ls;}
+  function clip(c,t,mw){t=String(t);if(c.measureText(t).width<=mw)return t;
+    while(t.length&&c.measureText(t+"…").width>mw)t=t.slice(0,-1);return t+"…";}
+  function drawCard(s){
+    var W=1200,H=630,dpr=Math.min(window.devicePixelRatio||1,2);
+    var cv=document.createElement("canvas");cv.width=W*dpr;cv.height=H*dpr;
+    var c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);
+    var acc=s.accent||"#74acff",FF="'Gothic A1','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#161a22");g.addColorStop(1,"#0e1116");
+    c.fillStyle=g;c.fillRect(0,0,W,H);
+    var gl=c.createRadialGradient(W-120,90,40,W-120,90,520);
+    gl.addColorStop(0,hexA(acc,.22));gl.addColorStop(1,hexA(acc,0));
+    c.fillStyle=gl;c.fillRect(0,0,W,H);
+    if(s.emoji){c.save();c.globalAlpha=.09;c.font="320px "+FF;c.textAlign="right";
+      c.fillText(s.emoji,W+40,H+96);c.restore();}
+    c.fillStyle=acc;c.fillRect(0,0,W,8);
+    var P=72;c.textAlign="left";c.textBaseline="alphabetic";
+    if(s.emoji){c.font="54px "+FF;c.fillText(s.emoji,P,96);}
+    c.font="500 23px "+FF;c.fillStyle="#9aa4b3";
+    try{c.letterSpacing="3px";}catch(e){}
+    c.fillText(String(s.subtitle||"").toUpperCase(),P,140);
+    try{c.letterSpacing="0px";}catch(e){}
+    if(s.pill){c.font="700 21px "+FF;var pw=c.measureText(s.pill).width+32,px=W-P-pw;
+      rr(c,px,60,pw,40,20);c.fillStyle=acc;c.fill();
+      c.fillStyle="#12151b";c.fillText(s.pill,px+16,87);}
+    c.font="800 72px "+FF;c.fillStyle=acc;
+    var nm=s.quote?("「"+s.title+"」"):String(s.title||"");
+    var nls=wrap(c,nm,W-P*2,2),ny=224;
+    nls.forEach(function(l,i){c.fillText(l,P,ny+i*80);});
+    var hy=ny+(nls.length-1)*80+44;
+    c.strokeStyle="rgba(255,255,255,.1)";c.lineWidth=1;
+    c.beginPath();c.moveTo(P,hy);c.lineTo(W-P,hy);c.stroke();
+    var ry=hy+56;(s.lines||[]).slice(0,3).forEach(function(t){
+      c.font="500 31px "+FF;c.fillStyle="#e9ecf3";
+      c.fillText(clip(c,t,W-P*2),P,ry);ry+=54;});
+    c.font="500 24px 'IBM Plex Mono',ui-monospace,monospace";c.fillStyle="#7f8a9b";
+    c.fillText("kimbap918.github.io/"+s.page,P,H-46);
+    c.textAlign="right";c.fillStyle="#6c7688";c.fillText("라테일 도구 모음",W-P,H-46);
+    return cv;
+  }
+  function withFonts(fn){
+    if(document.fonts&&document.fonts.load){
+      Promise.all([document.fonts.load("800 72px 'Gothic A1'"),
+        document.fonts.load("500 23px 'Gothic A1'"),
+        document.fonts.load("500 24px 'IBM Plex Mono'")]).then(fn,fn);
+    }else fn();
+  }
+  function dl(b,s){
+    if(!b){toast("이미지 생성 실패");return;}
+    var u=URL.createObjectURL(b),a=document.createElement("a");
+    a.href=u;a.download="latale-"+String(s.page||"card").replace(/[^A-Za-z0-9]+/g,"")+".png";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u);},5000);
+    toast("이미지 저장됨");
+  }
+  function makeBlob(s,opts,cb){
+    var el=opts&&opts.captureEl&&opts.captureEl();
+    if(el&&window.html2canvas){
+      var prev={ov:el.style.overflow,h:el.style.height,mh:el.style.maxHeight};
+      el.style.overflow="visible";el.style.height="auto";el.style.maxHeight="none";
+      var fix=document.createElement("style");
+      fix.textContent=".gold-shine,.mythic-shine{background:none!important;animation:none!important;-webkit-text-fill-color:#e8b93a!important;color:#e8b93a!important}.mythic-shine{-webkit-text-fill-color:#c48aff!important;color:#c48aff!important}";
+      document.head.appendChild(fix);
+      var undo=opts&&opts.prep?opts.prep(el):null;
+      var restore=function(){el.style.overflow=prev.ov;el.style.height=prev.h;el.style.maxHeight=prev.mh;fix.remove();if(undo)try{undo();}catch(e){}};
+      window.html2canvas(el,{backgroundColor:getComputedStyle(document.body).backgroundColor||"#12151b",scale:2,logging:false,ignoreElements:function(x){return x.classList&&x.classList.contains("lk-sb");}})
+        .then(function(cv){restore();cv.toBlob(cb,"image/png");})
+        .catch(function(){restore();withFonts(function(){drawCard(s).toBlob(cb,"image/png");});});
+      return;
+    }
+    withFonts(function(){drawCard(s).toBlob(cb,"image/png");});
+  }
+  function saveCard(s,opts){ makeBlob(s,opts,function(b){dl(b,s);}); }
+  function nativeShare(s,opts){
+    makeBlob(s,opts,function(b){
+      var f=b?new File([b],"latale.png",{type:"image/png"}):null;
+      var p={title:s.title,text:summary(s),url:url(s)};
+      if(f&&navigator.canShare&&navigator.canShare({files:[f]}))p.files=[f];
+      (navigator.share?navigator.share(p):copyText(summary(s)).then(function(){toast("공유 내용 복사됨");})).catch(function(){});
+    });
+  }
+  var openMenu=null;
+  function closeMenu(){if(openMenu){openMenu();openMenu=null;}}
+  function showMenu(btn,getState,opts){
+    closeMenu();
+    var m=document.createElement("div");m.className="lk-menu";
+    var withImg=!(opts&&opts.image===false);
+    m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
+      +(withImg?'<button data-a="img">🖼️ 이미지 저장</button>':'')
+      +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
+    document.body.appendChild(m);
+    var r=btn.getBoundingClientRect();
+    var left=Math.max(8,Math.min(r.left,window.innerWidth-m.offsetWidth-8));
+    var top=r.bottom+6;
+    if(top+m.offsetHeight>window.innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
+    m.style.left=left+"px";m.style.top=top+"px";
+    m.addEventListener("click",function(e){
+      var a=e.target.closest("button");if(!a)return;
+      var act=a.dataset.a;closeMenu();
+      var s=getState();if(!s)return;
+      if(act==="link")copyText(url(s)).then(function(){toast("링크 복사됨");},function(){toast("복사 실패 — 주소창에서 복사하세요");});
+      else if(act==="img")saveCard(s,opts);
+      else if(act==="native")nativeShare(s,opts);
+    });
+    function onDoc(e){if(!m.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))closeMenu();}
+    function onKey(e){if(e.key==="Escape")closeMenu();}
+    setTimeout(function(){document.addEventListener("mousedown",onDoc);},0);
+    document.addEventListener("keydown",onKey);
+    window.addEventListener("resize",closeMenu,{once:true});
+    window.addEventListener("scroll",closeMenu,{once:true,capture:true});
+    openMenu=function(){m.remove();document.removeEventListener("mousedown",onDoc);document.removeEventListener("keydown",onKey);};
+  }
+  var ICON='<svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>';
+  return {
+    attach:function(parent,getState,opts){
+      if(!parent||parent.querySelector(".lk-sb"))return null;
+      var b=document.createElement("button");
+      b.type="button";b.className="lk-sb";b.title="공유";b.setAttribute("aria-label","공유");
+      b.innerHTML=ICON;
+      b.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();showMenu(b,getState,opts||{});});
+      parent.appendChild(b);return b;
+    },
+    param:function(k,v){
+      try{var u=new URL(location.href);u.searchParams.set(k,String(v));
+        u.searchParams.delete("vc");
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    clearParam:function(k){
+      try{var u=new URL(location.href);u.searchParams.delete(k);
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    get:function(k){try{return new URLSearchParams(location.search).get(k);}catch(e){return null;}},
+    url:url, card:drawCard
+  };
+})();
+</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — boss_lookup (게임 데이터는 사전에 없어 한국어 유지) -->
+<script>
+LKI18N.add({
+  "라테일 보스 도감":{en:"LaTale Boss Codex",zh:"LaTale Boss图鉴",ja:"LaTale ボス図鑑"},
+  "라테일 보스의 스탯을 검색하고 한눈에 볼 수 있습니다.":{en:"Search LaTale boss stats and see them at a glance.",zh:"搜索并一览 LaTale Boss 属性。",ja:"LaTaleのボスステータスを検索して一目で確認できます。"},
+  "보스 이름 · 던전명 검색  (예: 데고스, 아마란스, 증명의탑)":{en:"Search boss / dungeon name  (e.g. 데고스, 아마란스, 증명의탑)",zh:"搜索 Boss·副本名  (例: 데고스, 아마란스, 증명의탑)",ja:"ボス・ダンジョン名で検索  (例: 데고스, 아마란스, 증명의탑)"},
+  "정렬":{en:"Sort",zh:"排序",ja:"並び替え"},
+  "최근순":{en:"Recent",zh:"最新",ja:"新着順"},
+  "최신순":{en:"Newest",zh:"最新",ja:"新着順"},
+  "레벨":{en:"Level",zh:"等级",ja:"レベル"},
+  "체력":{en:"HP",zh:"生命值",ja:"HP"},
+  "물리감소":{en:"Phys. reduce",zh:"物理减免",ja:"物理減少"},
+  "보스 목록":{en:"Boss list",zh:"Boss 列表",ja:"ボスリスト"},
+  "왼쪽에서 보스를 선택하세요.":{en:"Select a boss on the left.",zh:"请从左侧选择 Boss。",ja:"左からボスを選択してください。"},
+  "조건에 맞는 보스가 없습니다.":{en:"No bosses match.",zh:"没有符合条件的 Boss。",ja:"条件に合うボスがありません。"},
+  "← 목록으로":{en:"← Back to list",zh:"← 返回列表",ja:"← 一覧へ"},
+  "목록으로":{en:"Back to list",zh:"返回列表",ja:"一覧へ"},
+  "난이도":{en:"Difficulty",zh:"难度",ja:"難易度"},
+  "1단":{en:"T1",zh:"1段",ja:"1段"},
+  "2단":{en:"T2",zh:"2段",ja:"2段"},
+  "3단":{en:"T3",zh:"3段",ja:"3段"},
+  "4단":{en:"T4",zh:"4段",ja:"4段"},
+  "5단":{en:"T5",zh:"5段",ja:"5段"},
+  "1~4단":{en:"T1–T4",zh:"1~4段",ja:"1~4段"},
+  "4단(표준 난이도)":{en:"T4 (standard)",zh:"4段(标准难度)",ja:"4段(標準難易度)"},
+  "HP 리셋":{en:"HP Reset",zh:"HP 重置",ja:"HPリセット"},
+  "리셋":{en:"Reset",zh:"重置",ja:"リセット"},
+  "· HP바":{en:"· HP bars",zh:"· HP 槽",ja:"· HPバー"},
+  "체력 / SP":{en:"HP / SP",zh:"生命值 / SP",ja:"HP / SP"},
+  "공격 스탯":{en:"Attack stats",zh:"攻击属性",ja:"攻撃ステータス"},
+  "공격 (Atk)":{en:"ATK",zh:"攻击 (Atk)",ja:"攻撃 (Atk)"},
+  "마법 (Ele)":{en:"M.ATK",zh:"魔法 (Ele)",ja:"魔法 (Ele)"},
+  "방어 (Def)":{en:"DEF",zh:"防御 (Def)",ja:"防御 (Def)"},
+  "행운 (Luk)":{en:"LUK",zh:"幸运 (Luk)",ja:"幸運 (Luk)"},
+  "속성력":{en:"Elemental",zh:"属性力",ja:"属性力"},
+  "물리 대미지 배율":{en:"Phys. dmg %",zh:"物理伤害倍率",ja:"物理ダメージ倍率"},
+  "마법 대미지 배율":{en:"Magic dmg %",zh:"魔法伤害倍率",ja:"魔法ダメージ倍率"},
+  "대미지 배율":{en:"Damage %",zh:"伤害倍率",ja:"ダメージ倍率"},
+  "추가 대미지 (절대)":{en:"Added dmg (flat)",zh:"附加伤害(绝对)",ja:"追加ダメージ(絶対)"},
+  "추가 마법 대미지 (절대)":{en:"Added magic dmg (flat)",zh:"附加魔法伤害(绝对)",ja:"追加魔法ダメージ(絶対)"},
+  "점프 공격":{en:"Jump ATK",zh:"跳跃攻击",ja:"ジャンプ攻撃"},
+  "일반 / 크리티컬":{en:"Normal / Crit",zh:"普通 / 暴击",ja:"通常 / クリティカル"},
+  "크리티컬 대미지 %":{en:"Crit dmg %",zh:"暴击伤害 %",ja:"クリティカルダメージ %"},
+  "백어택 대미지":{en:"Back-attack dmg",zh:"背击伤害",ja:"バックアタックダメージ"},
+  "이동 속도":{en:"Move speed",zh:"移动速度",ja:"移動速度"},
+  "방어 · 대미지 감소":{en:"Defense · Damage reduction",zh:"防御·伤害减免",ja:"防御・ダメージ減少"},
+  "물리 절대 대미지 감소":{en:"Phys. flat dmg reduction",zh:"物理绝对伤害减免",ja:"物理絶対ダメージ減少"},
+  "마법 절대 대미지 감소":{en:"Magic flat dmg reduction",zh:"魔法绝对伤害减免",ja:"魔法絶対ダメージ減少"},
+  "절대 대미지 감소":{en:"Flat dmg reduction",zh:"绝对伤害减免",ja:"絶対ダメージ減少"},
+  "대미지 감소 %":{en:"Damage reduction %",zh:"伤害减免 %",ja:"ダメージ減少 %"},
+  "명중 · 회피":{en:"Accuracy · Evasion",zh:"命中·回避",ja:"命中・回避"},
+  "물리 명중률":{en:"Phys. accuracy",zh:"物理命中率",ja:"物理命中率"},
+  "마법 명중률":{en:"Magic accuracy",zh:"魔法命中率",ja:"魔法命中率"},
+  "물리 회피율":{en:"Phys. evasion",zh:"物理回避率",ja:"物理回避率"},
+  "마법 회피율":{en:"Magic evasion",zh:"魔法回避率",ja:"魔法回避率"},
+  "물·마 회피":{en:"Phys/Mag evasion",zh:"物·魔回避",ja:"物・魔回避"},
+  "면역 · 상태이상 저항":{en:"Immunity · Status resist",zh:"免疫·状态抗性",ja:"免疫・状態異常耐性"},
+  "면역":{en:"Immune",zh:"免疫",ja:"免疫"},
+  "저항":{en:"Resist",zh:"抗性",ja:"耐性"},
+  "면역·상태이상 저항 없음":{en:"No immunity or status resist",zh:"无免疫·状态抗性",ja:"免疫・状態異常耐性なし"},
+  "봉인기":{en:"Seal skill",zh:"封印技",ja:"封印技"},
+  "참고":{en:"Note",zh:"说明",ja:"参考"},
+  "※ 주의":{en:"※ Note",zh:"※ 注意",ja:"※ 注意"},
+  "미분류":{en:"Uncategorized",zh:"未分类",ja:"未分類"},
+  "미분류 · 동적 소환/이벤트":{en:"Uncategorized · dynamic summon / event",zh:"未分类·动态召唤/事件",ja:"未分類・動的召喚/イベント"},
+  "대략 콘텐츠 추가 순서":{en:"Roughly by content-release order",zh:"大致按内容追加顺序",ja:"おおよそのコンテンツ追加順"},
+  "· 위 감소 수치는 몹이 항상 지니는 고정값입니다. 해당 내용은 실제 게임 속 정보와 틀리거나 다를 수 있습니다.":{en:"· The reduction values above are the mob's permanent flat values. They may be inaccurate or differ from the live game.",zh:"· 上述减免为怪物固定持有的数值，可能与实际游戏有出入。",ja:"· 上記の減少値はモブが常に持つ固定値です。実際のゲームと異なる場合があります。"},
+  "· 난이도별 배율과 단계 전환 수치는 부정확할 수 있으며\n    실제 게임과 다를 수 있습니다. 참고용으로만 봐 주세요.":{en:"· Difficulty multipliers and tier-swap values may be inaccurate and differ from the live game. For reference only.",zh:"· 各难度倍率与阶段切换数值可能不准确，与实际游戏有差异，仅供参考。",ja:"· 難易度別倍率と段階切替の数値は不正確な場合があり、実際のゲームと異なることがあります。参考程度にご覧ください。"},
+  "최근 업데이트 2026.09.02":{en:"Last updated 2026.09.02",zh:"最近更新 2026.09.02",ja:"最終更新 2026.09.02"},
+  "수록 보스":{en:"Bosses listed",zh:"收录 Boss",ja:"収録ボス"},
+  "레벨 범위":{en:"Level range",zh:"等级范围",ja:"レベル範囲"},
+  "최고 체력":{en:"Highest HP",zh:"最高生命值",ja:"最大HP"},
+  "보스":{en:"Boss",zh:"Boss",ja:"ボス"},
+  "보스 기준":{en:"Boss basis",zh:"以 Boss 为准",ja:"ボス基準"},
+  "방어력":{en:"Defense",zh:"防御力",ja:"防御力"},
+  "속성 저항":{en:"Elemental resist",zh:"属性抗性",ja:"属性耐性"},
+  "물리 방어무시":{en:"Phys. DEF ignore",zh:"无视物理防御",ja:"物理防御無視"},
+  "마법 방어무시":{en:"Magic DEF ignore",zh:"无视魔法防御",ja:"魔法防御無視"},
+  "스턴 저항":{en:"Stun resist",zh:"眩晕抗性",ja:"スタン耐性"},
+  "수면 저항":{en:"Sleep resist",zh:"睡眠抗性",ja:"睡眠耐性"},
+  "혼란 저항":{en:"Confusion resist",zh:"混乱抗性",ja:"混乱耐性"},
+  "속박 저항":{en:"Bind resist",zh:"束缚抗性",ja:"束縛耐性"},
+  "1단계":{en:"Stage 1",zh:"第1阶段",ja:"ステージ1"},
+  "2단계":{en:"Stage 2",zh:"第2阶段",ja:"ステージ2"},
+  "3단계":{en:"Stage 3",zh:"第3阶段",ja:"ステージ3"},
+  "4단계":{en:"Stage 4",zh:"第4阶段",ja:"ステージ4"},
+  "5단계":{en:"Stage 5",zh:"第5阶段",ja:"ステージ5"},
+  "(일반몹 체력은 5단에서 4단 ×2.2~2.4.) 구형 8인 인던은 5단이 없고 4단이 최고 난이도입니다.":{en:"(Normal-mob HP at T5 is T4 ×2.2–2.4.) Older 8-player dungeons have no T5; T4 is the top difficulty.",zh:"(普通怪 5段生命值为 4段 ×2.2~2.4。) 旧版 8人副本没有 5段，4段为最高难度。",ja:"(一般モブのHPは5段で4段の×2.2~2.4。) 旧8人ダンジョンは5段がなく、4段が最高難易度です。"},
+  "표기된 8인 인던 보스의 스탯은 4단(표준 난이도) 기준이며, 표준 8인 인던 보스는 상세창에서 1~4단(5단이 있는 인던은 5단까지) 전환해 볼 수 있습니다. 난이도별 배율(보스 기준):":{en:"Stats shown for 8-player dungeon bosses are at T4 (standard difficulty); standard 8-player bosses can be switched T1–T4 (up to T5 where available) in the detail panel. Multipliers by difficulty (boss basis):",zh:"所示 8 人副本 Boss 属性以 4 段(标准难度)为准；标准 8 人副本 Boss 可在详情面板切换 1~4 段(有 5 段的副本可至 5 段)。各难度倍率(以 Boss 为准):",ja:"表記された8人ダンジョンボスのステータスは4段(標準難易度)基準です。標準8人ボスは詳細で1~4段(5段があるダンジョンは5段まで)切替可能。難易度別倍率(ボス基準):"}
+});
+LKI18N.init();
+</script>
+
 <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
 
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <h1>라테일 보스 도감<span class="updateDate">최근 업데이트 2026.09.02</span></h1>
+      <h1>라테일 보스 도감<span class="updateDate"><span>최근 업데이트</span> 2026.09.02</span></h1>
       <p class="sub">라테일 보스의 스탯을 검색하고 한눈에 볼 수 있습니다.</p>
     </div>
   </header>
@@ -371,9 +823,7 @@ body,button,.theme-toggle,.toggle input{cursor:url("data:image/x-icon;base64,AAA
   </div>
 
   <footer class="pg">
-    표기된 8인 인던 보스의 스탯은 <b>4단(표준 난이도)</b> 기준이며, 표준 8인 인던 보스는
-    상세창에서 <b>1~4단</b>(5단이 있는 인던은 <b>5단</b>까지) 전환해 볼 수 있습니다.
-    난이도별 배율(보스 기준):
+    <span class="fnote">표기된 8인 인던 보스의 스탯은 4단(표준 난이도) 기준이며, 표준 8인 인던 보스는 상세창에서 1~4단(5단이 있는 인던은 5단까지) 전환해 볼 수 있습니다. 난이도별 배율(보스 기준):</span>
     <div class="difftbl-wrap">
     <table class="difftbl">
       <tr><th>보스 기준</th><th>1단</th><th>2단</th><th>3단</th><th>4단</th><th>5단</th></tr>
@@ -542,6 +992,7 @@ detailEl.addEventListener("click", e=>{
 
 function select(id){
   st.sel = id;
+  if(window.LKShare) LKShare.param("b", id);
   document.querySelectorAll(".row").forEach(r=>r.setAttribute("aria-current", (+r.dataset.id===id)+""));
   const b = ALL.find(x=>x.id===id);
   if(!b) return;
@@ -609,7 +1060,7 @@ function select(id){
   detailEl.innerHTML = `
     ${DBAR}
     <div class="dhead">
-      <div class="dname">${esc(b.disp||b.name)}</div>
+      <div class="dname">${esc(b.disp||b.name)}<span class="lk-slot"></span></div>
       ${b.description ? `<p class="note" style="margin-top:8px">${esc(b.description)}</p>` : ""}
       <div class="dmeta">${tags.join("")}</div>
       ${tiersOK.length ? `<div class="seg tierseg" role="group" aria-label="난이도" style="margin-top:10px;width:max-content">
@@ -695,6 +1146,18 @@ function select(id){
   _meterPct = fillPct;
   _meterCell = cellPct;
 
+  const _sl = detailEl.querySelector(".lk-slot");
+  if(_sl && window.LKShare) LKShare.attach(_sl, () => ({
+    page:"boss.html", params:"b="+b.id,
+    title:(b.disp||b.name), subtitle:"라테일 보스 도감",
+    emoji:"🐲", accent:"#ff7a68",
+    lines:[
+      "Lv "+(b.level||"?"),
+      "HP "+hpUnit(E.hp)+((b.hp_bars||1)>1?(" · HP바 "+b.hp_bars):""),
+      (b.dungeons&&b.dungeons[0] ? b.dungeons[0].name : "")
+    ].filter(Boolean)
+  }), { captureEl: () => document.getElementById("detail") });
+
   openDetail();
   detailEl.scrollTop = 0;
 }
@@ -749,6 +1212,16 @@ document.querySelectorAll(".controls .seg button").forEach(btn=>{
 
 renderStats();
 renderList();
+
+/* 공유 링크로 진입 시 해당 보스 상세 열기 (?b=<id>) */
+(function(){ try{
+  var bp = new URLSearchParams(location.search).get("b");
+  if(bp && ALL.some(function(x){ return x.id === +bp; })){
+    select(+bp);
+    var d = document.getElementById("detail");
+    if(d) d.scrollIntoView({block:"nearest"});
+  }
+}catch(e){} })();
 
 /* 목록 틀 높이를 보스 상세 틀 높이에 맞춘다 (데스크톱 & 보스 선택 시). 넘치는 목록은 안에서만 스크롤 */
 (function(){
