@@ -146,6 +146,510 @@ h1{font-size:18px;margin:0 0 6px;}
   <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" title="라이트/다크 모드 전환"></button>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+<!-- LKShare v1 — 4개 도구 공통 공유 키트 (_shared/share_kit.html) -->
+<style>
+.lk-sb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;width:24px;height:24px;border-radius:6px;vertical-align:middle;
+  color:var(--muted,var(--ink-3,#8b95a5));transition:color .12s,background .12s}
+.lk-sb:hover{color:var(--accent,#3b82f6);background:color-mix(in srgb,currentColor 14%,transparent)}
+.lk-sb:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+.lk-sb svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.lk-menu{position:fixed;z-index:99999;min-width:158px;padding:5px;font-size:13px;
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  color:var(--text,var(--ink,#e7e9ef));
+  border:1px solid var(--border,var(--line,#333));border-radius:10px;
+  box-shadow:0 14px 36px -12px rgba(0,0,0,.5)}
+.lk-menu button{all:unset;box-sizing:border-box;display:flex;width:100%;gap:9px;align-items:center;
+  padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13px;
+  color:var(--text,var(--ink,#e7e9ef))}
+.lk-menu button:hover{background:color-mix(in srgb,var(--accent,#3b82f6) 16%,transparent)}
+.lk-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:100000;
+  background:var(--text,var(--ink,#111));color:var(--panel,var(--surface,var(--bg,#fff)));
+  padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:600;
+  box-shadow:0 12px 30px -8px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:no-preference){
+  .lk-toast{animation:lk-tin .18s ease-out}
+  @keyframes lk-tin{from{opacity:0;transform:translateX(-50%) translateY(6px)}}
+}
+</style>
+<script>
+window.LKShare=(function(){
+  var BASE="https://kimbap918.github.io/";
+  function url(s){return BASE+s.page+(s.params?("?"+s.params):"");}
+  function toast(m){
+    var o=document.querySelector(".lk-toast");if(o)o.remove();
+    var t=document.createElement("div");t.className="lk-toast";t.textContent=m;
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2400);
+  }
+  function copyText(x){
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(x);
+    return new Promise(function(res,rej){try{var a=document.createElement("textarea");
+      a.value=x;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);
+      a.select();document.execCommand("copy");a.remove();res();}catch(e){rej(e);}});
+  }
+  function summary(s){
+    var t=s.title+(s.lines&&s.lines[0]?(" ("+s.lines[0]+")"):"");
+    return t+" · "+(s.subtitle||"라테일 도구 모음")+String.fromCharCode(10)+url(s);
+  }
+  function hexA(h,a){h=(h||"#74acff").replace("#","");
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    return "rgba("+parseInt(h.substr(0,2),16)+","+parseInt(h.substr(2,2),16)+","+parseInt(h.substr(4,2),16)+","+a+")";}
+  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+  function wrap(c,t,mw,mx){var w=String(t).split(/ +/),ls=[],ln="";
+    for(var i=0;i<w.length;i++){var tt=ln?ln+" "+w[i]:w[i];
+      if(c.measureText(tt).width>mw&&ln){ls.push(ln);ln=w[i];}else ln=tt;}
+    if(ln)ls.push(ln);
+    if(mx&&ls.length>mx){ls=ls.slice(0,mx);var L=ls[mx-1];
+      while(L.length&&c.measureText(L+"…").width>mw)L=L.slice(0,-1);ls[mx-1]=L+"…";}
+    return ls;}
+  function clip(c,t,mw){t=String(t);if(c.measureText(t).width<=mw)return t;
+    while(t.length&&c.measureText(t+"…").width>mw)t=t.slice(0,-1);return t+"…";}
+  function drawCard(s){
+    var W=1200,H=630,dpr=Math.min(window.devicePixelRatio||1,2);
+    var cv=document.createElement("canvas");cv.width=W*dpr;cv.height=H*dpr;
+    var c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);
+    var acc=s.accent||"#74acff",FF="'Gothic A1','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#161a22");g.addColorStop(1,"#0e1116");
+    c.fillStyle=g;c.fillRect(0,0,W,H);
+    var gl=c.createRadialGradient(W-120,90,40,W-120,90,520);
+    gl.addColorStop(0,hexA(acc,.22));gl.addColorStop(1,hexA(acc,0));
+    c.fillStyle=gl;c.fillRect(0,0,W,H);
+    if(s.emoji){c.save();c.globalAlpha=.09;c.font="320px "+FF;c.textAlign="right";
+      c.fillText(s.emoji,W+40,H+96);c.restore();}
+    c.fillStyle=acc;c.fillRect(0,0,W,8);
+    var P=72;c.textAlign="left";c.textBaseline="alphabetic";
+    if(s.emoji){c.font="54px "+FF;c.fillText(s.emoji,P,96);}
+    c.font="500 23px "+FF;c.fillStyle="#9aa4b3";
+    try{c.letterSpacing="3px";}catch(e){}
+    c.fillText(String(s.subtitle||"").toUpperCase(),P,140);
+    try{c.letterSpacing="0px";}catch(e){}
+    if(s.pill){c.font="700 21px "+FF;var pw=c.measureText(s.pill).width+32,px=W-P-pw;
+      rr(c,px,60,pw,40,20);c.fillStyle=acc;c.fill();
+      c.fillStyle="#12151b";c.fillText(s.pill,px+16,87);}
+    c.font="800 72px "+FF;c.fillStyle=acc;
+    var nm=s.quote?("「"+s.title+"」"):String(s.title||"");
+    var nls=wrap(c,nm,W-P*2,2),ny=224;
+    nls.forEach(function(l,i){c.fillText(l,P,ny+i*80);});
+    var hy=ny+(nls.length-1)*80+44;
+    c.strokeStyle="rgba(255,255,255,.1)";c.lineWidth=1;
+    c.beginPath();c.moveTo(P,hy);c.lineTo(W-P,hy);c.stroke();
+    var ry=hy+56;(s.lines||[]).slice(0,3).forEach(function(t){
+      c.font="500 31px "+FF;c.fillStyle="#e9ecf3";
+      c.fillText(clip(c,t,W-P*2),P,ry);ry+=54;});
+    c.font="500 24px 'IBM Plex Mono',ui-monospace,monospace";c.fillStyle="#7f8a9b";
+    c.fillText("kimbap918.github.io/"+s.page,P,H-46);
+    c.textAlign="right";c.fillStyle="#6c7688";c.fillText("라테일 도구 모음",W-P,H-46);
+    return cv;
+  }
+  function withFonts(fn){
+    if(document.fonts&&document.fonts.load){
+      Promise.all([document.fonts.load("800 72px 'Gothic A1'"),
+        document.fonts.load("500 23px 'Gothic A1'"),
+        document.fonts.load("500 24px 'IBM Plex Mono'")]).then(fn,fn);
+    }else fn();
+  }
+  function dl(b,s){
+    if(!b){toast("이미지 생성 실패");return;}
+    var u=URL.createObjectURL(b),a=document.createElement("a");
+    a.href=u;a.download="latale-"+String(s.page||"card").replace(/[^A-Za-z0-9]+/g,"")+".png";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u);},5000);
+    toast("이미지 저장됨");
+  }
+  function makeBlob(s,opts,cb){
+    var el=opts&&opts.captureEl&&opts.captureEl();
+    if(el&&window.html2canvas){
+      var prev={ov:el.style.overflow,h:el.style.height,mh:el.style.maxHeight};
+      el.style.overflow="visible";el.style.height="auto";el.style.maxHeight="none";
+      var fix=document.createElement("style");
+      fix.textContent=".gold-shine,.mythic-shine{background:none!important;animation:none!important;-webkit-text-fill-color:#e8b93a!important;color:#e8b93a!important}.mythic-shine{-webkit-text-fill-color:#c48aff!important;color:#c48aff!important}";
+      document.head.appendChild(fix);
+      var undo=opts&&opts.prep?opts.prep(el):null;
+      var restore=function(){el.style.overflow=prev.ov;el.style.height=prev.h;el.style.maxHeight=prev.mh;fix.remove();if(undo)try{undo();}catch(e){}};
+      window.html2canvas(el,{backgroundColor:getComputedStyle(document.body).backgroundColor||"#12151b",scale:2,logging:false,ignoreElements:function(x){return x.classList&&x.classList.contains("lk-sb");}})
+        .then(function(cv){restore();cv.toBlob(cb,"image/png");})
+        .catch(function(){restore();withFonts(function(){drawCard(s).toBlob(cb,"image/png");});});
+      return;
+    }
+    withFonts(function(){drawCard(s).toBlob(cb,"image/png");});
+  }
+  function saveCard(s,opts){ makeBlob(s,opts,function(b){dl(b,s);}); }
+  function nativeShare(s,opts){
+    makeBlob(s,opts,function(b){
+      var f=b?new File([b],"latale.png",{type:"image/png"}):null;
+      var p={title:s.title,text:summary(s),url:url(s)};
+      if(f&&navigator.canShare&&navigator.canShare({files:[f]}))p.files=[f];
+      (navigator.share?navigator.share(p):copyText(summary(s)).then(function(){toast("공유 내용 복사됨");})).catch(function(){});
+    });
+  }
+  var openMenu=null;
+  function closeMenu(){if(openMenu){openMenu();openMenu=null;}}
+  function showMenu(btn,getState,opts){
+    closeMenu();
+    var m=document.createElement("div");m.className="lk-menu";
+    var withImg=!(opts&&opts.image===false);
+    m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
+      +(withImg?'<button data-a="img">🖼️ 이미지 저장</button>':'')
+      +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
+    document.body.appendChild(m);
+    var r=btn.getBoundingClientRect();
+    var left=Math.max(8,Math.min(r.left,window.innerWidth-m.offsetWidth-8));
+    var top=r.bottom+6;
+    if(top+m.offsetHeight>window.innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
+    m.style.left=left+"px";m.style.top=top+"px";
+    m.addEventListener("click",function(e){
+      var a=e.target.closest("button");if(!a)return;
+      var act=a.dataset.a;closeMenu();
+      var s=getState();if(!s)return;
+      if(act==="link")copyText(url(s)).then(function(){toast("링크 복사됨");},function(){toast("복사 실패 — 주소창에서 복사하세요");});
+      else if(act==="img")saveCard(s,opts);
+      else if(act==="native")nativeShare(s,opts);
+    });
+    function onDoc(e){if(!m.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))closeMenu();}
+    function onKey(e){if(e.key==="Escape")closeMenu();}
+    setTimeout(function(){document.addEventListener("mousedown",onDoc);},0);
+    document.addEventListener("keydown",onKey);
+    window.addEventListener("resize",closeMenu,{once:true});
+    window.addEventListener("scroll",closeMenu,{once:true,capture:true});
+    openMenu=function(){m.remove();document.removeEventListener("mousedown",onDoc);document.removeEventListener("keydown",onKey);};
+  }
+  var ICON='<svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>';
+  return {
+    attach:function(parent,getState,opts){
+      if(!parent||parent.querySelector(".lk-sb"))return null;
+      var b=document.createElement("button");
+      b.type="button";b.className="lk-sb";b.title="공유";b.setAttribute("aria-label","공유");
+      b.innerHTML=ICON;
+      b.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();showMenu(b,getState,opts||{});});
+      parent.appendChild(b);return b;
+    },
+    param:function(k,v){
+      try{var u=new URL(location.href);u.searchParams.set(k,String(v));
+        u.searchParams.delete("vc");
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    clearParam:function(k){
+      try{var u=new URL(location.href);u.searchParams.delete(k);
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    get:function(k){try{return new URLSearchParams(location.search).get(k);}catch(e){return null;}},
+    url:url, card:drawCard
+  };
+})();
+</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — specialization (스킬명·효과 설명은 게임 데이터라 한국어 유지) -->
+<script>
+LKI18N.add({
+  "스킬 특화 정보":{en:"Skill Specialization",zh:"技能特化信息",ja:"スキル特化情報"},
+  "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+  "특화석 재료 요구량":{en:"Specialization Stone materials",zh:"特化石材料需求",ja:"特化石の必要素材"},
+  "유니크 특화석":{en:"Unique Specialization Stones",zh:"专属特化石",ja:"ユニーク特化石"},
+  "일반 특화석":{en:"Common Specialization Stones",zh:"普通特化石",ja:"通常特化石"},
+  "강화 · 슬롯 해금 · 파편 교환":{en:"Enhance · Slot unlock · Fragment exchange",zh:"强化 · 槽位解锁 · 碎片兑换",ja:"強化・スロット解放・かけら交換"},
+  "직업별 스킬 목록 - 인피니티 · 직업 전용 힌트 표기":{en:"Per-job skill list — Infinity · job-exclusive hints shown",zh:"各职业技能列表 — 无限 · 标注职业专属提示",ja:"職業別スキル一覧 — インフィニティ・職業専用ヒント表記"},
+  "35개 - 모든 직업 공통":{en:"35 · common to all jobs",zh:"35个 · 所有职业通用",ja:"35個・全職業共通"},
+  "직업 선택 · 38":{en:"Choose job · 38",zh:"选择职业 · 38",ja:"職業選択 · 38"},
+  "강화 (레벨업, 일반·유니크 공통 패턴)":{en:"Enhance (level-up, same for Common & Unique)",zh:"强化(升级，普通·专属通用模式)",ja:"強化(レベルアップ、通常・ユニーク共通)"},
+  "슬롯 해금 - 일반":{en:"Slot unlock — Common",zh:"槽位解锁 - 普通",ja:"スロット解放 - 通常"},
+  "슬롯 해금 - 유니크":{en:"Slot unlock — Unique",zh:"槽位解锁 - 专属",ja:"スロット解放 - ユニーク"},
+  "특화석 파편 → 결정 교환 (신비한 숲의 신전 교환 NPC)":{en:"Stone fragment → crystal exchange (Forest Temple exchange NPC)",zh:"特化石碎片 → 结晶兑换(神秘森林神殿兑换NPC)",ja:"特化石のかけら → 結晶交換(神秘の森の神殿 交換NPC)"},
+  "3차 직업 및 서브클래스의 각성 2페이지 오픈 시 열리는 신규 시스템 - 각성 완료된 스킬에 특화석을 장착해 효과를 바꾼다.":{en:"A system that opens once the Awakening page 2 of a 3rd job / subclass is unlocked — equip Specialization Stones on awakened skills to change their effects.",zh:"在三转职业及副职业觉醒第2页开放后开启的新系统 — 在已觉醒的技能上装备特化石以改变其效果。",ja:"3次職・サブクラスの覚醒2ページ開放時に解禁される新システム — 覚醒済みスキルに特化石を装着して効果を変える。"},
+  "특화석 종류":{en:"Stone types",zh:"特化石种类",ja:"特化石の種類"},
+  "일반 특화석과 유니크 특화석으로 구분 - 유니크는 스킬에 FX·공격범위·추가효과까지 부여":{en:"Split into Common and Unique — Unique also grants FX, attack range and extra effects to the skill",zh:"分为普通与专属 — 专属还会为技能赋予FX·攻击范围·额外效果",ja:"通常と専用に区分 — ユニークはスキルにFX・攻撃範囲・追加効果まで付与"},
+  "슬롯 구조":{en:"Slot structure",zh:"槽位结构",ja:"スロット構造"},
+  "스킬 하나당 특화석 최대 3개 장착 - 첫 슬롯은 해금돼 있고, 이후 슬롯은 해금 결정 소모":{en:"Up to 3 stones per skill — the first slot is unlocked, later slots cost unlock crystals",zh:"每个技能最多装备3颗特化石 — 首个槽位已解锁，之后的槽位消耗解锁结晶",ja:"スキル1つにつき特化石は最大3個 — 最初のスロットは解放済み、以降は解放結晶を消費"},
+  "강화":{en:"Enhance",zh:"强化",ja:"強化"},
+  "특화석 레벨 1~5 - 종류·단계별로 소모 결정 수량이 다름":{en:"Stone level 1–5 — crystal cost varies by type and level",zh:"特化石等级1~5 — 消耗结晶量因种类·阶段而异",ja:"特化石レベル1~5 — 種類・段階ごとに消費結晶量が異なる"},
+  "재료 획득처":{en:"Where to get materials",zh:"材料获取处",ja:"素材の入手先"},
+  "주간 던전 \"신비한 숲의 신전\" - 특화석 파편(일반/유니크) 드랍, 결정으로 교환":{en:"Weekly dungeon \"Forest Temple\" — drops stone fragments (Common/Unique), exchanged for crystals",zh:"周常副本「神秘森林神殿」— 掉落特化石碎片(普通/专属)，可兑换结晶",ja:"週間ダンジョン「神秘の森の神殿」— 特化石のかけら(通常/ユニーク)がドロップ、結晶に交換"},
+  "공식 가이드북 안내: 특화석 슬롯은 스킬마다 3개씩 존재하며 유니크 특화석은 스킬당 1개만 설정 가능. 슬롯 해금 정보는 캐릭터 단위, 특화석 해금·강화 정보는 계정 단위로 저장됨.":{en:"Official guidebook: each skill has 3 specialization slots; only 1 Unique stone can be set per skill. Slot-unlock data is per character; stone unlock/enhance data is per account.",zh:"官方指南：每个技能有3个特化槽位，每个技能只能设置1颗专属特化石。槽位解锁信息按角色保存，特化石解锁·强化信息按账号保存。",ja:"公式ガイドブック：特化石スロットはスキルごとに3つ、ユニーク特化石はスキル1つにつき1個のみ設定可能。スロット解放情報はキャラ単位、特化石の解放・強化情報はアカウント単位で保存。"},
+  "유니크 특화석은 스킬당 1개만 장착 가능 - 스킬에 FX·공격범위·추가효과까지 부여. 1~6번은 직업(스킬)마다 값이 다른 전용 옵션(아래 직업별 \"직업 전용 효과\" 참고), 7~12번은 모든 직업 공통 옵션.":{en:"Only 1 Unique stone can be equipped per skill — grants FX, attack range and extra effects. #1–6 are job-specific options that differ per job/skill (see \"Job-exclusive effects\" per job below); #7–12 are common to all jobs.",zh:"专属特化石每个技能只能装备1颗 — 赋予FX·攻击范围·额外效果。1~6号为各职业(技能)数值不同的专属选项(见下方各职业「职业专属效果」)，7~12号为所有职业通用选项。",ja:"ユニーク特化石はスキル1つにつき1個のみ装着可能 — FX・攻撃範囲・追加効果まで付与。1~6番は職業(スキル)ごとに値が異なる専用オプション(下記の職業別「職業専用効果」参照)、7~12番は全職業共通オプション。"},
+  "특화 대상 스킬":{en:"Specialization target skills",zh:"特化对象技能",ja:"特化対象スキル"},
+  "(마우스 오버 시 효과 미리보기)":{en:"(hover to preview effect)",zh:"(鼠标悬停预览效果)",ja:"(マウスオーバーで効果プレビュー)"},
+  "직업 전용 효과":{en:"Job-exclusive effects",zh:"职业专属效果",ja:"職業専用効果"},
+  "특정 스킬이 아닌 특화석 슬롯 전체에 적용되는 공용 옵션 - 레벨별 수치가 확인된 경우 함께 표기":{en:"Shared options that apply to the whole specialization slot, not a specific skill — per-level values shown where known",zh:"并非针对特定技能、而是应用于整个特化槽位的通用选项 — 已确认逐级数值时一并标注",ja:"特定スキルではなく特化石スロット全体に適用される共通オプション — レベル別数値が判明している場合は併記"},
+  "결정은 일반은 [특화석 강화 결정 - 일반], 유니크는 [특화석 강화 결정 - 유니크] 사용":{en:"Crystals: Common uses [Specialization Enhance Crystal - Common], Unique uses [Specialization Enhance Crystal - Unique]",zh:"结晶：普通使用[特化石强化结晶 - 普通]，专属使用[特化石强化结晶 - 专属]",ja:"結晶：通常は[特化石強化結晶 - 通常]、ユニークは[特化石強化結晶 - ユニーク]を使用"},
+  "1~10번은 기본 해금(무료) · 11~35번부터 아래 소모":{en:"#1–10 unlocked by default (free) · #11–35 cost the below",zh:"1~10号默认解锁(免费) · 11~35号起消耗如下",ja:"1~10番は初期解放(無料) · 11~35番から下記を消費"},
+  "1번은 기본 해금(무료) · 엘리는 전 구간 1억으로 동일":{en:"#1 unlocked by default (free) · Ely is 100M across the board",zh:"1号默认解锁(免费) · 全区间艾利均为1亿",ja:"1番は初期解放(無料) · エリは全区間1億で同一"},
+  "특화석 슬롯 해금 비용":{en:"Slot unlock cost",zh:"槽位解锁费用",ja:"スロット解放コスト"},
+  "· 장착·강화와 별개":{en:"· separate from equipping / enhancing",zh:"· 与装备·强化无关",ja:"· 装着・強化とは別"},
+  "일반 슬롯":{en:"Common slot",zh:"普通槽位",ja:"通常スロット"},
+  "유니크 슬롯":{en:"Unique slot",zh:"专属槽位",ja:"ユニークスロット"},
+  "무료":{en:"Free",zh:"免费",ja:"無料"},
+  "해금 결정[일반] 1개":{en:"Unlock Crystal [Common] ×1",zh:"解锁结晶[普通] ×1",ja:"解放結晶[通常] ×1"},
+  "해금 결정[유니크] 3개":{en:"Unlock Crystal [Unique] ×3",zh:"解锁结晶[专属] ×3",ja:"解放結晶[ユニーク] ×3"},
+  "1개":{en:"×1",zh:"×1",ja:"×1"},
+  "2개":{en:"×2",zh:"×2",ja:"×2"},
+  "3개":{en:"×3",zh:"×3",ja:"×3"},
+  "※특화 효과※":{en:"※ Specialization effect ※",zh:"※ 特化效果 ※",ja:"※ 特化効果 ※"},
+  "※참고※":{en:"※ Note ※",zh:"※ 说明 ※",ja:"※ 参考 ※"},
+  "일반 몬스터 지배력 %":{en:"Normal-monster dominance %",zh:"普通怪支配力 %",ja:"通常モンスター支配力 %"},
+  "보스 몬스터 지배력 %":{en:"Boss-monster dominance %",zh:"Boss 支配力 %",ja:"ボスモンスター支配力 %"},
+  "하이랜더":{en:"Highlander",zh:"高地人",ja:"ハイランダー"},
+  "소드댄서":{en:"Sword Dancer",zh:"剑舞者",ja:"ソードダンサー"},
+  "테러나이트":{en:"Terra Knight",zh:"大地骑士",ja:"テラナイト"},
+  "사이키커":{en:"Psykicker",zh:"灵能踢击者",ja:"サイキッカー"},
+  "팬텀메이지":{en:"Phantom Mage",zh:"幻影法师",ja:"ファントムメイジ"},
+  "마에스트로":{en:"Maestro",zh:"大师",ja:"マエストロ"},
+  "로그마스터":{en:"Rogue Master",zh:"盗贼大师",ja:"ローグマスター"},
+  "저지먼트":{en:"Judgment",zh:"审判者",ja:"ジャッジメント"},
+  "스타시커":{en:"Star Seeker",zh:"逐星者",ja:"スターシーカー"},
+  "검호":{en:"Sword Master",zh:"剑豪",ja:"剣豪"},
+  "세피로트":{en:"Sephiroth",zh:"塞菲罗斯",ja:"セフィロト"},
+  "아크메이지":{en:"Archmage",zh:"大魔导士",ja:"アークメイジ"},
+  "파픈스타":{en:"Popn Star",zh:"流行之星",ja:"ポップンスター"},
+  "프라이쉬츠":{en:"Freischutz",zh:"神射手",ja:"フライシュッツ"},
+  "소디언":{en:"Sordian",zh:"剑灵",ja:"ソーディアン"},
+  "아크마스터":{en:"Arch Master",zh:"弓术宗师",ja:"アークマスター"},
+  "포스마스터":{en:"Force Master",zh:"力量宗师",ja:"フォースマスター"},
+  "데미갓":{en:"Demigod",zh:"半神",ja:"デミゴッド"},
+  "아그니":{en:"Agni",zh:"阿格尼",ja:"アグニ"},
+  "다크체이서":{en:"Dark Chaser",zh:"暗影追猎者",ja:"ダークチェイサー"},
+  "쥬얼스타":{en:"Jewel Star",zh:"宝石之星",ja:"ジュエルスター"},
+  "섀도우워커":{en:"Shadow Walker",zh:"暗影行者",ja:"シャドウウォーカー"},
+  "윈디아":{en:"Windia",zh:"温蒂娅",ja:"ウィンディア"},
+  "레이니아":{en:"Rania",zh:"蕾妮亚",ja:"レイニア"},
+  "게이트키퍼":{en:"Gatekeeper",zh:"守门人",ja:"ゲートキーパー"},
+  "검성":{en:"Sword Saint",zh:"剑圣",ja:"剣聖"},
+  "도깨비":{en:"Dokkaebi",zh:"独脚鬼",ja:"トッケビ"},
+  "아이돌":{en:"Idol",zh:"偶像",ja:"アイドル"},
+  "히어로":{en:"Hero",zh:"英雄",ja:"ヒーロー"},
+  "세이버":{en:"Saber",zh:"军刀",ja:"セイバー"},
+  "윈드스토커":{en:"Wind Stalker",zh:"追风者",ja:"ウィンドストーカー"},
+  "흑영":{en:"Black Shadow",zh:"黑影",ja:"黒影"},
+  "소울리스 원":{en:"Soulless One",zh:"无魂者",ja:"ソウルレス・ワン"},
+  "히어로(양손검)":{en:"Hero (Greatsword)",zh:"英雄(双手剑)",ja:"ヒーロー(両手剣)"},
+  "히어로(창)":{en:"Hero (Spear)",zh:"英雄(枪)",ja:"ヒーロー(槍)"},
+  "세이버(한손검)":{en:"Saber (One-hand Sword)",zh:"军刀(单手剑)",ja:"セイバー(片手剣)"},
+  "세이버(둔기)":{en:"Saber (Blunt)",zh:"军刀(钝器)",ja:"セイバー(鈍器)"},
+  "윈드스토커(단검)":{en:"Wind Stalker (Dagger)",zh:"追风者(短剑)",ja:"ウィンドストーカー(短剣)"},
+  "윈드스토커(활)":{en:"Wind Stalker (Bow)",zh:"追风者(弓)",ja:"ウィンドストーカー(弓)"},
+  "윈드스토커(석궁)":{en:"Wind Stalker (Crossbow)",zh:"追风者(弩)",ja:"ウィンドストーカー(クロスボウ)"},
+  "흑영(옥)":{en:"Black Shadow (Jade)",zh:"黑影(玉)",ja:"黒影(玉)"},
+  "흑영(도)":{en:"Black Shadow (Blade)",zh:"黑影(刀)",ja:"黒影(刀)"}
+});
+LKI18N.addRules([
+  [/《\s*맹공\s*》/g, {en:"《 Onslaught 》",zh:"《 猛攻 》",ja:"《 猛攻 》"}],
+  [/《\s*신속\s*》/g, {en:"《 Swiftness 》",zh:"《 迅速 》",ja:"《 迅速 》"}],
+  [/《\s*진화\s*》/g, {en:"《 Evolution 》",zh:"《 进化 》",ja:"《 進化 》"}],
+  [/《\s*오의\s*》/g, {en:"《 Mastery 》",zh:"《 奥义 》",ja:"《 奥義 》"}],
+  [/《\s*해방\s*》/g, {en:"《 Unleash 》",zh:"《 解放 》",ja:"《 解放 》"}],
+  [/《\s*초급\s*》/g, {en:"《 Beginner 》",zh:"《 初级 》",ja:"《 初級 》"}],
+  [/《\s*중급\s*》/g, {en:"《 Intermediate 》",zh:"《 中级 》",ja:"《 中級 》"}],
+  [/《\s*상급\s*》/g, {en:"《 Advanced 》",zh:"《 高级 》",ja:"《 上級 》"}],
+  [/《\s*최상급\s*》/g, {en:"《 Elite 》",zh:"《 顶级 》",ja:"《 最上級 》"}],
+  [/《\s*소탕\s*》/g, {en:"《 Sweep 》",zh:"《 扫荡 》",ja:"《 掃討 》"}],
+  [/《\s*토벌\s*》/g, {en:"《 Subjugation 》",zh:"《 讨伐 》",ja:"《 討伐 》"}],
+  [/일반\/보스 지배력/g, {en:"Normal/Boss dominance",zh:"普通/Boss支配力",ja:"通常/ボス支配力"}],
+  [/보스 지배력/g, {en:"Boss dominance",zh:"Boss支配力",ja:"ボス支配力"}],
+  [/일반 지배력/g, {en:"Normal dominance",zh:"普通支配力",ja:"通常支配力"}],
+  [/스킬 쿨타임 단축/g, {en:"Skill CD reduction",zh:"技能冷却缩短",ja:"スキルCD短縮"}],
+  [/스킬 쿨타임/g, {en:"Skill cooldown",zh:"技能冷却",ja:"スキルCD"}],
+  [/스킬 계수\(레벨 비례\)/g, {en:"Skill coeff. (level-scaled)",zh:"技能系数(随等级)",ja:"スキル係数(レベル比例)"}],
+  [/스킬 계수/g, {en:"Skill coeff.",zh:"技能系数",ja:"スキル係数"}],
+  [/쿨타임 증가/g, {en:"CD increase",zh:"冷却增加",ja:"CD増加"}],
+  [/최대 대미지/g, {en:"Max damage",zh:"最大伤害",ja:"最大ダメージ"}],
+  [/대미지 감소\s*%/g, {en:"Damage reduction %",zh:"伤害减免 %",ja:"ダメージ減少 %"}],
+  [/크리티컬 대미지/g, {en:"Crit damage",zh:"暴击伤害",ja:"クリティカルダメージ"}],
+  [/타겟수/g, {en:"Target count",zh:"目标数",ja:"ターゲット数"}],
+  [/무기 공격력\/속성력/g, {en:"Weapon ATK / Elemental",zh:"武器攻击力/属性力",ja:"武器攻撃力/属性力"}],
+  [/근력\/마법력/g, {en:"STR / M.ATK",zh:"力量/魔法力",ja:"筋力/魔法力"}],
+  [/스탯 \/ 공격력/g, {en:"Stat / ATK",zh:"属性/攻击力",ja:"ステータス/攻撃力"}],
+  [/(\d+)~(\d+)번(?!째)/g, {en:"#$1–$2",zh:"第$1~$2个",ja:"$1~$2番"}],
+  [/(\d+)번(?!째|[가-힣0-9])/g, {en:"#$1",zh:"第$1个",ja:"$1番"}],
+  [/특화석 파편/g, {en:"Stone fragment",zh:"特化石碎片",ja:"特化石のかけら"}],
+  [/해금 결정/g, {en:"Unlock crystal",zh:"解锁结晶",ja:"解放結晶"}],
+  [/강화 결정/g, {en:"Enhance crystal",zh:"强化结晶",ja:"強化結晶"}],
+  [/파편/g, {en:"fragment",zh:"碎片",ja:"かけら"}],
+  [/결정/g, {en:"crystal",zh:"结晶",ja:"結晶"}],
+  [/\[일반\]/g, {en:"[Common]",zh:"[普通]",ja:"[通常]"}],
+  [/\[유니크\]/g, {en:"[Unique]",zh:"[专属]",ja:"[ユニーク]"}],
+  [/엘리 5천만/g, {en:"50M Ely",zh:"5千万艾利",ja:"5千万エリ"}],
+  [/엘리 (\d+)억/g, {en:"$1"+"00M Ely",zh:"$1亿艾利",ja:"$1億エリ"}],
+  [/엘리/g, {en:"Ely",zh:"艾利",ja:"エリ"}],
+  [/(\d+)개(?=\s*\+)/g, {en:"×$1",zh:"×$1",ja:"×$1"}],
+  [/\(양손검\)/g, {en:"(Greatsword)",zh:"(双手剑)",ja:"(両手剣)"}],
+  [/\(한손검\)/g, {en:"(One-hand Sword)",zh:"(单手剑)",ja:"(片手剣)"}],
+  [/\(둔기\)/g, {en:"(Blunt)",zh:"(钝器)",ja:"(鈍器)"}],
+  [/\(단검\)/g, {en:"(Dagger)",zh:"(短剑)",ja:"(短剣)"}],
+  [/\(석궁\)/g, {en:"(Crossbow)",zh:"(弩)",ja:"(クロスボウ)"}],
+  [/\(창\)/g, {en:"(Spear)",zh:"(枪)",ja:"(槍)"}],
+  [/\(활\)/g, {en:"(Bow)",zh:"(弓)",ja:"(弓)"}],
+  [/\(옥\)/g, {en:"(Jade)",zh:"(玉)",ja:"(玉)"}],
+  [/\(도\)/g, {en:"(Blade)",zh:"(刀)",ja:"(刀)"}]
+]);
+LKI18N.init();
+</script>
+
+
 <script>
 (function () {
   var btn = document.getElementById('themeToggle');
@@ -166,7 +670,7 @@ h1{font-size:18px;margin:0 0 6px;}
 })();
 </script>
 <header>
-  <h1>스킬 특화 정보<span class="updateDate">최근 업데이트 2026.09.02</span></h1>
+  <h1>스킬 특화 정보<span class="updateDate"><span>최근 업데이트</span> 2026.09.02</span></h1>
   <p class="lead">3차 직업 및 서브클래스의 각성 2페이지 오픈 시 열리는 신규 시스템 - 각성 완료된 스킬에 특화석을 장착해 효과를 바꾼다.</p>
 </header>
 <div id="main">
@@ -229,10 +733,16 @@ h1{font-size:18px;margin:0 0 6px;}
   var select = document.getElementById('jobSelect');
   var chips = Array.prototype.slice.call(nav.querySelectorAll('.job-chip'));
   var panels = Array.prototype.slice.call(document.querySelectorAll('.job-panel'));
+  function jobName(idx) {
+    var c = chips.filter(function (x) { return x.dataset.job === String(idx); })[0];
+    return c ? c.textContent.trim() : ('직업 ' + idx);
+  }
   function showJob(idx) {
+    idx = String(idx);
     chips.forEach(function (c) { c.classList.toggle('active', c.dataset.job === idx); });
     panels.forEach(function (p) { p.classList.toggle('active', p.dataset.job === idx); });
     select.value = idx;
+    if (window.LKShare) LKShare.param('job', idx);
   }
   nav.addEventListener('click', function (ev) {
     var btn = ev.target.closest('.job-chip');
@@ -242,6 +752,48 @@ h1{font-size:18px;margin:0 0 6px;}
   select.addEventListener('change', function () {
     showJob(select.value);
   });
+
+  // 유니크 특화석: 선택 직업 패널 제목에 공유 버튼
+  //   이미지 = 직업명(제목) + 특화 대상 스킬 창 + 직업 전용 효과를 화면 그대로 한 장에 캡처
+  panels.forEach(function (p) {
+    if (!window.LKShare) return;
+    var h2 = p.querySelector('h2');
+    var grid = p.querySelector('.panel-grid');
+    if (!h2 || !grid) return;
+    var idx = p.dataset.job;
+    LKShare.attach(h2, function () {
+      return {
+        page: 'specialization.html', params: 'job=' + idx + '&s=unique',
+        title: jobName(idx) + ' · 유니크 특화', subtitle: '라테일 스킬 특화',
+        emoji: '⚔️', accent: '#c48aff', lines: ['직업 전용 효과 · 특화 대상 스킬']
+      };
+    }, { captureEl: function () { return p; } });
+  });
+
+  // 일반 특화석(모든 직업 공통): 섹션 제목에 별도 공유 버튼
+  (function () {
+    if (!window.LKShare) return;
+    var genHead = document.querySelector('.section-head.gen h2');
+    var genGrid = document.querySelector('.section-head.gen ~ .common-grid');
+    if (!genHead || !genGrid) return;
+    LKShare.attach(genHead, function () {
+      return {
+        page: 'specialization.html', params: 's=normal',
+        title: '일반 특화석 (모든 직업 공통)', subtitle: '라테일 스킬 특화',
+        emoji: '⚔️', accent: '#5fe0cf', lines: ['특화석 슬롯 공용 옵션']
+      };
+    }, { captureEl: function () { return genGrid; } });
+  })();
+
+  // 공유 링크로 진입 시 해당 직업 열기 (?job=<n>)
+  try {
+    var jp = new URLSearchParams(location.search).get('job');
+    if (jp !== null && panels.some(function (p) { return p.dataset.job === String(jp); })) {
+      showJob(jp);
+      var ap = panels.filter(function (p) { return p.dataset.job === String(jp); })[0];
+      if (ap) ap.scrollIntoView({ block: 'start' });
+    }
+  } catch (e) {}
 })();
 </script>
 <script>
