@@ -157,10 +157,451 @@ tr.reward-row.best td{color:var(--best);}
   <a href="exp.html">경험치 인던 (beta)</a>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+<!-- LKShare v1 — 4개 도구 공통 공유 키트 (_shared/share_kit.html) -->
+<style>
+.lk-sb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;
+  justify-content:center;width:24px;height:24px;border-radius:6px;vertical-align:middle;
+  color:var(--muted,var(--ink-3,#8b95a5));transition:color .12s,background .12s}
+.lk-sb:hover{color:var(--accent,#3b82f6);background:color-mix(in srgb,currentColor 14%,transparent)}
+.lk-sb:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+.lk-sb svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.lk-menu{position:fixed;z-index:99999;min-width:158px;padding:5px;font-size:13px;
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  color:var(--text,var(--ink,#e7e9ef));
+  border:1px solid var(--border,var(--line,#333));border-radius:10px;
+  box-shadow:0 14px 36px -12px rgba(0,0,0,.5)}
+.lk-menu button{all:unset;box-sizing:border-box;display:flex;width:100%;gap:9px;align-items:center;
+  padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13px;
+  color:var(--text,var(--ink,#e7e9ef))}
+.lk-menu button:hover{background:color-mix(in srgb,var(--accent,#3b82f6) 16%,transparent)}
+.lk-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:100000;
+  background:var(--text,var(--ink,#111));color:var(--panel,var(--surface,var(--bg,#fff)));
+  padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:600;
+  box-shadow:0 12px 30px -8px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:no-preference){
+  .lk-toast{animation:lk-tin .18s ease-out}
+  @keyframes lk-tin{from{opacity:0;transform:translateX(-50%) translateY(6px)}}
+}
+</style>
+<script>
+window.LKShare=(function(){
+  var BASE="https://kimbap918.github.io/";
+  function url(s){return BASE+s.page+(s.params?("?"+s.params):"");}
+  function toast(m){
+    var o=document.querySelector(".lk-toast");if(o)o.remove();
+    var t=document.createElement("div");t.className="lk-toast";t.textContent=m;
+    document.body.appendChild(t);setTimeout(function(){t.remove();},2400);
+  }
+  function copyText(x){
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(x);
+    return new Promise(function(res,rej){try{var a=document.createElement("textarea");
+      a.value=x;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);
+      a.select();document.execCommand("copy");a.remove();res();}catch(e){rej(e);}});
+  }
+  function summary(s){
+    var t=s.title+(s.lines&&s.lines[0]?(" ("+s.lines[0]+")"):"");
+    return t+" · "+(s.subtitle||"라테일 도구 모음")+String.fromCharCode(10)+url(s);
+  }
+  function hexA(h,a){h=(h||"#74acff").replace("#","");
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    return "rgba("+parseInt(h.substr(0,2),16)+","+parseInt(h.substr(2,2),16)+","+parseInt(h.substr(4,2),16)+","+a+")";}
+  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+  function wrap(c,t,mw,mx){var w=String(t).split(/ +/),ls=[],ln="";
+    for(var i=0;i<w.length;i++){var tt=ln?ln+" "+w[i]:w[i];
+      if(c.measureText(tt).width>mw&&ln){ls.push(ln);ln=w[i];}else ln=tt;}
+    if(ln)ls.push(ln);
+    if(mx&&ls.length>mx){ls=ls.slice(0,mx);var L=ls[mx-1];
+      while(L.length&&c.measureText(L+"…").width>mw)L=L.slice(0,-1);ls[mx-1]=L+"…";}
+    return ls;}
+  function clip(c,t,mw){t=String(t);if(c.measureText(t).width<=mw)return t;
+    while(t.length&&c.measureText(t+"…").width>mw)t=t.slice(0,-1);return t+"…";}
+  function drawCard(s){
+    var W=1200,H=630,dpr=Math.min(window.devicePixelRatio||1,2);
+    var cv=document.createElement("canvas");cv.width=W*dpr;cv.height=H*dpr;
+    var c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);
+    var acc=s.accent||"#74acff",FF="'Gothic A1','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+    var g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#161a22");g.addColorStop(1,"#0e1116");
+    c.fillStyle=g;c.fillRect(0,0,W,H);
+    var gl=c.createRadialGradient(W-120,90,40,W-120,90,520);
+    gl.addColorStop(0,hexA(acc,.22));gl.addColorStop(1,hexA(acc,0));
+    c.fillStyle=gl;c.fillRect(0,0,W,H);
+    if(s.emoji){c.save();c.globalAlpha=.09;c.font="320px "+FF;c.textAlign="right";
+      c.fillText(s.emoji,W+40,H+96);c.restore();}
+    c.fillStyle=acc;c.fillRect(0,0,W,8);
+    var P=72;c.textAlign="left";c.textBaseline="alphabetic";
+    if(s.emoji){c.font="54px "+FF;c.fillText(s.emoji,P,96);}
+    c.font="500 23px "+FF;c.fillStyle="#9aa4b3";
+    try{c.letterSpacing="3px";}catch(e){}
+    c.fillText(String(s.subtitle||"").toUpperCase(),P,140);
+    try{c.letterSpacing="0px";}catch(e){}
+    if(s.pill){c.font="700 21px "+FF;var pw=c.measureText(s.pill).width+32,px=W-P-pw;
+      rr(c,px,60,pw,40,20);c.fillStyle=acc;c.fill();
+      c.fillStyle="#12151b";c.fillText(s.pill,px+16,87);}
+    c.font="800 72px "+FF;c.fillStyle=acc;
+    var nm=s.quote?("「"+s.title+"」"):String(s.title||"");
+    var nls=wrap(c,nm,W-P*2,2),ny=224;
+    nls.forEach(function(l,i){c.fillText(l,P,ny+i*80);});
+    var hy=ny+(nls.length-1)*80+44;
+    c.strokeStyle="rgba(255,255,255,.1)";c.lineWidth=1;
+    c.beginPath();c.moveTo(P,hy);c.lineTo(W-P,hy);c.stroke();
+    var ry=hy+56;(s.lines||[]).slice(0,3).forEach(function(t){
+      c.font="500 31px "+FF;c.fillStyle="#e9ecf3";
+      c.fillText(clip(c,t,W-P*2),P,ry);ry+=54;});
+    c.font="500 24px 'IBM Plex Mono',ui-monospace,monospace";c.fillStyle="#7f8a9b";
+    c.fillText("kimbap918.github.io/"+s.page,P,H-46);
+    c.textAlign="right";c.fillStyle="#6c7688";c.fillText("라테일 도구 모음",W-P,H-46);
+    return cv;
+  }
+  function withFonts(fn){
+    if(document.fonts&&document.fonts.load){
+      Promise.all([document.fonts.load("800 72px 'Gothic A1'"),
+        document.fonts.load("500 23px 'Gothic A1'"),
+        document.fonts.load("500 24px 'IBM Plex Mono'")]).then(fn,fn);
+    }else fn();
+  }
+  function dl(b,s){
+    if(!b){toast("이미지 생성 실패");return;}
+    var u=URL.createObjectURL(b),a=document.createElement("a");
+    a.href=u;a.download="latale-"+String(s.page||"card").replace(/[^A-Za-z0-9]+/g,"")+".png";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u);},5000);
+    toast("이미지 저장됨");
+  }
+  function makeBlob(s,opts,cb){
+    var el=opts&&opts.captureEl&&opts.captureEl();
+    if(el&&window.html2canvas){
+      var prev={ov:el.style.overflow,h:el.style.height,mh:el.style.maxHeight};
+      el.style.overflow="visible";el.style.height="auto";el.style.maxHeight="none";
+      var fix=document.createElement("style");
+      fix.textContent=".gold-shine,.mythic-shine{background:none!important;animation:none!important;-webkit-text-fill-color:#e8b93a!important;color:#e8b93a!important}.mythic-shine{-webkit-text-fill-color:#c48aff!important;color:#c48aff!important}";
+      document.head.appendChild(fix);
+      var undo=opts&&opts.prep?opts.prep(el):null;
+      var restore=function(){el.style.overflow=prev.ov;el.style.height=prev.h;el.style.maxHeight=prev.mh;fix.remove();if(undo)try{undo();}catch(e){}};
+      window.html2canvas(el,{backgroundColor:getComputedStyle(document.body).backgroundColor||"#12151b",scale:2,logging:false,ignoreElements:function(x){return x.classList&&x.classList.contains("lk-sb");}})
+        .then(function(cv){restore();cv.toBlob(cb,"image/png");})
+        .catch(function(){restore();withFonts(function(){drawCard(s).toBlob(cb,"image/png");});});
+      return;
+    }
+    withFonts(function(){drawCard(s).toBlob(cb,"image/png");});
+  }
+  function saveCard(s,opts){ makeBlob(s,opts,function(b){dl(b,s);}); }
+  function nativeShare(s,opts){
+    makeBlob(s,opts,function(b){
+      var f=b?new File([b],"latale.png",{type:"image/png"}):null;
+      var p={title:s.title,text:summary(s),url:url(s)};
+      if(f&&navigator.canShare&&navigator.canShare({files:[f]}))p.files=[f];
+      (navigator.share?navigator.share(p):copyText(summary(s)).then(function(){toast("공유 내용 복사됨");})).catch(function(){});
+    });
+  }
+  var openMenu=null;
+  function closeMenu(){if(openMenu){openMenu();openMenu=null;}}
+  function showMenu(btn,getState,opts){
+    closeMenu();
+    var m=document.createElement("div");m.className="lk-menu";
+    var withImg=!(opts&&opts.image===false);
+    m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
+      +(withImg?'<button data-a="img">🖼️ 이미지 저장</button>':'')
+      +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
+    document.body.appendChild(m);
+    var r=btn.getBoundingClientRect();
+    var left=Math.max(8,Math.min(r.left,window.innerWidth-m.offsetWidth-8));
+    var top=r.bottom+6;
+    if(top+m.offsetHeight>window.innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
+    m.style.left=left+"px";m.style.top=top+"px";
+    m.addEventListener("click",function(e){
+      var a=e.target.closest("button");if(!a)return;
+      var act=a.dataset.a;closeMenu();
+      var s=getState();if(!s)return;
+      if(act==="link")copyText(url(s)).then(function(){toast("링크 복사됨");},function(){toast("복사 실패 — 주소창에서 복사하세요");});
+      else if(act==="img")saveCard(s,opts);
+      else if(act==="native")nativeShare(s,opts);
+    });
+    function onDoc(e){if(!m.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))closeMenu();}
+    function onKey(e){if(e.key==="Escape")closeMenu();}
+    setTimeout(function(){document.addEventListener("mousedown",onDoc);},0);
+    document.addEventListener("keydown",onKey);
+    window.addEventListener("resize",closeMenu,{once:true});
+    window.addEventListener("scroll",closeMenu,{once:true,capture:true});
+    openMenu=function(){m.remove();document.removeEventListener("mousedown",onDoc);document.removeEventListener("keydown",onKey);};
+  }
+  var ICON='<svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>';
+  return {
+    attach:function(parent,getState,opts){
+      if(!parent||parent.querySelector(".lk-sb"))return null;
+      var b=document.createElement("button");
+      b.type="button";b.className="lk-sb";b.title="공유";b.setAttribute("aria-label","공유");
+      b.innerHTML=ICON;
+      b.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();showMenu(b,getState,opts||{});});
+      parent.appendChild(b);return b;
+    },
+    param:function(k,v){
+      try{var u=new URL(location.href);u.searchParams.set(k,String(v));
+        u.searchParams.delete("vc");
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    clearParam:function(k){
+      try{var u=new URL(location.href);u.searchParams.delete(k);
+        history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+    },
+    get:function(k){try{return new URLSearchParams(location.search).get(k);}catch(e){return null;}},
+    url:url, card:drawCard
+  };
+})();
+</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — gacha_ev (아이템·존 이름은 게임 데이터라 한국어 유지) -->
+<script>
+LKI18N.add({
+  "확률형 상자 기대값 계산기":{en:"Gacha Box EV Calculator",zh:"概率型宝箱期望值计算器",ja:"確率型ボックス期待値計算機"},
+  "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+  "로얄 상자 시뮬레이터":{en:"Royal Box Simulator",zh:"皇家宝箱模拟器",ja:"ロイヤルボックスシミュレーター"},
+  "신화 상자 시뮬레이터":{en:"Mythic Box Simulator",zh:"神话宝箱模拟器",ja:"神話ボックスシミュレーター"},
+  "구성 아이템":{en:"Contents",zh:"构成道具",ja:"構成アイテム"},
+  "구성 아이템 (카드를 클릭하면 아래 계산기 대상이 바뀝니다)":{en:"Contents (click a card to change the calculator target below)",zh:"构成道具(点击卡片可切换下方计算器对象)",ja:"構成アイテム(カードをクリックで下の計算対象が変わります)"},
+  "(카드를 클릭하면 아래 계산기 대상이 바뀝니다)":{en:"(click a card to change the calculator target below)",zh:"(点击卡片可切换下方计算器对象)",ja:"(カードをクリックで下の計算対象が変わります)"},
+  "교환 · 보유 아이템 (뽑기로 획득한 의상 선택권을 교환해서 실제로 뭘 뽑았는지 모아볼 수 있습니다)":{en:"Exchange & owned (exchange the outfit selectors you pulled to see what you actually got)",zh:"兑换·持有道具(将抽到的服装选择券兑换后可汇总查看实际抽到的物品)",ja:"交換・所持アイテム(ガチャで得た衣装選択券を交換して実際に何を引いたかまとめて確認できます)"},
+  "뽑기 시뮬레이터":{en:"Draw simulator",zh:"抽卡模拟器",ja:"ガチャシミュレーター"},
+  "가격 (묶음 구매)":{en:"Price (bundle purchase)",zh:"价格(打包购买)",ja:"価格(まとめ買い)"},
+  "기대값 계산기":{en:"EV calculator",zh:"期望值计算器",ja:"期待値計算機"},
+  "포인트 교환":{en:"Point exchange",zh:"积分兑换",ja:"ポイント交換"},
+  "시뮬레이터":{en:"Simulator",zh:"模拟器",ja:"シミュレーター"},
+  "인던 1회 클리어 시간(분)":{en:"Time per dungeon clear (min)",zh:"单次副本通关时间(分)",ja:"ダンジョン1回クリア時間(分)"},
+  "탑급(TOP) 아이템 중 아무거나 하나":{en:"Any one TOP-tier item",zh:"任意一件顶级(TOP)道具",ja:"最上級(TOP)アイテムのいずれか1つ"},
+  "이어하기":{en:"Continue",zh:"继续",ja:"続ける"},
+  "초기화":{en:"Reset",zh:"重置",ja:"リセット"},
+  "닫기":{en:"Close",zh:"关闭",ja:"閉じる"},
+  "취소":{en:"Cancel",zh:"取消",ja:"キャンセル"},
+  "확인":{en:"Confirm",zh:"确认",ja:"確認"},
+  "뽑기 실행":{en:"Draw",zh:"抽取",ja:"ガチャ実行"},
+  "뽑는 중...":{en:"Drawing...",zh:"抽取中...",ja:"抽選中..."},
+  "인던 돌기":{en:"Run dungeon",zh:"跑副本",ja:"ダンジョン周回"},
+  "인던 도는 중...":{en:"Running dungeon...",zh:"跑副本中...",ja:"周回中..."},
+  "TOP 아이템 획득!":{en:"TOP item obtained!",zh:"获得顶级道具！",ja:"TOPアイテム獲得！"},
+  "신화 아이템 획득!":{en:"Mythic item obtained!",zh:"获得神话道具！",ja:"神話アイテム獲得！"},
+  "(보너스 뽑기)":{en:"(bonus draw)",zh:"(奖励抽取)",ja:"(ボーナス抽選)"},
+  "보유 교환권":{en:"Owned vouchers",zh:"持有兑换券",ja:"所持交換券"},
+  "보유 아이템":{en:"Owned items",zh:"持有道具",ja:"所持アイテム"},
+  "묶음":{en:"Bundle",zh:"打包",ja:"まとめ"},
+  "정가":{en:"List price",zh:"原价",ja:"定価"},
+  "할인가":{en:"Sale price",zh:"折扣价",ja:"割引価格"},
+  "개당 단가(할인가)":{en:"Unit price (sale)",zh:"单件单价(折扣价)",ja:"1個あたり単価(割引)"},
+  "교환 아이템":{en:"Exchange item",zh:"兑换道具",ja:"交換アイテム"},
+  "수량":{en:"Qty",zh:"数量",ja:"数量"},
+  "필요 포인트":{en:"Points needed",zh:"所需积分",ja:"必要ポイント"},
+  "TOP 아이템 획득(누적)":{en:"TOP items obtained (cumulative)",zh:"获得顶级道具(累计)",ja:"TOPアイテム獲得(累計)"},
+  "일반 아이템 획득(누적)":{en:"Normal items obtained (cumulative)",zh:"获得普通道具(累计)",ja:"通常アイテム獲得(累計)"},
+  "신화 아이템 획득(누적)":{en:"Mythic items obtained (cumulative)",zh:"获得神话道具(累计)",ja:"神話アイテム獲得(累計)"},
+  "개봉해서 확인한 아이템(누적)":{en:"Items confirmed by opening (cumulative)",zh:"开箱确认的道具(累计)",ja:"開封して確認したアイテム(累計)"},
+  "횟수":{en:"Count",zh:"次数",ja:"回数"},
+  "아이템":{en:"Item",zh:"道具",ja:"アイテム"},
+  "개수":{en:"Count",zh:"数量",ja:"個数"},
+  "단계":{en:"Stage",zh:"阶段",ja:"段階"},
+  "확률":{en:"Rate",zh:"概率",ja:"確率"},
+  "별도 능력치 없음":{en:"No separate stats",zh:"无额外属性",ja:"別途能力値なし"},
+  "교환 가능":{en:"Exchangeable",zh:"可兑换",ja:"交換可能"},
+  "교환 목록 보기":{en:"View exchange list",zh:"查看兑换列表",ja:"交換リストを見る"},
+  "설명 보기":{en:"View description",zh:"查看说明",ja:"説明を見る"},
+  "신화 상자 데이터가 없습니다.":{en:"No mythic box data.",zh:"没有神话宝箱数据。",ja:"神話ボックスのデータがありません。"},
+  "실행하면 최근 결과가 여기 실시간으로 표시됩니다.":{en:"Run it and recent results show here in real time.",zh:"运行后最近结果会在此实时显示。",ja:"実行すると最近の結果がここにリアルタイムで表示されます。"},
+  "실제 공개된 확률(게임산업법 확률 공개용 수치)과 캐시샵 가격을 그대로 계산에 씁니다.":{en:"Uses the officially disclosed rates and cash-shop prices as-is in the calculation.",zh:"计算直接采用官方公开的概率与商城价格。",ja:"公式に開示された確率とキャッシュショップ価格をそのまま計算に使用します。"},
+  "기대 비용은 평균값입니다 - 확률형 상자는 결과가 매번 랜덤이라 실제로 그보다 훨씬 적게/많이 쓸 수 있습니다.":{en:"Expected cost is an average — gacha results are random each time, so you may spend far less or far more.",zh:"期望花费为平均值 — 概率型宝箱每次结果随机，实际可能远少于或远多于此值。",ja:"期待コストは平均値です — 確率型ボックスは毎回ランダムなので、実際にはこれよりずっと少なく/多く使う場合があります。"},
+  "🍀 당신은 운이 아주 좋으시네요! 로얄 까러가보시는건 어떨까요?":{en:"🍀 You're very lucky! How about going for the Royal box?",zh:"🍀 你的运气真好！要不要去开皇家宝箱？",ja:"🍀 とても運がいいですね！ロイヤルを開けに行ってみては？"},
+  "😅 이 정도면 템은 사 드셔야겠는데요??":{en:"😅 At this rate you might just have to buy the item...",zh:"😅 到这地步不如直接买道具吧……",ja:"😅 これはもうアイテムを買った方がいいのでは……"},
+  "누적 뽑기 횟수":{en:"Cumulative draws",zh:"累计抽取次数",ja:"累計ガチャ回数"},
+  "TOP 아이템 획득":{en:"TOP items obtained",zh:"获得顶级道具",ja:"TOPアイテム獲得"},
+  "누적 소비 금액(할인가)":{en:"Cumulative spend (sale)",zh:"累计消费金额(折扣价)",ja:"累計消費金額(割引価格)"},
+  "누적 소비 금액(정가)":{en:"Cumulative spend (list)",zh:"累计消费金额(原价)",ja:"累計消費金額(定価)"},
+  "누적 로얄 포인트":{en:"Cumulative Royal points",zh:"累计皇家积分",ja:"累計ロイヤルポイント"},
+  "대상:":{en:"Target:",zh:"对象：",ja:"対象:"}
+});
+LKI18N.addRules([
+  [/(\d[\d,]*)번째 뽑기 만에 획득했습니다!/g, {en:"obtained on draw #$1!",zh:"第 $1 抽获得！",ja:"$1 回目のガチャで獲得！"}],
+  [/인던 (\d[\d,]*)회, /g, {en:"$1 clears, ",zh:"副本 $1 次，",ja:"ダンジョン $1 回、"}],
+  [/만에 획득했습니다!/g, {en:"— obtained!",zh:"后获得！",ja:"で獲得！"}],
+  [/진행 상황: /g, {en:"Progress: ",zh:"进度：",ja:"進捗: "}],
+  [/(\d[\d,]*)\s*회$/g, {en:"$1",zh:"$1 次",ja:"$1 回"}],
+  [/(\d+)회 묶음 기준/g, {en:"per $1-pack",zh:"以 $1 个装为准",ja:"$1個パック基準"}],
+  [/(\d+)종/g, {en:"$1 kinds",zh:"$1 种",ja:"$1 種"}],
+  [/최종보스: /g, {en:"Final boss: ",zh:"最终Boss：",ja:"最終ボス: "}],
+  [/(\d+)회 \(\+(\d+)\)/g, {en:"×$1 (+$2)",zh:"×$1 (+$2)",ja:"×$1 (+$2)"}],
+  [/([\d,]+)원/g, {en:"₩$1",zh:"₩$1",ja:"₩$1"}],
+  [/(\d[\d,]*)점/g, {en:"$1 pts",zh:"$1 分",ja:"$1 pt"}]
+]);
+LKI18N.init();
+</script>
+
+
 <div id="app">
   <header>
     <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
-    <h1>확률형 상자 기대값 계산기 <span class="updateDate">최근 업데이트 2026.09.02</span></h1>
+    <h1>확률형 상자 기대값 계산기 <span class="updateDate"><span>최근 업데이트</span> 2026.09.02</span></h1>
     <p class="lead">실제 공개된 확률(게임산업법 확률 공개용 수치)과 캐시샵 가격을 그대로 계산에 씁니다.</p>
     <div class="mode-tabs">
       <button id="modeRoyalBtn" class="mode-tab active">로얄 상자 시뮬레이터</button>
@@ -539,7 +980,7 @@ function runRoyalSimulation(box, trials) {
 
 function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
   const { chosen, sinceLast, isBonus } = hit;
-  let html = '<h3>TOP 아이템 획득!' + (isBonus ? ' <span class="small stat-orange">(보너스 뽑기)</span>' : '') + '</h3>';
+  let html = '<h3>TOP 아이템 획득!' + (isBonus ? ' <span class="small stat-orange">(보너스 뽑기)</span>' : '') + '<span class="lk-slot" id="royalShareSlot"></span></h3>';
   html += '<div class="modal-icon-row">';
   if (chosen.icon) html += '<img src="' + chosen.icon + '" alt="">';
   html += '<div class="gold-shine" style="font-size:15px;">' + chosen.name + '</div>';
@@ -549,6 +990,18 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
   html += '<div class="modal-actions"><button id="royalContinueBtn" class="confirm">이어하기</button></div>';
   pendingModalContinue = onContinue;
   showModal(html, 'gold-glow');
+  (function () {
+    var s = document.getElementById('royalShareSlot');
+    if (!s || !window.LKShare) return;
+    LKShare.attach(s, function () {
+      return {
+        page: 'gacha.html', params: 'mode=royal&box=' + boxSelect.value,
+        title: chosen.name, subtitle: '라테일 확률 계산기 · 로얄 상자',
+        emoji: '🎰', accent: '#f0c650', pill: 'ROYAL',
+        lines: [box.title, sinceLast.toLocaleString('ko-KR') + '번째 뽑기에 획득', isBonus ? '보너스 뽑기' : ''].filter(Boolean)
+      };
+    }, { captureEl: function () { return document.getElementById('modalBox'); } });
+  })();
   document.getElementById('royalContinueBtn').onclick = hideModal;
 }
 
@@ -932,7 +1385,7 @@ function runMythicSimulation(zone, trials) {
 
 function showMythicHitModal(zone, hit, done, trials, onContinue) {
   const { chosen, elapsed, sinceLast, isFirstMythic } = hit;
-  let html = '<h3>신화 아이템 획득!</h3>';
+  let html = '<h3>신화 아이템 획득!<span class="lk-slot" id="mythicShareSlot"></span></h3>';
   html += '<div class="modal-icon-row">';
   if (chosen.icon) html += '<img src="' + chosen.icon + '" alt="">';
   html += '<div class="mythic-shine" style="font-size:15px;">' + chosen.name + (zone.secondBox ? ' (미개봉)' : '') + '</div>';
@@ -947,6 +1400,18 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
   html += '<div class="modal-actions"><button id="mythicContinueBtn" class="confirm">이어하기</button></div>';
   pendingModalContinue = onContinue;
   showModal(html, 'mythic-glow');
+  (function () {
+    var s = document.getElementById('mythicShareSlot');
+    if (!s || !window.LKShare) return;
+    LKShare.attach(s, function () {
+      return {
+        page: 'gacha.html', params: 'mode=mythic&zone=' + mythicZoneIdx,
+        title: chosen.name, subtitle: '라테일 확률 계산기 · 신화 상자',
+        emoji: '✨', accent: '#cf9bff', pill: 'MYTHIC',
+        lines: [zone.name, sinceLast.toLocaleString('ko-KR') + '회차에 등장', elapsed + ' 만에 획득'].filter(Boolean)
+      };
+    }, { captureEl: function () { return document.getElementById('modalBox'); } });
+  })();
   document.getElementById('mythicContinueBtn').onclick = hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
   if (eggLink) {
@@ -1158,6 +1623,7 @@ function renderMythic() {
     btn.onclick = () => {
       mythicZoneIdx = parseInt(btn.dataset.idx, 10);
       mythicRecentEvents = [];
+      if (window.LKShare) LKShare.param('zone', mythicZoneIdx);
       renderMythic();
     };
   });
@@ -1179,11 +1645,27 @@ function switchMode(m) {
   boxSelect.style.display = m === 'royal' ? '' : 'none';
   if (m === 'royal') render(); else renderMythic();
 }
-modeRoyalBtn.addEventListener('click', () => switchMode('royal'));
-modeMythicBtn.addEventListener('click', () => switchMode('mythic'));
+modeRoyalBtn.addEventListener('click', () => { if (window.LKShare) LKShare.param('mode', 'royal'); switchMode('royal'); });
+modeMythicBtn.addEventListener('click', () => { if (window.LKShare) LKShare.param('mode', 'mythic'); switchMode('mythic'); });
 
-boxSelect.addEventListener('change', () => { target = { kind: 'row', idx: 0 }; royalRecentEvents = []; render(); });
-switchMode('royal');
+boxSelect.addEventListener('change', () => {
+  target = { kind: 'row', idx: 0 }; royalRecentEvents = [];
+  if (window.LKShare) LKShare.param('box', boxSelect.value);
+  render();
+});
+
+// 공유 링크로 진입 시 모드·상자·존 복원 (?mode=royal|mythic&box=<i>&zone=<i>)
+(function () {
+  try {
+    const P = new URLSearchParams(location.search);
+    const bx = P.get('box');
+    if (bx !== null && boxSelect.options[+bx]) { boxSelect.value = bx; target = { kind: 'row', idx: 0 }; royalRecentEvents = []; }
+    const zn = P.get('zone');
+    if (zn !== null && mythicZones[+zn]) mythicZoneIdx = +zn;
+    if (P.get('mode') === 'mythic') { switchMode('mythic'); return; }
+  } catch (e) {}
+  switchMode('royal');
+})();
 
 </script>
 <script>
