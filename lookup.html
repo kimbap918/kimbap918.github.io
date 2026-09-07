@@ -97,10 +97,202 @@ details.enchant-group table{margin-top:0;}
   <a href="exp.html">경험치 인던 (beta)</a>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — item_lookup (아이템·옵션 이름은 게임 데이터라 한국어 유지) -->
+<script>
+LKI18N.add({
+  "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+  "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+  "강화 단계별 필요 재료":{en:"Materials needed per enhance level",zh:"各强化阶段所需材料",ja:"強化段階別の必要素材"},
+  "인챈트 옵션":{en:"Enchant options",zh:"附魔选项",ja:"エンチャントオプション"},
+  "Excel(CSV) 다운로드":{en:"Download Excel (CSV)",zh:"下载 Excel (CSV)",ja:"Excel (CSV) をダウンロード"},
+  "PDF로 저장(인쇄)":{en:"Save as PDF (print)",zh:"保存为 PDF(打印)",ja:"PDFで保存(印刷)"},
+  "단계":{en:"Level",zh:"阶段",ja:"段階"},
+  "재료":{en:"Materials",zh:"材料",ja:"素材"},
+  "성공확률":{en:"Success rate",zh:"成功率",ja:"成功確率"},
+  "수치":{en:"Value",zh:"数值",ja:"数値"},
+  "비고":{en:"Notes",zh:"备注",ja:"備考"},
+  "레벨":{en:"Level",zh:"等级",ja:"レベル"},
+  "확률":{en:"Rate",zh:"概率",ja:"確率"},
+  "왼쪽 목록에서 아이템을 선택하세요.":{en:"Select an item from the list on the left.",zh:"请从左侧列表选择一个道具。",ja:"左のリストからアイテムを選択してください。"},
+  "아이템 이름으로 검색 (예: 돌도끼)":{en:"Search by item name (e.g. 돌도끼)",zh:"按道具名称搜索 (例: 돌도끼)",ja:"アイテム名で検索 (例: 돌도끼)"},
+  "이 아이템은 강화 경로가 없습니다.":{en:"This item has no enhance path.",zh:"该道具没有强化路径。",ja:"このアイテムには強化ルートがありません。"},
+  "이 아이템 부류에는 인챈트 옵션 데이터가 없습니다.":{en:"There is no enchant-option data for this item category.",zh:"该道具类别没有附魔选项数据。",ja:"このアイテム分類にはエンチャントオプションのデータがありません。"},
+  "총 필요 재료":{en:"Total materials needed",zh:"总计所需材料",ja:"合計必要素材"}
+});
+LKI18N.addRules([
+  [/(\d+)단계/g, {en:"$1 levels",zh:"$1 阶段",ja:"$1 段階"}]
+]);
+LKI18N.init();
+</script>
 <div id="app">
   <header>
     <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
-    <h1>장비 강화·인챈트 조회 <span class="updateDate">최근 업데이트 2026.09.02</span></h1>
+    <h1>장비 강화·인챈트 조회 <span class="updateDate"><span>최근 업데이트</span> 2026.09.02</span></h1>
     <input id="search" type="text" placeholder="아이템 이름으로 검색 (예: 돌도끼)" autocomplete="off">
     <div id="searchMeta"></div>
   </header>
