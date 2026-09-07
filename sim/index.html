@@ -29,6 +29,235 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
   <a href="../exp.html">경험치 인던 (beta)</a>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — sim (webapp/frontend) 코디 시뮬레이터. 아이템·헤어 등 이름은 게임 데이터라 한국어 유지 -->
+<script>
+LKI18N.add({
+  "LaTale 캐릭터 코디 시뮬레이터 Latte_1":{en:"LaTale Character Outfit Simulator — Latte_1",zh:"LaTale 角色装扮模拟器 Latte_1",ja:"LaTale キャラクターコーデシミュレーター Latte_1"},
+  "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+  "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+  "캐릭터 미리보기":{en:"Character preview",zh:"角色预览",ja:"キャラクタープレビュー"},
+  "홈 러너로 등록":{en:"Home runner",zh:"注册跑者",ja:"ランナー登録"},
+  "내 홈 러너 관리":{en:"My runners",zh:"我的跑者",ja:"マイランナー"},
+  "내 러너 관리":{en:"My runners",zh:"我的跑者",ja:"マイランナー"},
+  "잔상 갤러리":{en:"Afterimage gallery",zh:"残影画廊",ja:"残像ギャラリー"},
+  "포즈":{en:"Pose",zh:"姿势",ja:"ポーズ"},
+  "이모티콘 (포즈 사용)":{en:"Emote (uses pose)",zh:"表情(使用姿势)",ja:"エモート(ポーズ使用)"},
+  "(포즈 사용)":{en:"(uses pose)",zh:"(使用姿势)",ja:"(ポーズ使用)"},
+  "자동 재생":{en:"Autoplay",zh:"自动播放",ja:"自動再生"},
+  "패션 비활성 (헤어/눈/피부만)":{en:"Fashion off (hair / eyes / skin only)",zh:"关闭时装(仅头发/眼睛/皮肤)",ja:"ファッション無効(髪/目/肌のみ)"},
+  "마네킹 모드 (대머리+무표정)":{en:"Mannequin mode (bald + blank face)",zh:"人偶模式(光头+无表情)",ja:"マネキンモード(ハゲ+無表情)"},
+  "실시간 이동 테스트 (←/→, 짧게 두번=달리기, C=점프)":{en:"Live movement test (←/→, double-tap = run, C = jump)",zh:"实时移动测试 (←/→，短按两次=奔跑，C=跳跃)",ja:"リアルタイム移動テスト (←/→、2回=走る、C=ジャンプ)"},
+  "잔상 적용":{en:"Apply afterimage",zh:"应用残影",ja:"残像を適用"},
+  "배경 포함":{en:"Include background",zh:"包含背景",ja:"背景を含む"},
+  "일반":{en:"Normal",zh:"普通",ja:"通常"},
+  "크리티컬":{en:"Critical",zh:"暴击",ja:"クリティカル"},
+  "억대":{en:"Billions",zh:"亿级",ja:"億台"},
+  "점프":{en:"Jump",zh:"跳跃",ja:"ジャンプ"},
+  "현재 조합 저장":{en:"Save current combo",zh:"保存当前搭配",ja:"現在の組み合わせを保存"},
+  "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+  "TXT 저장":{en:"Save TXT",zh:"保存 TXT",ja:"TXT保存"},
+  "모두 탈의":{en:"Undress all",zh:"全部脱下",ja:"すべて脱ぐ"},
+  "세트 모음":{en:"Set collection",zh:"套装合集",ja:"セット一覧"},
+  "대미지 스킨":{en:"Damage skin",zh:"伤害皮肤",ja:"ダメージスキン"},
+  "숨김 아이템":{en:"Hidden items",zh:"隐藏道具",ja:"非表示アイテム"},
+  "★ 즐겨찾기만":{en:"★ Favorites only",zh:"★ 仅收藏",ja:"★ お気に入りのみ"},
+  "랜덤 데미지":{en:"Random damage",zh:"随机伤害",ja:"ランダムダメージ"},
+  "전체 숫자 0~9 보기":{en:"Show all digits 0–9",zh:"显示全部数字 0~9",ja:"数字 0~9 をすべて表示"},
+  "취소":{en:"Cancel",zh:"取消",ja:"キャンセル"},
+  "등록":{en:"Register",zh:"注册",ja:"登録"},
+  "닫기":{en:"Close",zh:"关闭",ja:"閉じる"},
+  "저장":{en:"Save",zh:"保存",ja:"保存"},
+  "적용":{en:"Apply",zh:"应用",ja:"適用"},
+  "초기화":{en:"Reset",zh:"重置",ja:"リセット"},
+  "삭제":{en:"Delete",zh:"删除",ja:"削除"},
+  "방향키로 좌우 이동 · 장비를 바꾸려면 체크를 껐다 켜세요":{en:"Arrow keys to move left / right · toggle the checkbox off and on to change gear",zh:"方向键左右移动 · 更换装备请先取消再勾选",ja:"矢印キーで左右移動 · 装備を変えるにはチェックを外して再度入れてください"},
+  "현재 캐릭터가 달리는 동안 전체 잔상거울(+6 강화)이 남기는 잔상을 실시간으로 미리 봅니다.":{en:"Preview in real time the afterimages left by the full Afterimage Mirror (+6) while the character runs.",zh:"实时预览角色奔跑时整套残影镜(+6强化)留下的残影。",ja:"キャラクターが走っている間、フル残像鏡(+6強化)が残す残像をリアルタイムでプレビューします。"},
+  "전체 부위 통합검색 (예: 고양이, 라이트 피치... / 초성검색 가능)":{en:"Search all slots (e.g. 고양이, 라이트 피치... / initial-consonant search OK)",zh:"全部位综合搜索 (例: 고양이, 라이트 피치... / 支持首字母)",ja:"全部位まとめて検索 (例: 고양이, 라이트 피치... / 頭文字検索可)"},
+  "검색 (초성검색 가능)":{en:"Search (initial-consonant OK)",zh:"搜索 (支持首字母)",ja:"検索 (頭文字可)"},
+  "닉네임 (선택, 홈 화면에 캐릭터 클릭 시 표시)":{en:"Nickname (optional, shown when the character is clicked on the home screen)",zh:"昵称(可选，在主页点击角色时显示)",ja:"ニックネーム(任意、ホーム画面でキャラをクリック時に表示)"},
+  "프레임":{en:"Frame",zh:"帧",ja:"フレーム"},
+  "이모티콘":{en:"Emote",zh:"表情",ja:"エモート"},
+  "렌더링 중…":{en:"Rendering…",zh:"渲染中…",ja:"レンダリング中…"},
+  "기본옷 색상":{en:"Base color",zh:"基础色",ja:"基本色"},
+  "이동속도":{en:"Speed",zh:"移速",ja:"移動速度"},
+  "잔상 종류":{en:"Trail type",zh:"残影种类",ja:"残像種類"},
+  "프리셋 (이 브라우저에만 저장됨)":{en:"Presets (this browser only)",zh:"预设(仅本浏览器)",ja:"プリセット(このブラウザのみ)"},
+  "장비창":{en:"Gear",zh:"装备",ja:"装備"},
+  "홈 화면 러너로 등록하시겠습니까?":{en:"Register as a home-screen runner?",zh:"要注册为主页跑者吗？",ja:"ホーム画面のランナーに登録しますか？"},
+  "최근 업데이트 2026.09.02":{en:"Last updated 2026.09.02",zh:"最近更新 2026.09.02",ja:"最終更新 2026.09.02"},
+  "저장된 프리셋이 없습니다.":{en:"No saved presets.",zh:"没有已保存的预设。",ja:"保存されたプリセットはありません。"},
+  "전투":{en:"Combat",zh:"战斗",ja:"戦闘"},
+  "패션":{en:"Fashion",zh:"时装",ja:"ファッション"},
+  "여":{en:"F",zh:"女",ja:"女"},
+  "남":{en:"M",zh:"男",ja:"男"}
+});
+LKI18N.init();
+</script>
 <header class="topbar">
   <div class="title-block">
     <h1>LaTale 캐릭터 코디 시뮬레이터 Latte_1</h1>
