@@ -5,6 +5,220 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>kimbap918</title>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  // 8개 도구 공통 문구 (상단 탭 / 테마 토글 / 방문자 카운터 등)
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "코디 시뮬레이터":{en:"Outfit Simulator",zh:"装扮模拟器",ja:"コーデシミュレーター"},
+    "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+    "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+    "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+    "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+    "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+    "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
+    "오늘":{en:"Today",zh:"今日",ja:"今日"},
+    "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
+    "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
+    "공유":{en:"Share",zh:"分享",ja:"共有"},
+    "링크 복사":{en:"Copy link",zh:"复制链接",ja:"リンクをコピー"},
+    "이미지 저장":{en:"Save image",zh:"保存图片",ja:"画像を保存"},
+    "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
+    "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+</script>
+<!-- LKI18N 사전 — hub (랜딩 페이지) -->
+<script>
+LKI18N.add({
+  "틈틈이 흥미로 만든 도구를 모아두는":{en:"A place for tools made here and there out of curiosity —",zh:"随手出于兴趣做的小工具的合集 —",ja:"合間に興味で作ったツールを集めた —"},
+  "개인 블로그":{en:"personal blog",zh:"个人博客",ja:"個人ブログ"},
+  "입니다.":{en:".",zh:"。",ja:"。"},
+  "정보 제공을 목적으로 운영하는 사이트는 아닙니다.":{en:"It is not run for the purpose of providing information.",zh:"本站并非以提供信息为目的运营。",ja:"情報提供を目的に運営しているサイトではありません。"},
+  "도구":{en:"Tools",zh:"工具",ja:"ツール"},
+  "코디 시뮬레이터 & 홈 러너 (web)":{en:"Outfit Simulator & Home Runner (web)",zh:"装扮模拟器 & 主页跑者 (web)",ja:"コーデシミュレーター & ホームランナー (web)"},
+  "코디 미리보기 · 홈 러너 등록":{en:"Outfit preview · register a home runner",zh:"装扮预览 · 注册主页跑者",ja:"コーデプレビュー・ホームランナー登録"},
+  "PC 코디 시뮬레이터 (설치형)":{en:"PC Outfit Simulator (installer)",zh:"PC 装扮模拟器 (安装版)",ja:"PC コーデシミュレーター (インストール型)"},
+  "실행파일 다운로드 · 라테일 설치 필요":{en:"Download the executable · LaTale install required",zh:"下载可执行文件 · 需安装 LaTale",ja:"実行ファイルをダウンロード・ラテール要インストール"},
+  "데스크톱 캐릭터 러너":{en:"Desktop Character Runner",zh:"桌面角色跑者",ja:"デスクトップキャラクターランナー"},
+  "바탕화면 캐릭터 펫 · 라테일 설치 불필요":{en:"Desktop character pet · no LaTale install needed",zh:"桌面角色宠物 · 无需安装 LaTale",ja:"デスクトップのキャラペット・ラテール不要"},
+  "장비 강화·인챈트 조회":{en:"Enchant Lookup",zh:"装备强化·附魔查询",ja:"装備強化・エンチャント検索"},
+  "강화/인챈트 옵션과 확률 조회":{en:"Look up enhance / enchant options and rates",zh:"查询强化/附魔选项与概率",ja:"強化・エンチャントのオプションと確率を検索"},
+  "확률 계산기":{en:"Gacha Calculator",zh:"概率计算器",ja:"確率計算機"},
+  "확률형 아이템의 기대값 계산":{en:"Expected-value calculator for gacha items",zh:"计算概率型道具的期望值",ja:"確率型アイテムの期待値を計算"},
+  "타이틀 검색기":{en:"Title Search",zh:"称号搜索",ja:"称号検索"},
+  "타이틀과 옵션 빠른 검색":{en:"Quick search of titles and options",zh:"快速搜索称号与选项",ja:"称号とオプションを素早く検索"},
+  "보스 도감":{en:"Boss Codex",zh:"Boss图鉴",ja:"ボス図鑑"},
+  "보스 체력·방어·저항 등 스탯 조회":{en:"Look up boss HP, defense, resistance and other stats",zh:"查询Boss生命·防御·抗性等属性",ja:"ボスのHP・防御・耐性などのステータスを検索"},
+  "스킬 특화":{en:"Skill Specialization",zh:"技能特化",ja:"スキル特化"},
+  "직업별 스킬 특화 정보":{en:"Skill specialization info by job",zh:"各职业技能特化信息",ja:"職業別のスキル特化情報"},
+  "경험치 인던 계산":{en:"EXP Dungeon Calculator",zh:"经验副本计算",ja:"経験値ダンジョン計算"},
+  "인던별 획득 경험치·레벨업까지 완주 횟수":{en:"EXP per dungeon · clears needed to level up",zh:"各副本获得经验·升级所需完成次数",ja:"ダンジョン別の獲得経験値・レベルアップまでの完走回数"},
+  "OO님의 캐릭터":{en:"OO's character",zh:"OO 的角色",ja:"OOさんのキャラクター"},
+  "님의 캐릭터":{en:"'s character",zh:" 的角色",ja:"さんのキャラクター"},
+  "하단 러너 캐릭터 켜기/끄기":{en:"Toggle bottom runner character",zh:"开关底部跑者角色",ja:"下部ランナーキャラの表示切替"},
+  "하단 러너 캐릭터 켜기":{en:"Turn on bottom runner character",zh:"开启底部跑者角色",ja:"下部ランナーキャラを表示"},
+  "하단 러너 캐릭터 끄기":{en:"Turn off bottom runner character",zh:"关闭底部跑者角色",ja:"下部ランナーキャラを非表示"},
+  "온라인":{en:"online",zh:"在线",ja:"オンライン"},
+  "홈 러너로 등록":{en:"Home runner",zh:"注册跑者",ja:"ランナー登録"},
+  "이 러너를 삭제할까요? (휴지통으로 이동)":{en:"Delete this runner? (moves to trash)",zh:"删除此跑者？(移入回收站)",ja:"このランナーを削除しますか？(ゴミ箱へ移動)"},
+  "정말 삭제할까요?":{en:"Really delete?",zh:"确定删除？",ja:"本当に削除しますか？"},
+  "휴지통에서 완전히 삭제할까요? 복구할 수 없습니다.":{en:"Permanently delete from trash? This cannot be undone.",zh:"从回收站彻底删除？无法恢复。",ja:"ゴミ箱から完全に削除しますか？元に戻せません。"},
+  "삭제":{en:"Delete",zh:"删除",ja:"削除"},
+  "복구":{en:"Restore",zh:"恢复",ja:"復元"},
+  "완전삭제":{en:"Delete permanently",zh:"彻底删除",ja:"完全削除"},
+  "휴지통":{en:"Trash",zh:"回收站",ja:"ゴミ箱"},
+  "성격":{en:"Personality",zh:"性格",ja:"性格"},
+  "지금 이동 방향":{en:"Current direction",zh:"当前移动方向",ja:"現在の移動方向"},
+  "치폭":{en:"Crit dmg",zh:"暴伤",ja:"クリ幅"},
+  "명 · 오늘":{en:" today",zh:"人 · 今日",ja:"人 · 今日"},
+  "명 다녀감 · 누적":{en:" visits · total",zh:"人到访 · 累计",ja:"人来訪 · 累計"},
+  "명":{en:" online",zh:"人",ja:"人"}
+});
+LKI18N.init();
+</script>
 <script>(function(){try{if(localStorage.getItem('hub_runner_enabled')==='0')document.documentElement.classList.add('runners-off');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -537,7 +751,7 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
     if (onlineEl) onlineEl.textContent = n.toLocaleString();
   });
 
-  // webapp/frontend(패션 시뮬레이터)의 "홈 러너로 등록"으로 저장된
+  // webapp/frontend(코디 시뮬레이터)의 "홈 러너로 등록"으로 저장된
   // idle/run 프레임(무기 제외, 알파 바운딩 박스로 크롭+통일된 크기)을
   // 읽어와 프로필 러너와 같은 방식(idle↔run 상태머신, 화면 끝에서 방향
   // 전환)으로 하단에 뛰어다니게 한다. 실시간 반영은 하지 않고 페이지 로드
