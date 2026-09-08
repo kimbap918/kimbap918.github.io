@@ -681,9 +681,11 @@ LKI18N.init();
      ============================================================ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 <style id="simCss">
-.mode-switch{display:flex;gap:6px;justify-content:flex-start;margin:14px auto 0;max-width:1460px;padding:0 18px;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;}
-.mode-switch button{flex:0 0 auto;padding:9px 22px;border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none;background:var(--panel);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;}
-.mode-switch button.active{color:var(--text);background:var(--bg);border-color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent);}
+.mode-switch{display:flex;gap:8px;justify-content:flex-start;margin:14px auto 4px;max-width:1460px;padding:0 18px;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;}
+.mode-switch button{flex:0 0 auto;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13.5px;font-weight:600;cursor:pointer;}
+.mode-switch button:hover{border-color:var(--accent);}
+.mode-switch button.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700;}
+.mode-switch .beta{font-size:10px;font-weight:700;opacity:.75;margin-left:5px;vertical-align:1px;letter-spacing:.3px;}
 
 /* 게임 창 스킨 - 기본(다크) 네이비. 라이트 테마는 아래 #simView.lite 로 전환(JS) */
 #simView{
@@ -695,31 +697,47 @@ LKI18N.init();
   max-width:1460px;margin:0 auto;padding:16px 18px 70px;
   font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--g-txt);
 }
-/* ── 라이트 테마 : 밝은 하늘색 패널 + 진한 남색 글자 ── */
+/* ── 라이트 테마 : 깔끔한 플랫 화이트 패널 (내부 글로우·짙은 그림자 전부 제거) ── */
 #simView.lite{
-  --g-bg:#eef2f8;--g-win:#ffffff;--g-win2:#eaf1fb;--g-line:#cfdbec;--g-edge:#93b8d6;
-  --g-txt:#1b2942;--g-mut:#5b6b86;--g-dim:#8a99b2;--g-gold:#9c6b06;--g-cyan:#0d7c8f;
-  --g-blue1:#2c74b8;--g-blue2:#3f8fd8;--g-mag1:#a8324a;--g-mag2:#cf5064;--g-mag-edge:#d9556a;
-  --g-ov:rgba(30,55,95,.05);--g-title:linear-gradient(180deg,#dceaf7,#cadef0);--g-ico:linear-gradient(135deg,#e8eef8,#d9e3f1);
-  --g-field:#f2f6fc;--g-toast:#ffffff;--g-scap:#5a6f92;
+  --g-bg:#f6f8fb;--g-win:#ffffff;--g-win2:#ffffff;--g-line:#e6eaf1;--g-edge:#dfe4ec;
+  --g-txt:#1e2836;--g-mut:#63708a;--g-dim:#98a2b3;--g-gold:#9a6a08;--g-cyan:#0e7488;
+  --g-blue1:#3877bd;--g-blue2:#4b93da;--g-mag1:#b03a52;--g-mag2:#d05a6e;--g-mag-edge:#d9556a;
+  --g-ov:#f4f6fa;--g-title:#f2f5fa;--g-ico:linear-gradient(135deg,#eef2f8,#e3e9f2);
+  --g-field:#f4f6fa;--g-toast:#ffffff;--g-scap:#8b97a9;
 }
-#simView.lite .gwin{box-shadow:0 0 0 1px rgba(13,124,143,.12),0 1px 4px rgba(30,50,90,.14),inset 0 0 40px rgba(210,225,245,.35);}
-#simView.lite .gwin-title{text-shadow:none;color:#123453;border-bottom-color:#93b8d6;}
-#simView.lite .gwin-title .ic{opacity:.7;}
-#simView.lite .gwin-title .sp{background:rgba(0,0,0,.04);}
-#simView.lite .sk-row.sel{background:rgba(13,124,143,.1);}
-#simView.lite .sk-row:nth-child(odd){background:rgba(60,120,200,.05);}
-#simView.lite .scell .sh em{color:#3a5b85;}
-#simView.lite #simToast{color:#a8324a;box-shadow:0 6px 24px rgba(20,40,80,.18);}
-#simView.lite .sim-tip{background:linear-gradient(180deg,#f4f8fd,#e6eef8);border-color:#93b8d6;border-top-color:#0d7c8f;color:#1b2942;box-shadow:0 10px 30px rgba(20,40,80,.18);}
-#simView.lite .sim-tip .tn{color:#0d7c8f;text-shadow:none;}
-#simView.lite .sim-tip .tl{color:#5b6b86;} #simView.lite .sim-tip .tb{color:#33455f;}
-#simView.lite .sim-tip .tv{color:#9c6b06;} #simView.lite .sim-tip .tu{color:#a8324a;}
-#simView.lite .ss-line b{color:#1b2942;}
-#simView.lite .ss-line .ss-tag{background:rgba(30,55,95,.1);}
+/* 라이트: 모든 패널 = 얇은 실선 + 아주 옅은 드롭섀도만. inset 글로우 전부 무효화 */
+#simView.lite .gwin,
+#simView.lite .sim-summary,
+#simView.lite .sim-detail .dcard{
+  box-shadow:0 1px 2px rgba(23,42,74,.05),0 0 0 1px rgba(23,42,74,.04);
+  background:var(--g-win);
+}
+#simView.lite .gwin-title{background:var(--g-title);color:#22303f;text-shadow:none;border-bottom:1px solid var(--g-line);}
+#simView.lite .gwin-title .ic{background:var(--g-cyan);opacity:.6;}
+#simView.lite .gwin-title .sp{background:#eef1f6;color:var(--g-mut);border-color:var(--g-line);}
+#simView.lite .lvbar,#simView.lite .sk-tabstrip,#simView.lite .mat-guide,
+#simView.lite .stone-col + .stone-col{border-color:var(--g-line);}
+#simView.lite .sk-list .sk-row{border-bottom-color:#eef1f6;}
+#simView.lite .sk-row:nth-child(odd){background:#fafbfd;}
+#simView.lite .sk-row.sel{background:#eef7f8;box-shadow:inset 3px 0 0 var(--g-cyan);}
+#simView.lite .sk-rail,#simView.lite .sk-foot,#simView.lite .preset-bar,
+#simView.lite .have-f input,#simView.lite .ss-from,#simView.lite #bulkFrom{background:var(--g-field);}
+#simView.lite .sk-ico{background:var(--g-ico);color:#43587a;border-color:#d7deea;}
+#simView.lite .scell .sh em{color:#43587a;}
+#simView.lite .sum-skill{background:#fafbfd;border-color:var(--g-line);}
+#simView.lite #simToast{color:#a8324a;box-shadow:0 6px 20px rgba(23,42,74,.12);}
+#simView.lite .sim-tip{background:#ffffff;border-color:var(--g-line);border-top-color:var(--g-cyan);color:#1e2836;box-shadow:0 8px 24px rgba(23,42,74,.14);}
+#simView.lite .sim-tip .tn{color:var(--g-cyan);text-shadow:none;}
+#simView.lite .sim-tip .tl{color:var(--g-mut);} #simView.lite .sim-tip .tb{color:#3a4557;}
+#simView.lite .sim-tip .tv{color:var(--g-gold);} #simView.lite .sim-tip .tu{color:#b03a52;}
+#simView.lite .ss-line b{color:#1e2836;}
+#simView.lite .ss-line .ss-tag{background:#eef1f6;}
 #simView.lite .ss-line.gen .ss-tag{color:#7a5200;} #simView.lite .ss-line.uq .ss-tag{color:#8f2a63;}
 #simView.lite .sim-detail .d-name.uq{color:#c0345c;}
 #simView.lite .hex.filled i>b,#simView.lite .hex .x{color:#fff;}
+#simView.lite .hex.empty:hover{filter:brightness(1.03) drop-shadow(0 1px 3px rgba(23,42,74,.18));}
+#simView.lite .hex.filled.gen{filter:drop-shadow(0 1px 3px rgba(154,106,8,.35));}
+#simView.lite .hex.filled.uq{filter:drop-shadow(0 1px 3px rgba(176,58,82,.35));}
 #simView .sim-note{font-size:13px;color:var(--muted);margin:4px 2px 14px;line-height:1.6;}
 #simView .sim-note b{color:var(--best);}
 
@@ -752,6 +770,10 @@ LKI18N.init();
 #simView .sim-jobbar button{padding:6px 12px;border-radius:6px;border:1px solid var(--g-line);
   background:var(--g-win);color:var(--g-mut);font-size:13px;cursor:pointer;white-space:nowrap;}
 #simView .sim-jobbar button.active{background:linear-gradient(180deg,#f2d476,#c99a34);color:#241a05;border-color:#e8c159;font-weight:800;}
+#simView .sim-jobsel{display:none;width:100%;margin-bottom:14px;padding:10px 12px;border-radius:8px;
+  border:1px solid var(--g-line);background:var(--g-field);color:var(--g-txt);font-size:14px;font-weight:700;
+  font-family:inherit;cursor:pointer;}
+#simView .sim-jobsel:focus{outline:1px solid var(--g-cyan);border-color:var(--g-cyan);}
 
 #simView .sim-windows{display:grid;grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);gap:16px;align-items:stretch;}
 @media (max-width:980px){#simView .sim-windows{grid-template-columns:1fr;}}
@@ -954,11 +976,77 @@ LKI18N.init();
 #simView .sim-empty{color:var(--g-mut);font-size:12px;padding:8px 0;}
 #simView #simToast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:var(--g-toast);color:#ffd9d9;border:1px solid #b1418d;border-radius:9px;padding:9px 16px;font-size:12.5px;z-index:99999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:0 6px 24px rgba(0,0,0,.4);}
 #simView #simToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ───────────── 모바일 최적화 ───────────── */
+@media (max-width:680px){
+  .mode-switch{padding:0 10px;margin:12px auto 4px;}
+  #simView{padding:12px 10px 56px;}
+  #simView .sim-note{font-size:11.5px;line-height:1.55;margin:2px 0 12px;}
+  /* 직업 = 드롭다운 (버튼 바 숨김) */
+  #simView .sim-jobbar{display:none;}
+  #simView .sim-jobsel{display:block;}
+  /* 셋팅 바 = 항목별로 늘어나며 줄바꿈 */
+  #simView .preset-bar{gap:6px;padding:8px 9px;}
+  #simView .preset-bar .pb-label{flex-basis:100%;}
+  #simView .preset-bar .pb-name{flex:1 1 110px;width:auto;}
+  #simView .preset-bar .pb-sel{flex:1 1 130px;max-width:none;}
+  #simView .preset-bar .pb-btn{flex:1 1 auto;text-align:center;}
+  #simView .preset-bar .pb-div{display:none;}
+  /* 두 창 세로 쌓기 + 간격 축소 */
+  #simView .sim-windows{gap:12px;}
+  /* 창 제목 : 상태문구를 아래 줄로 내려 제목이 안 쪼개지게 */
+  #simView .gwin-title{flex-wrap:wrap;gap:6px;padding:10px 12px;font-size:14.5px;}
+  #simView .gwin-title .sp{margin-left:0;flex-basis:100%;font-size:11px;white-space:normal;text-align:left;}
+  /* 스킬 목록 높이 제한 → 스킬 고른 뒤 특화석까지 스크롤 최소화 */
+  #simView .sk-list{max-height:46vh;}
+  /* 스킬 행 : 슬롯 3칸을 이름 아래 줄로 */
+  #simView .sk-row{grid-template-columns:32px 1fr;gap:6px 8px;padding:9px 10px;}
+  #simView .sk-ico{width:32px;height:32px;}
+  #simView .sk-nm{font-size:13px;}
+  #simView .sk-slots{grid-column:1 / -1;justify-content:flex-start;gap:10px;}
+  #simView .sk-tabstrip{flex-wrap:wrap;gap:6px;padding:8px 10px;}
+  #simView .sk-tabstrip .clr-grp{margin-left:0;width:100%;}
+  #simView .sk-tabstrip .clr{flex:1 1 auto;text-align:center;}
+  /* 특화석 그리드 : 일반 4열 / 유니크 2열, 셀 축소 */
+  #simView .stone-cols{grid-template-columns:1fr;}
+  #simView .stone-col + .stone-col{border-left:0;border-top:1px solid var(--g-line);}
+  #simView .col-gen .hexgrid{grid-template-columns:repeat(4,1fr);}
+  #simView .hexgrid{gap:12px 6px;padding:12px 8px;}
+  #simView .scell .sh{width:52px;height:52px;}
+  #simView .scell .cap{font-size:9.5px;}
+  #simView .lvbar{gap:6px;padding:10px 12px;}
+  #simView .lvbar .lv-cost{flex-basis:100%;}
+  #simView .mat-guide{padding:8px 12px 10px;gap:5px 10px;}
+  /* 상세/요약 : 라벨을 위로, 최소폭 해제해서 넘침 방지 */
+  #simView .sim-detail{grid-template-columns:1fr;gap:12px;}
+  #simView .sim-detail .d-row .k{min-width:0;display:block;margin-bottom:1px;}
+  #simView .sum-tot .k{min-width:0;display:block;margin-bottom:1px;}
+  #simView .sum-tot .row.mat-head{gap:6px;}
+  #simView .sum-tot .bulk{margin-left:0;}
+  #simView .have-grid{grid-template-columns:1fr;gap:7px 10px;}
+  #simView .have-f input{width:84px;}
+  #simView .sim-summary{padding:12px 12px;}
+  #simView .sim-summary h3{font-size:13.5px;gap:5px;}
+  #simView .sim-summary h3 .sum-img-btn{font-size:11px;padding:3px 8px;}
+  #simView .ss-line{font-size:11.5px;}
+  #simView #matCalc .row.mat-final{font-size:12px;}
+}
+
+/* 이미지 저장 시엔 PC 레이아웃으로 캡처 (모바일 축소 규칙 무효화) */
+#simView.cap-pc .sim-summary{padding:16px 18px !important;}
+#simView.cap-pc .sim-summary h3{font-size:15px !important;gap:8px !important;}
+#simView.cap-pc .sim-summary h3 .sum-img-btn{font-size:11.5px !important;padding:4px 10px !important;}
+#simView.cap-pc .sum-tot .k{min-width:170px !important;display:inline-block !important;margin-bottom:0 !important;}
+#simView.cap-pc .sum-tot .row.mat-head{gap:10px !important;}
+#simView.cap-pc .sum-tot .bulk{margin-left:auto !important;}
+#simView.cap-pc .have-grid{grid-template-columns:1fr 1fr !important;gap:6px 14px !important;}
+#simView.cap-pc .ss-line{font-size:12px !important;}
+#simView.cap-pc #matCalc .row.mat-final{font-size:12.5px !important;}
 </style>
 
 <div class="mode-switch" id="modeSwitch">
   <button id="mDocBtn" class="active" type="button">정보 보기</button>
-  <button id="mSimBtn" type="button">시뮬레이터</button>
+  <button id="mSimBtn" type="button">시뮬레이터<span class="beta">(beta)</span></button>
 </div>
 <div id="main">
 
@@ -1026,6 +1114,7 @@ LKI18N.init();
     <b>유니크 특화석은 스킬당 1개</b>(인피니티 스킬은 맹공·신속 중 하나). 요약의 강화 결정·엘리는 <b>1강→현재 레벨</b> 누적값입니다.
   </p>
   <div class="sim-jobbar" id="simJobbar"></div>
+  <select class="sim-jobsel" id="simJobSel" aria-label="직업 선택"></select>
 
   <div class="preset-bar" id="presetBar">
     <span class="pb-label">내 셋팅</span>
@@ -1201,12 +1290,18 @@ LKI18N.init();
 
   // ---------- 직업 바 ----------
   var jobbar = document.getElementById('simJobbar');
+  var jobSel = document.getElementById('simJobSel');
+  function pickJob(id) { st.job = id; selSlot = selSkill = null; save(); render(); }
   D.jobs.forEach(function (j) {
     var b = document.createElement('button');
     b.type = 'button'; b.textContent = j.name; b.dataset.j = j.id;
-    b.onclick = function () { st.job = j.id; selSlot = selSkill = null; save(); render(); };
+    b.onclick = function () { pickJob(j.id); };
     jobbar.appendChild(b);
+    var o = document.createElement('option');
+    o.value = j.id; o.textContent = j.name;
+    jobSel.appendChild(o);
   });
+  jobSel.onchange = function () { pickJob(+jobSel.value); };
   document.getElementById('simClearAll').onclick = function () {
     st.builds[st.job] = {}; selSlot = selSkill = null; save(); render();
   };
@@ -1362,6 +1457,7 @@ LKI18N.init();
   function render() { paintJobbar(); renderSkills(); renderStones(); renderDetail(); renderSummary(); paintLv(); }
   function paintJobbar() {
     Array.prototype.forEach.call(jobbar.children, function (b) { b.classList.toggle('active', +b.dataset.j === st.job); });
+    if (jobSel.value !== String(st.job)) jobSel.value = String(st.job);
     document.getElementById('simJobLabel').textContent = D.jobs[st.job].name;
     document.getElementById('simWtab').textContent = D.jobs[st.job].name;
     var info = selSlot ? ('슬롯 지정 (' + D.jobs[st.job].skills[selSlot.skill].name + ' ' + (selSlot.slot + 1) + '번) → 특화석 클릭')
@@ -1393,8 +1489,14 @@ LKI18N.init();
       for (var k = 0; k < 3; k++) { if (arr[k]) cnt++; slots.appendChild(hex(si, k, arr[k])); }
       row.appendChild(ico); row.appendChild(nm); row.appendChild(slots);
       row.onclick = function () {
-        selSkill = (selSkill === si) ? null : si; selSlot = null;
+        var picked = selSkill !== si;
+        selSkill = picked ? si : null; selSlot = null;
         render();
+        // 모바일: 스킬을 고르면 특화석 창으로 이동(위아래 스크롤 반복 방지)
+        if (picked && window.matchMedia('(max-width:680px)').matches) {
+          var rt = document.querySelector('#simView .gwin-right');
+          if (rt) rt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       };
       wrap.appendChild(row);
     });
@@ -1719,7 +1821,18 @@ LKI18N.init();
     var lite = sim.classList.contains('lite');
     var bg = lite ? '#f5f6f8' : '#0e1c33';
     if (btn) { btn.disabled = true; btn.textContent = '저장 중…'; }
+
+    // 항상 PC 레이아웃으로 캡처: 모바일 축소 규칙 무효화 + 폭 고정
+    var PCW = 960;
+    sim.classList.add('cap-pc');
+    var prev = { w: el.style.width, mw: el.style.maxWidth, mnw: el.style.minWidth, mg: el.style.margin };
+    el.style.width = PCW + 'px'; el.style.maxWidth = 'none'; el.style.minWidth = PCW + 'px'; el.style.margin = '0';
+    function restore() {
+      sim.classList.remove('cap-pc');
+      el.style.width = prev.w; el.style.maxWidth = prev.mw; el.style.minWidth = prev.mnw; el.style.margin = prev.mg;
+    }
     function done(ok) {
+      restore();
       if (btn) { btn.disabled = false; btn.textContent = '🖼 이미지 저장'; }
       simToast(ok ? '이미지를 저장했습니다.' : '이미지 생성에 실패했습니다.');
     }
@@ -1731,13 +1844,14 @@ LKI18N.init();
     }
     function fallback() {
       if (!window.html2canvas) { done(false); return; }
-      window.html2canvas(el, { backgroundColor: bg, scale: 2, useCORS: true, logging: false })
+      window.html2canvas(el, { backgroundColor: bg, scale: 2, useCORS: true, logging: false, windowWidth: 1280 })
         .then(function (cv) { dl(cv.toDataURL('image/png')); done(true); })
         .catch(function () { done(false); });
     }
     var H2I = window.htmlToImage;
     if (H2I && H2I.toPng) {
-      H2I.toPng(el, { pixelRatio: 2, backgroundColor: bg, skipFonts: true, cacheBust: true, style: { margin: '0' } })
+      H2I.toPng(el, { pixelRatio: 2, backgroundColor: bg, skipFonts: true, cacheBust: true,
+        width: PCW, style: { margin: '0', width: PCW + 'px', maxWidth: 'none' } })
         .then(function (u) { dl(u); done(true); }, fallback);
     } else fallback();
   }
