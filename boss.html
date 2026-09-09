@@ -333,6 +333,22 @@ body,button,a,select,summary,.theme-toggle,.toggle input{cursor:url("data:image/
   <a href="exp.html">경험치 인던 (beta)</a>
 </nav>
 <script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+<script>
+/* 모바일: 상단 탭을 '홈' + 현재 페이지만 남기고 나머지는 '더보기'로 접기 */
+(function(){
+  var nav=document.getElementById("siteTabs"); if(!nav||nav.querySelector(".st-more"))return;
+  var s=document.createElement("style");
+  s.textContent="#siteTabs .st-more{display:none;font-family:inherit;font-size:14px;padding:8px 14px;border:0;border-radius:6px;background:#2f3a4a;color:#eaeef3;cursor:pointer;}"
+   +"@media(max-width:680px){#siteTabs a:not(.home):not(.active){display:none;}#siteTabs.st-open a:not(.home):not(.active){display:inline-block;}#siteTabs .st-more{display:inline-block;}#siteTabs.st-open .st-more{background:#3c4a5e;}}";
+  document.head.appendChild(s);
+  var n=nav.querySelectorAll("a:not(.home):not(.active)").length;
+  var b=document.createElement("button");
+  b.type="button"; b.className="st-more"; b.setAttribute("data-noi18n",""); b.setAttribute("aria-expanded","false");
+  function lbl(){ b.textContent = nav.classList.contains("st-open") ? "접기" : "더보기 · "+n; }
+  b.addEventListener("click",function(){ var o=nav.classList.toggle("st-open"); b.setAttribute("aria-expanded",o?"true":"false"); lbl(); });
+  lbl(); nav.appendChild(b);
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
 <!-- LKShare v1 — 4개 도구 공통 공유 키트 (_shared/share_kit.html) -->
 <style>
