@@ -783,7 +783,8 @@ LKI18N.init();
 #simView .preset-bar .pb-btn{border:1px solid var(--g-line);background:var(--g-win);color:var(--g-txt);
   border-radius:6px;font-size:12px;padding:5px 10px;cursor:var(--lk-cur);font-family:inherit;}
 #simView .preset-bar .pb-btn:hover{border-color:var(--g-cyan);}
-#simView .preset-bar .pb-primary{background:linear-gradient(180deg,#2c74b8,#1f4e8f);color:#fff;border-color:#3f8fd8;font-weight:700;}
+#simView .preset-bar .pb-primary{background:var(--g-cyan);color:var(--g-bg);border-color:var(--g-cyan);font-weight:700;}
+#simView .preset-bar .pb-primary:hover{background:var(--g-cyan);border-color:var(--g-cyan);opacity:.88;}
 #simView .preset-bar .pb-danger{color:#ff9a8f;border-color:#a4392c;background:rgba(120,40,32,.22);}
 #simView.lite .preset-bar .pb-danger{color:#a8324a;background:rgba(200,50,74,.1);border-color:#d9a3ac;}
 #simView .preset-bar .pb-div{width:1px;align-self:stretch;background:var(--g-line);margin:0 3px;}
@@ -798,8 +799,10 @@ LKI18N.init();
 /* 직업 선택 바 */
 #simView .sim-jobbar{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
 #simView .sim-jobbar button{padding:6px 12px;border-radius:6px;border:1px solid var(--g-line);
-  background:var(--g-win);color:var(--g-mut);font-size:13px;cursor:var(--lk-cur);white-space:nowrap;}
-#simView .sim-jobbar button.active{background:linear-gradient(180deg,#f2d476,#c99a34);color:#241a05;border-color:#e8c159;font-weight:800;}
+  background:var(--g-win);color:var(--g-mut);font-size:13px;cursor:var(--lk-cur);white-space:nowrap;
+  transition:color .12s,border-color .12s;}
+#simView .sim-jobbar button:hover{color:var(--g-txt);border-color:var(--g-edge);}
+#simView .sim-jobbar button.active{background:var(--g-win2);color:var(--g-gold);border-color:var(--g-gold);font-weight:700;}
 #simView .sim-jobsel{display:none;width:100%;margin-bottom:14px;padding:10px 12px;border-radius:8px;
   border:1px solid var(--g-line);background:var(--g-field);color:var(--g-txt);font-size:14px;font-weight:700;
   font-family:inherit;cursor:var(--lk-cur);}
