@@ -1341,18 +1341,23 @@ LKI18N.init();
   // 모바일/터치(호버 없음): 마지막으로 탭한 특화석 스탯을 화면 하단에 떠 있는 바로 표시.
   //   그리드를 아무리 스크롤해도 계속 보이고, ✕ 로 닫는다(다음 특화석을 탭하면 다시 뜸).
   //   장착은 기존대로 탭 한 번. PC(호버 가능)는 이 바를 안 쓰고 호버 툴팁 그대로.
-  var lastStone = null;   // {t, no} — 바에 표시 중인 특화석
-  function renderStoneInfo(t, no) { lastStone = { t: t, no: no }; renderSimPanel(); }
+  var lastStone = null;       // {t, no} — 바에 표시 중인 특화석
+  var panelDismissed = false; // ✕ 로 사용자가 닫음 — 다음 특화석 탭 전까지 안 뜸
+  function renderStoneInfo(t, no) { panelDismissed = false; lastStone = { t: t, no: no }; renderSimPanel(); }
+  function closeSimPanel() {
+    panelDismissed = true; lastStone = null;
+    var host = document.getElementById('simStoneInfo');
+    if (host) { host.hidden = true; host.innerHTML = ''; }
+  }
   function renderSimPanel() {
     var host = document.getElementById('simStoneInfo');
     if (!host) return;
     var tgt = selSlot ? selSlot.skill : selSkill;
-    if (!lastStone && tgt == null) { host.hidden = true; host.innerHTML = ''; return; }
+    if (panelDismissed || (!lastStone && tgt == null)) { host.hidden = true; host.innerHTML = ''; return; }
 
-    // 상단: 스킬 목록으로 위로가기 + (스탯 표시 중이면) 닫기
-    var h = '<div class="sf-bar"><button type="button" class="sf-up">▲ 스킬 목록</button>';
-    if (lastStone) h += '<button type="button" class="sf-x" aria-label="스탯 닫기">×</button>';
-    h += '</div>';
+    // 상단: 스킬 목록으로 위로가기 + 닫기(플로트 전체를 닫음)
+    var h = '<div class="sf-bar"><button type="button" class="sf-up">▲ 스킬 목록</button>'
+          + '<button type="button" class="sf-x" aria-label="닫기">×</button></div>';
 
     // 선택한 스킬의 슬롯 3칸 (왼쪽 창과 동기화)
     if (tgt != null) {
@@ -1400,8 +1405,7 @@ LKI18N.init();
       var l = document.querySelector('#simView .gwin-left');
       if (l) l.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    var x = host.querySelector('.sf-x');
-    if (x) x.onclick = function () { lastStone = null; renderSimPanel(); };
+    host.querySelector('.sf-x').onclick = closeSimPanel;
     host.querySelectorAll('.sf-hex').forEach(function (b) {
       b.onclick = function (ev) {
         var rm = ev.target && ev.target.getAttribute && ev.target.getAttribute('data-rm');
@@ -1452,7 +1456,7 @@ LKI18N.init();
   var jobbar = document.getElementById('simJobbar');
   var jobSel = document.getElementById('simJobSel');
   function pickJob(id) {
-    st.job = id; selSlot = selSkill = null; lastStone = null;
+    st.job = id; selSlot = selSkill = null; lastStone = null; panelDismissed = false;
     var si = document.getElementById('simStoneInfo'); if (si) si.hidden = true;
     save(); render();
   }
