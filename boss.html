@@ -96,7 +96,8 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
 .search{position:relative;flex:1;min-width:220px}
 .search input{
   width:100%;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;
-  padding:9px 12px 9px 34px;color:var(--ink);font:inherit
+  padding:9px 12px 9px 34px;color:var(--ink);font:inherit;
+  font-size:16px   /* 16px 미만이면 iOS Safari 가 포커스 시 화면을 확대함 — 검색 후 상세도 확대된 채로 남음 */
 }
 .search input::placeholder{color:var(--ink-3)}
 .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none}
