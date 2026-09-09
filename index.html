@@ -335,10 +335,10 @@ body{
   margin-left:2px;
   background:var(--accent);
   vertical-align:-.16em;
-  animation:cur-blink 1.15s steps(1) infinite;
 }
+.prompt.typed .cur{ animation:cur-blink 1.15s steps(1) infinite; }
 @keyframes cur-blink{50%{opacity:0;}}
-@media (prefers-reduced-motion: reduce){ .prompt .cur{animation:none;} }
+@media (prefers-reduced-motion: reduce){ .prompt.typed .cur{animation:none;} }
 .bio{
   margin:0;
   font-size:14.5px;
@@ -494,7 +494,7 @@ footer .dom{
     </div>
     <div class="masthead-body">
       <h1 class="name">kimbap918</h1>
-      <p class="prompt" data-noi18n>kimbap918:~$ whoami<span class="cur" aria-hidden="true"></span></p>
+      <p class="prompt" data-noi18n><span class="ps">kimbap918:~$ </span><span class="cmd" id="promptCmd"></span><span class="cur" aria-hidden="true"></span></p>
       <p class="bio">흥미로 만든 도구를 모아두는 <strong>개인 블로그</strong>입니다.<br>정보 제공을 목적으로 운영하는 사이트는 아닙니다.</p>
       <p class="visit-stats"><span class="dot"></span><span>온라인 <span id="statOnline">-</span>명 · 오늘 <span id="statDaily">-</span>명 다녀감 · 누적 <span id="statTotal">-</span>명</span></p>
     </div>
@@ -1151,6 +1151,23 @@ import { getDatabase, ref, push, set, get, remove, onDisconnect, onValue } from 
       playing = false;
     }, emote.ms);
   });
+})();
+</script>
+<script>
+(function () {
+  var p = document.querySelector('.prompt');
+  var el = document.getElementById('promptCmd');
+  if (!p || !el) return;
+  var text = 'whoami';
+  var reduce = false;
+  try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (reduce) { el.textContent = text; p.classList.add('typed'); return; }
+  var i = 0;
+  (function tick() {
+    el.textContent = text.slice(0, i);
+    if (i < text.length) { i++; setTimeout(tick, 65 + Math.random() * 70); }
+    else { p.classList.add('typed'); }
+  })();
 })();
 </script>
 </body>
