@@ -609,18 +609,32 @@ LKI18N.addRules([
   [/《\s*소탕\s*》/g, {en:"《 Sweep 》",zh:"《 扫荡 》",ja:"《 掃討 》"}],
   [/《\s*토벌\s*》/g, {en:"《 Subjugation 》",zh:"《 讨伐 》",ja:"《 討伐 》"}],
   [/일반\/보스 지배력/g, {en:"Normal/Boss dominance",zh:"普通/Boss支配力",ja:"通常/ボス支配力"}],
+  [/일반 몬스터 지배력/g, {en:"Normal-monster dominance",zh:"普通怪支配力",ja:"通常モンスター支配力"}],
+  [/보스 몬스터 지배력/g, {en:"Boss-monster dominance",zh:"Boss支配力",ja:"ボスモンスター支配力"}],
+  [/몬스터 지배력/g, {en:"Monster dominance",zh:"怪物支配力",ja:"モンスター支配力"}],
   [/보스 지배력/g, {en:"Boss dominance",zh:"Boss支配力",ja:"ボス支配力"}],
   [/일반 지배력/g, {en:"Normal dominance",zh:"普通支配力",ja:"通常支配力"}],
-  [/스킬 쿨타임 단축/g, {en:"Skill CD reduction",zh:"技能冷却缩短",ja:"スキルCD短縮"}],
-  [/스킬 쿨타임/g, {en:"Skill cooldown",zh:"技能冷却",ja:"スキルCD"}],
+  [/지배력/g, {en:"dominance",zh:"支配力",ja:"支配力"}],
+  [/스킬 쿨타임 감소 효과 미적용/g, {en:"skill-cooldown reduction not applied",zh:"不受技能冷却缩短影响",ja:"スキルCD短縮効果は非適用"}],
+  [/쿨타임 감소 효과 미적용/g, {en:"cooldown reduction not applied",zh:"不受冷却缩短影响",ja:"クールタイム短縮効果は非適用"}],
+  [/스킬 쿨타임 단축/g, {en:"skill cooldown reduction",zh:"技能冷却缩短",ja:"スキルCD短縮"}],
+  [/스킬 쿨타임/g, {en:"skill cooldown",zh:"技能冷却",ja:"スキルCD"}],
   [/스킬 계수\(레벨 비례\)/g, {en:"Skill coeff. (level-scaled)",zh:"技能系数(随等级)",ja:"スキル係数(レベル比例)"}],
   [/스킬 계수/g, {en:"Skill coeff.",zh:"技能系数",ja:"スキル係数"}],
   [/쿨타임 증가/g, {en:"CD increase",zh:"冷却增加",ja:"CD増加"}],
+  [/쿨타임 초기화/g, {en:"cooldown reset",zh:"冷却重置",ja:"クールタイム初期化"}],
+  [/쿨타임 공유/g, {en:"shared cooldown",zh:"共享冷却",ja:"クールタイム共有"}],
+  [/쿨타임/g, {en:"cooldown",zh:"冷却",ja:"クールタイム"}],
+  [/(\d+(?:\.\d+)?)분(?=[\s,)초]|$)/g, {en:"$1 min",zh:"$1分钟",ja:"$1分"}],
+  [/(\d+(?:\.\d+)?)초/g, {en:"$1 s",zh:"$1秒",ja:"$1秒"}],
   [/최대 대미지/g, {en:"Max damage",zh:"最大伤害",ja:"最大ダメージ"}],
+  [/최종 크리티컬 대미지/g, {en:"Final crit damage",zh:"最终暴击伤害",ja:"最終クリティカルダメージ"}],
   [/대미지 감소\s*%/g, {en:"Damage reduction %",zh:"伤害减免 %",ja:"ダメージ減少 %"}],
+  [/대미지 감소/g, {en:"Damage reduction",zh:"伤害减免",ja:"ダメージ減少"}],
   [/크리티컬 대미지/g, {en:"Crit damage",zh:"暴击伤害",ja:"クリティカルダメージ"}],
   [/타겟수/g, {en:"Target count",zh:"目标数",ja:"ターゲット数"}],
   [/무기 공격력\/속성력/g, {en:"Weapon ATK / Elemental",zh:"武器攻击力/属性力",ja:"武器攻撃力/属性力"}],
+  [/물리\/마법(?!력)/g, {en:"Phys/Magic",zh:"物理/魔法",ja:"物理/魔法"}],
   [/근력\/마법력/g, {en:"STR / M.ATK",zh:"力量/魔法力",ja:"筋力/魔法力"}],
   [/스탯 \/ 공격력/g, {en:"Stat / ATK",zh:"属性/攻击力",ja:"ステータス/攻撃力"}],
   [/(\d+)~(\d+)번(?!째)/g, {en:"#$1–$2",zh:"第$1~$2个",ja:"$1~$2番"}],
@@ -1032,6 +1046,34 @@ LKI18N.init();
   #simView #matCalc .row.mat-final{font-size:12px;}
 }
 
+/* ── 터치(호버 없음)에서만: 특화석 탭 시 스탯 정보를 특화석 창 안에 인라인 표시 (모달 아님) ── */
+#simView .stone-info{
+  margin:0;padding:11px 16px 12px;border-bottom:1px solid var(--g-line);
+  background:var(--g-ov);font-size:12px;line-height:1.5;color:var(--g-txt);
+}
+#simView .stone-info .si-name{font-weight:800;font-size:12.5px;margin-bottom:3px;}
+#simView .stone-info .si-name.gen{color:var(--g-gold);}
+#simView .stone-info .si-name.uq{color:#e0788a;}
+#simView .stone-info .si-lv{font-weight:600;color:var(--g-mut);font-size:11px;margin-left:4px;}
+#simView .stone-info .si-eff{color:var(--g-gold);}
+#simView .stone-info .si-b{color:var(--g-mut);font-size:11.5px;}
+#simView .stone-info .si-b::before{content:"\203A ";color:var(--g-cyan);}
+#simView .stone-info .si-hint{margin-top:5px;color:var(--g-cyan);font-size:11px;opacity:.92;}
+#simView.lite .stone-info .si-name.uq{color:#c0345c;}
+/* 선택한 스킬의 슬롯 3칸을 패널에 미러 — 그리드로 스크롤한 채 슬롯 상태를 보며 장착 */
+#simView .stone-info .si-slots{display:flex;align-items:center;gap:8px 10px;margin-bottom:8px;flex-wrap:wrap;}
+#simView .stone-info .si-sk{font-weight:800;font-size:12px;color:var(--g-cyan);}
+#simView .stone-info .si-hexes{display:flex;gap:7px;}
+#simView .stone-info .si-hex{position:relative;width:36px;height:36px;padding:0;flex:none;border-radius:7px;
+  border:1px solid var(--g-line);background:var(--g-field);color:var(--g-dim);font-size:12px;font-weight:800;
+  font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+#simView .stone-info .si-hex img{width:100%;height:100%;object-fit:contain;border-radius:6px;display:block;}
+#simView .stone-info .si-hex.filled.gen{border-color:#c99a34;box-shadow:0 0 5px rgba(232,193,89,.5);}
+#simView .stone-info .si-hex.filled.uq{border-color:#c23a4a;box-shadow:0 0 5px rgba(224,120,138,.55);}
+#simView .stone-info .si-hex.sel{outline:2px solid var(--g-cyan);outline-offset:1px;}
+#simView .stone-info .si-hex .si-x{position:absolute;top:-7px;right:-7px;width:17px;height:17px;border-radius:50%;
+  background:#c0392b;color:#fff;font-size:11px;line-height:17px;font-style:normal;text-align:center;}
+
 /* 이미지 저장 시엔 PC 레이아웃으로 캡처 (모바일 축소 규칙 무효화) */
 #simView.cap-pc .sim-summary{padding:16px 18px !important;}
 #simView.cap-pc .sim-summary h3{font-size:15px !important;gap:8px !important;}
@@ -1166,6 +1208,7 @@ LKI18N.init();
           <span class="mat-row"><i>→Lv5</i> 결정 10 · 엘리 10억</span>
           <span class="mat-note">일반 특화석 → <em>결정 [일반]</em> / 유니크 특화석 → <em>결정 [유니크]</em> · 자세한 소모량과 파편 환산은 아래 <em>장착 요약</em>에서</span>
         </div>
+        <div class="stone-info" id="simStoneInfo" hidden></div>
         <div class="stone-cols">
           <div class="stone-col col-gen">
             <div class="col-banner">일반 특화석 · 35</div>
@@ -1206,6 +1249,8 @@ LKI18N.init();
   function build(job) { return (st.builds[job] = st.builds[job] || {}); }
 
   var lv = 5, selSlot = null, selSkill = null;   // 순서: 스킬(또는 슬롯) 선택 -> 특화석 클릭
+  var NOHOVER = false;   // 마우스 호버가 없는 환경(모바일/터치) — 특화석 정보는 탭 시트로
+  try { NOHOVER = window.matchMedia('(hover: none)').matches; } catch (e) { NOHOVER = 'ontouchstart' in window; }
 
   // 강화 결정(누적, 1강→해당 레벨) · 엘리(억, 누적) — 일반/유니크 동일, 특화석 1개당
   //   단계별 : Lv1→2 결정1, 2→3 결정2, 3→4 결정3, 4→5 결정4 (엘리도 1·2·3·4억)
@@ -1253,6 +1298,68 @@ LKI18N.init();
     el.addEventListener('mouseleave', tipHide);
   }
 
+  // 모바일/터치(호버 없음): 특화석 창 안에 인라인 패널을 띄운다(모달 아님, 닫을 필요 없음).
+  //   · 선택한 스킬의 슬롯 3칸을 미러 → 그리드로 스크롤한 채 슬롯 상태를 보며 장착 가능
+  //   · 마지막으로 탭한 특화석의 스탯도 함께 표시
+  // 장착은 기존대로 탭 한 번. PC(호버 가능)는 이 패널을 안 쓰고 호버 툴팁 그대로.
+  var lastStone = null;   // {t, no} — 패널에 표시 중인 특화석
+  function renderStoneInfo(t, no) { lastStone = { t: t, no: no }; renderSimPanel(); }
+  function renderSimPanel() {
+    var host = document.getElementById('simStoneInfo');
+    if (!host) return;
+    var tgt = selSlot ? selSlot.skill : selSkill;
+    if (tgt == null && !lastStone) { host.hidden = true; host.innerHTML = ''; return; }
+    var h = '';
+    // 1) 선택한 스킬의 슬롯 3칸 미러
+    if (tgt != null) {
+      var sk = D.jobs[st.job].skills[tgt], arr = arrOf(tgt);
+      h += '<div class="si-slots"><span class="si-sk">' + sk.name + '</span><span class="si-hexes">';
+      for (var k = 0; k < 3; k++) {
+        var cur = arr[k];
+        var selc = (selSlot && selSlot.skill === tgt && selSlot.slot === k) ? ' sel' : '';
+        if (cur) {
+          var ic = iconFor(cur.t, cur.no);
+          h += '<button type="button" class="si-hex filled ' + cur.t + selc + '" data-slot="' + k + '">'
+             + (ic ? '<img src="' + ic + '" alt="">' : (cur.t === 'gen' ? cur.no : 'U' + cur.no))
+             + '<i class="si-x" data-rm="' + k + '">×</i></button>';
+        } else {
+          h += '<button type="button" class="si-hex empty' + selc + '" data-slot="' + k + '">+</button>';
+        }
+      }
+      h += '</span></div>';
+    }
+    // 2) 마지막으로 탭한 특화석 스탯
+    if (lastStone) {
+      var e = effAt(lastStone.t, lastStone.no, lv);
+      h += '<div class="si-name ' + lastStone.t + '">' + lastStone.no + '. ' + e.name
+         + ' <span class="si-lv">강화 Lv' + lv + '</span></div>';
+      h += '<div class="si-eff">' + (e.text || '수치 미표기') + '</div>';
+      (e.bullets || []).slice(0, 3).forEach(function (b) {
+        if (b && !/^<|^Lv\d/.test(b)) h += '<div class="si-b">' + b + '</div>';
+      });
+    }
+    // 3) 안내
+    if (tgt == null) {
+      h += '<div class="si-hint">◀ 왼쪽에서 스킬을 선택한 뒤 특화석을 탭하면 장착됩니다</div>';
+    } else if (lastStone && lastStone.t === 'uq' && !skillAcceptsUnique(st.job, tgt, lastStone.no)) {
+      h += '<div class="si-hint">이 스킬에는 이 유니크 특화석을 장착할 수 없습니다</div>';
+    } else {
+      h += '<div class="si-hint">특화석 탭 = 빈 슬롯에 장착 / 다시 탭 = 해제 · 위 슬롯을 탭해 넣을 자리 지정</div>';
+    }
+    host.innerHTML = h;
+    host.hidden = false;
+    // 미러 슬롯 조작
+    host.querySelectorAll('.si-hex').forEach(function (b) {
+      b.onclick = function (ev) {
+        var rm = ev.target && ev.target.getAttribute && ev.target.getAttribute('data-rm');
+        if (rm != null) { ev.stopPropagation(); arrOf(tgt).splice(+rm, 1); selSlot = null; selSkill = tgt; save(); render(); return; }
+        var kk = +b.getAttribute('data-slot');
+        selSlot = (selSlot && selSlot.skill === tgt && selSlot.slot === kk) ? null : { skill: tgt, slot: kk };
+        selSkill = tgt; render();
+      };
+    });
+  }
+
   // 비차단 토스트(브라우저 alert 금지 - 페이지가 멈춤)
   var _toastT;
   function simToast(msg) {
@@ -1291,7 +1398,11 @@ LKI18N.init();
   // ---------- 직업 바 ----------
   var jobbar = document.getElementById('simJobbar');
   var jobSel = document.getElementById('simJobSel');
-  function pickJob(id) { st.job = id; selSlot = selSkill = null; save(); render(); }
+  function pickJob(id) {
+    st.job = id; selSlot = selSkill = null; lastStone = null;
+    var si = document.getElementById('simStoneInfo'); if (si) si.hidden = true;
+    save(); render();
+  }
   D.jobs.forEach(function (j) {
     var b = document.createElement('button');
     b.type = 'button'; b.textContent = j.name; b.dataset.j = j.id;
@@ -1454,7 +1565,10 @@ LKI18N.init();
   }
 
   // ---------- 렌더 ----------
-  function render() { paintJobbar(); renderSkills(); renderStones(); renderDetail(); renderSummary(); paintLv(); }
+  function render() {
+    paintJobbar(); renderSkills(); renderStones(); renderDetail(); renderSummary(); paintLv();
+    if (NOHOVER) renderSimPanel();   // 슬롯/레벨/선택 바뀌면 모바일 패널도 갱신
+  }
   function paintJobbar() {
     Array.prototype.forEach.call(jobbar.children, function (b) { b.classList.toggle('active', +b.dataset.j === st.job); });
     if (jobSel.value !== String(st.job)) jobSel.value = String(st.job);
@@ -1463,7 +1577,8 @@ LKI18N.init();
     var info = selSlot ? ('슬롯 지정 (' + D.jobs[st.job].skills[selSlot.skill].name + ' ' + (selSlot.slot + 1) + '번) → 특화석 클릭')
       : selSkill != null ? ('▶ ' + D.jobs[st.job].skills[selSkill].name + ' 선택됨 → 특화석을 계속 클릭')
       : '스킬 클릭 → 특화석 클릭';
-    var si = document.getElementById('simSelInfo'); if (si) si.textContent = info;
+    var si = document.getElementById('simSelInfo');
+    if (si) si.textContent = NOHOVER ? (info + ' · 특화석 탭 = 정보') : info;
     var sh = document.getElementById('simSelHint');
     if (sh) sh.textContent = selSkill != null ? ('선택: ' + D.jobs[st.job].skills[selSkill].name)
       : selSlot ? ('선택: ' + D.jobs[st.job].skills[selSlot.skill].name + ' ' + (selSlot.slot + 1) + '번 슬롯')
@@ -1571,8 +1686,9 @@ LKI18N.init();
       '<span class="st">' + starRow(lv) + '</span>' +
       '<span class="cap">' + name + '</span>';
     bindStoneTip(el, t, no);
-    // 우클릭 = 선택한 스킬에서 이 특화석 해제
+    // 우클릭 = 선택한 스킬에서 이 특화석 해제 (터치 롱프레스로 실수 해제되지 않도록 제외)
     el.oncontextmenu = function (ev) {
+      if (NOHOVER) return;
       ev.preventDefault();
       var tgt = selSlot ? selSlot.skill : selSkill;
       if (tgt == null) return;
@@ -1583,9 +1699,11 @@ LKI18N.init();
     };
     el.onclick = function () {
       tipHide();
+      // 모바일: 탭한 특화석 스탯을 창 안 인라인 패널에 표시(모달 아님). 그 뒤 아래 장착 로직은 그대로 진행.
+      if (NOHOVER) renderStoneInfo(t, no);
       // 순서: 먼저 스킬(또는 슬롯)을 선택해야 함
       var tgt = selSlot ? selSlot.skill : selSkill;
-      if (tgt == null) { simToast('먼저 왼쪽에서 스킬을 클릭하세요.'); return; }
+      if (tgt == null) { if (!NOHOVER) simToast('먼저 왼쪽에서 스킬을 클릭하세요.'); return; }
       var arr = arrOf(tgt), at = -1;
       for (var i = 0; i < arr.length; i++) if (arr[i] && arr[i].t === t && arr[i].no === no) { at = i; break; }
       if (at >= 0) {                                   // 그 스킬에 이미 있으면 -> 다시 클릭 = 해제
