@@ -882,6 +882,7 @@ LKI18N.init();
 #simView .mat-guide .mat-row i{color:var(--g-gold);font-style:normal;font-weight:800;margin-right:3px;}
 #simView .mat-guide .mat-note{flex-basis:100%;color:var(--g-dim);}
 #simView .mat-guide .mat-note em{color:var(--g-cyan);font-style:normal;}
+#simView .stone-tabs{display:none;}   /* 일반/유니크 전환 탭 — 모바일에서만 노출 */
 #simView .stone-cols{display:grid;grid-template-columns:1.9fr 1fr;gap:0;}
 @media (max-width:520px){#simView .stone-cols{grid-template-columns:1fr;}}
 #simView .stone-col{padding:0 0 10px;}
@@ -1012,7 +1013,7 @@ LKI18N.init();
   #simView .gwin-title{flex-wrap:wrap;gap:6px;padding:10px 12px;font-size:14.5px;}
   #simView .gwin-title .sp{margin-left:0;flex-basis:100%;font-size:11px;white-space:normal;text-align:left;}
   /* 스킬 목록 높이 제한 → 스킬 고른 뒤 특화석까지 스크롤 최소화 */
-  #simView .sk-list{max-height:46vh;}
+  #simView .sk-list{max-height:34vh;}
   /* 스킬 행 : 슬롯 3칸을 이름 아래 줄로 */
   #simView .sk-row{grid-template-columns:32px 1fr;gap:6px 8px;padding:9px 10px;}
   #simView .sk-ico{width:32px;height:32px;}
@@ -1021,12 +1022,29 @@ LKI18N.init();
   #simView .sk-tabstrip{flex-wrap:wrap;gap:6px;padding:8px 10px;}
   #simView .sk-tabstrip .clr-grp{margin-left:0;width:100%;}
   #simView .sk-tabstrip .clr{flex:1 1 auto;text-align:center;}
-  /* 특화석 그리드 : 일반 4열 / 유니크 2열, 셀 축소 */
+  /* 특화석 스탯 패널 : 화면 하단에 떠 있는 바 (그리드를 아무리 스크롤해도 계속 보임) */
+  #simView #simStoneInfo{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--g-win);
+    border-top:2px solid var(--g-cyan);box-shadow:0 -6px 20px rgba(0,0,0,.45);
+    padding:12px 14px 46px;max-height:46vh;overflow-y:auto;}   /* 하단 여백 = 언어 전환 알약 회피 */
+  #simView.lite #simStoneInfo{box-shadow:0 -4px 16px rgba(23,42,74,.16);}
+  #simView #simStoneInfo .sf-x{position:absolute;top:7px;right:9px;width:27px;height:27px;padding:0;border-radius:50%;
+    border:1px solid var(--g-line);background:var(--g-field);color:var(--g-txt);font-size:15px;line-height:23px;
+    text-align:center;cursor:pointer;font-family:inherit;}
+  #simView #simStoneInfo .si-eff{padding-right:30px;}
+  /* 특화석 : 일반/유니크를 탭으로 나눠 한 번에 한 종류만 (위아래 스크롤 절감) */
+  #simView .stone-tabs{display:flex;gap:6px;padding:8px 10px;}
+  #simView .stone-tabs button{flex:1;padding:9px 8px;border-radius:7px;border:1px solid var(--g-line);
+    background:var(--g-win);color:var(--g-mut);font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+  #simView .stone-tabs button.active{background:linear-gradient(180deg,var(--g-blue2),var(--g-blue1));color:#fff;border-color:var(--g-edge);}
   #simView .stone-cols{grid-template-columns:1fr;}
-  #simView .stone-col + .stone-col{border-left:0;border-top:1px solid var(--g-line);}
-  #simView .col-gen .hexgrid{grid-template-columns:repeat(4,1fr);}
+  #simView .stone-cols .col-banner{display:none;}
+  #simView .stone-cols.show-gen .col-uq{display:none;}
+  #simView .stone-cols.show-uq .col-gen{display:none;}
+  #simView .stone-col + .stone-col{border-left:0;border-top:0;}
+  #simView .col-gen .hexgrid{grid-template-columns:repeat(5,1fr);}
+  #simView .col-uq .hexgrid{grid-template-columns:repeat(3,1fr);}
   #simView .hexgrid{gap:12px 6px;padding:12px 8px;}
-  #simView .scell .sh{width:52px;height:52px;}
+  #simView .scell .sh{width:46px;height:46px;}
   #simView .scell .cap{font-size:9.5px;}
   #simView .lvbar{gap:6px;padding:10px 12px;}
   #simView .lvbar .lv-cost{flex-basis:100%;}
@@ -1046,10 +1064,10 @@ LKI18N.init();
   #simView #matCalc .row.mat-final{font-size:12px;}
 }
 
-/* ── 터치(호버 없음)에서만: 특화석 탭 시 스탯 정보를 특화석 창 안에 인라인 표시 (모달 아님) ── */
+/* ── 터치(호버 없음)에서만: 마지막으로 탭한 특화석 스탯을 하단 플로팅 바로 표시 (모달 아님) ── */
 #simView .stone-info{
-  margin:0;padding:11px 16px 12px;border-bottom:1px solid var(--g-line);
-  background:var(--g-ov);font-size:12px;line-height:1.5;color:var(--g-txt);
+  margin:0;padding:11px 16px 12px;
+  background:var(--g-win);font-size:12px;line-height:1.5;color:var(--g-txt);
 }
 #simView .stone-info .si-name{font-weight:800;font-size:12.5px;margin-bottom:3px;}
 #simView .stone-info .si-name.gen{color:var(--g-gold);}
@@ -1060,19 +1078,6 @@ LKI18N.init();
 #simView .stone-info .si-b::before{content:"\203A ";color:var(--g-cyan);}
 #simView .stone-info .si-hint{margin-top:5px;color:var(--g-cyan);font-size:11px;opacity:.92;}
 #simView.lite .stone-info .si-name.uq{color:#c0345c;}
-/* 선택한 스킬의 슬롯 3칸을 패널에 미러 — 그리드로 스크롤한 채 슬롯 상태를 보며 장착 */
-#simView .stone-info .si-slots{display:flex;align-items:center;gap:8px 10px;margin-bottom:8px;flex-wrap:wrap;}
-#simView .stone-info .si-sk{font-weight:800;font-size:12px;color:var(--g-cyan);}
-#simView .stone-info .si-hexes{display:flex;gap:7px;}
-#simView .stone-info .si-hex{position:relative;width:36px;height:36px;padding:0;flex:none;border-radius:7px;
-  border:1px solid var(--g-line);background:var(--g-field);color:var(--g-dim);font-size:12px;font-weight:800;
-  font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-#simView .stone-info .si-hex img{width:100%;height:100%;object-fit:contain;border-radius:6px;display:block;}
-#simView .stone-info .si-hex.filled.gen{border-color:#c99a34;box-shadow:0 0 5px rgba(232,193,89,.5);}
-#simView .stone-info .si-hex.filled.uq{border-color:#c23a4a;box-shadow:0 0 5px rgba(224,120,138,.55);}
-#simView .stone-info .si-hex.sel{outline:2px solid var(--g-cyan);outline-offset:1px;}
-#simView .stone-info .si-hex .si-x{position:absolute;top:-7px;right:-7px;width:17px;height:17px;border-radius:50%;
-  background:#c0392b;color:#fff;font-size:11px;line-height:17px;font-style:normal;text-align:center;}
 
 /* 이미지 저장 시엔 PC 레이아웃으로 캡처 (모바일 축소 규칙 무효화) */
 #simView.cap-pc .sim-summary{padding:16px 18px !important;}
@@ -1208,6 +1213,10 @@ LKI18N.init();
           <span class="mat-row"><i>→Lv5</i> 결정 10 · 엘리 10억</span>
           <span class="mat-note">일반 특화석 → <em>결정 [일반]</em> / 유니크 특화석 → <em>결정 [유니크]</em> · 자세한 소모량과 파편 환산은 아래 <em>장착 요약</em>에서</span>
         </div>
+        <div class="stone-tabs" id="stoneTabs">
+          <button type="button" data-g="gen" class="active">일반 특화석 · 35</button>
+          <button type="button" data-g="uq">유니크 특화석 · 12</button>
+        </div>
         <div class="stone-info" id="simStoneInfo" hidden></div>
         <div class="stone-cols">
           <div class="stone-col col-gen">
@@ -1274,6 +1283,7 @@ LKI18N.init();
   // ---------- 게임풍 호버 툴팁 ----------
   var tipEl = document.getElementById('simTip');
   function tipShow(html, x, y) {
+    if (NOHOVER) return;   // 터치에선 합성 mousemove 로 툴팁이 깜빡였다 사라짐 — 인라인 패널만 사용
     tipEl.innerHTML = html; tipEl.hidden = false;
     var w = tipEl.offsetWidth, h = tipEl.offsetHeight, pad = 14;
     var px = x + 16, py = y + 16;
@@ -1294,70 +1304,41 @@ LKI18N.init();
     return h;
   }
   function bindStoneTip(el, t, no) {
+    if (NOHOVER) return;   // 터치: 호버 툴팁 미사용 (깜빡임 방지) — 정보는 인라인 패널로
     el.addEventListener('mousemove', function (ev) { tipShow(stoneTipHTML(t, no, lv), ev.clientX, ev.clientY); });
     el.addEventListener('mouseleave', tipHide);
   }
 
-  // 모바일/터치(호버 없음): 특화석 창 안에 인라인 패널을 띄운다(모달 아님, 닫을 필요 없음).
-  //   · 선택한 스킬의 슬롯 3칸을 미러 → 그리드로 스크롤한 채 슬롯 상태를 보며 장착 가능
-  //   · 마지막으로 탭한 특화석의 스탯도 함께 표시
-  // 장착은 기존대로 탭 한 번. PC(호버 가능)는 이 패널을 안 쓰고 호버 툴팁 그대로.
-  var lastStone = null;   // {t, no} — 패널에 표시 중인 특화석
+  // 모바일/터치(호버 없음): 마지막으로 탭한 특화석 스탯을 화면 하단에 떠 있는 바로 표시.
+  //   그리드를 아무리 스크롤해도 계속 보이고, ✕ 로 닫는다(다음 특화석을 탭하면 다시 뜸).
+  //   장착은 기존대로 탭 한 번. PC(호버 가능)는 이 바를 안 쓰고 호버 툴팁 그대로.
+  var lastStone = null;   // {t, no} — 바에 표시 중인 특화석
   function renderStoneInfo(t, no) { lastStone = { t: t, no: no }; renderSimPanel(); }
+  function hideStonePanel() { lastStone = null; var h = document.getElementById('simStoneInfo'); if (h) { h.hidden = true; h.innerHTML = ''; } }
   function renderSimPanel() {
     var host = document.getElementById('simStoneInfo');
     if (!host) return;
+    if (!lastStone) { host.hidden = true; host.innerHTML = ''; return; }
     var tgt = selSlot ? selSlot.skill : selSkill;
-    if (tgt == null && !lastStone) { host.hidden = true; host.innerHTML = ''; return; }
-    var h = '';
-    // 1) 선택한 스킬의 슬롯 3칸 미러
-    if (tgt != null) {
-      var sk = D.jobs[st.job].skills[tgt], arr = arrOf(tgt);
-      h += '<div class="si-slots"><span class="si-sk">' + sk.name + '</span><span class="si-hexes">';
-      for (var k = 0; k < 3; k++) {
-        var cur = arr[k];
-        var selc = (selSlot && selSlot.skill === tgt && selSlot.slot === k) ? ' sel' : '';
-        if (cur) {
-          var ic = iconFor(cur.t, cur.no);
-          h += '<button type="button" class="si-hex filled ' + cur.t + selc + '" data-slot="' + k + '">'
-             + (ic ? '<img src="' + ic + '" alt="">' : (cur.t === 'gen' ? cur.no : 'U' + cur.no))
-             + '<i class="si-x" data-rm="' + k + '">×</i></button>';
-        } else {
-          h += '<button type="button" class="si-hex empty' + selc + '" data-slot="' + k + '">+</button>';
-        }
-      }
-      h += '</span></div>';
-    }
-    // 2) 마지막으로 탭한 특화석 스탯
-    if (lastStone) {
-      var e = effAt(lastStone.t, lastStone.no, lv);
-      h += '<div class="si-name ' + lastStone.t + '">' + lastStone.no + '. ' + e.name
-         + ' <span class="si-lv">강화 Lv' + lv + '</span></div>';
-      h += '<div class="si-eff">' + (e.text || '수치 미표기') + '</div>';
-      (e.bullets || []).slice(0, 3).forEach(function (b) {
-        if (b && !/^<|^Lv\d/.test(b)) h += '<div class="si-b">' + b + '</div>';
-      });
-    }
-    // 3) 안내
+    var e = effAt(lastStone.t, lastStone.no, lv);
+    var h = '<button type="button" class="sf-x" aria-label="닫기">×</button>';
+    h += '<div class="si-name ' + lastStone.t + '">' + lastStone.no + '. ' + e.name
+       + ' <span class="si-lv">강화 Lv' + lv + '</span></div>';
+    h += '<div class="si-eff">' + (e.text || '수치 미표기') + '</div>';
+    (e.bullets || []).slice(0, 2).forEach(function (b) {
+      if (b && !/^<|^Lv\d/.test(b)) h += '<div class="si-b">' + b + '</div>';
+    });
     if (tgt == null) {
       h += '<div class="si-hint">◀ 왼쪽에서 스킬을 선택한 뒤 특화석을 탭하면 장착됩니다</div>';
-    } else if (lastStone && lastStone.t === 'uq' && !skillAcceptsUnique(st.job, tgt, lastStone.no)) {
-      h += '<div class="si-hint">이 스킬에는 이 유니크 특화석을 장착할 수 없습니다</div>';
+    } else if (lastStone.t === 'uq' && !skillAcceptsUnique(st.job, tgt, lastStone.no)) {
+      h += '<div class="si-hint">' + D.jobs[st.job].skills[tgt].name + ' 에는 이 유니크 특화석을 장착할 수 없습니다</div>';
     } else {
-      h += '<div class="si-hint">특화석 탭 = 빈 슬롯에 장착 / 다시 탭 = 해제 · 위 슬롯을 탭해 넣을 자리 지정</div>';
+      var filled = arrOf(tgt).filter(Boolean).length;
+      h += '<div class="si-hint">' + D.jobs[st.job].skills[tgt].name + ' (슬롯 ' + filled + '/3) · 특화석 탭 = 장착 / 다시 탭 = 해제</div>';
     }
     host.innerHTML = h;
     host.hidden = false;
-    // 미러 슬롯 조작
-    host.querySelectorAll('.si-hex').forEach(function (b) {
-      b.onclick = function (ev) {
-        var rm = ev.target && ev.target.getAttribute && ev.target.getAttribute('data-rm');
-        if (rm != null) { ev.stopPropagation(); arrOf(tgt).splice(+rm, 1); selSlot = null; selSkill = tgt; save(); render(); return; }
-        var kk = +b.getAttribute('data-slot');
-        selSlot = (selSlot && selSlot.skill === tgt && selSlot.slot === kk) ? null : { skill: tgt, slot: kk };
-        selSkill = tgt; render();
-      };
-    });
+    host.querySelector('.sf-x').onclick = hideStonePanel;
   }
 
   // 비차단 토스트(브라우저 alert 금지 - 페이지가 멈춤)
@@ -1996,6 +1977,24 @@ LKI18N.init();
   var SS = window.SLOT_SPRITES || {};
   if (SS.open) sim.style.setProperty('--slot-open', 'url("' + SS.open + '")');
   if (SS.star) sim.style.setProperty('--star', 'url("' + SS.star + '")');
+
+  // 모바일: 일반 / 유니크 특화석 전환 탭 (한 번에 한 종류만 보여 위아래 스크롤 절감)
+  (function () {
+    var tabs = document.getElementById('stoneTabs');
+    var cols = document.querySelector('#simView .stone-cols');
+    if (!tabs || !cols) return;
+    cols.classList.add('show-gen');
+    tabs.querySelectorAll('button').forEach(function (b) {
+      b.onclick = function () {
+        var g = b.getAttribute('data-g');
+        tabs.querySelectorAll('button').forEach(function (x) { x.classList.toggle('active', x === b); });
+        cols.classList.toggle('show-gen', g === 'gen');
+        cols.classList.toggle('show-uq', g === 'uq');
+        var rt = document.querySelector('#simView .gwin-right');   // 탭 전환 시 그 그리드 맨 위로
+        if (rt && window.matchMedia('(max-width:680px)').matches) rt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
+  })();
 
   if (D.jobs[st.job] == null) st.job = 0;
   var m0 = 'doc'; try { m0 = localStorage.getItem(MSKEY) || 'doc'; } catch (e) {}
