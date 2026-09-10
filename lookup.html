@@ -298,11 +298,125 @@ LKI18N.add({
   "아이템 이름으로 검색 (예: 돌도끼)":{en:"Search by item name (e.g. 돌도끼)",zh:"按道具名称搜索 (例: 돌도끼)",ja:"アイテム名で検索 (例: 돌도끼)"},
   "이 아이템은 강화 경로가 없습니다.":{en:"This item has no enhance path.",zh:"该道具没有强化路径。",ja:"このアイテムには強化ルートがありません。"},
   "이 아이템 부류에는 인챈트 옵션 데이터가 없습니다.":{en:"There is no enchant-option data for this item category.",zh:"该道具类别没有附魔选项数据。",ja:"このアイテム分類にはエンチャントオプションのデータがありません。"},
-  "총 필요 재료":{en:"Total materials needed",zh:"总计所需材料",ja:"合計必要素材"}
+  "총 필요 재료":{en:"Total materials needed",zh:"总计所需材料",ja:"合計必要素材"},
+  "분류":{en:"Category",zh:"分类",ja:"分類"},
+  "검색 결과 없음":{en:"No results",zh:"无搜索结果",ja:"検索結果なし"},
+  "아이템":{en:"Item",zh:"道具",ja:"アイテム"},
+  "(알 수 없음)":{en:"(unknown)",zh:"(未知)",ja:"(不明)"},
+  "강화시 재료가 사라집니다":{en:"Materials are consumed on enhancement",zh:"强化时材料会消失",ja:"強化時に素材が消費されます"},
+  "펫 성장시 재료가 사라집니다":{en:"Materials are consumed on pet growth",zh:"宠物成长时材料会消失",ja:"ペット成長時に素材が消費されます"},
+  "실패시 일정확률로 강화수치 하락":{en:"On failure, the enhance level may drop by chance",zh:"失败时有一定概率强化数值下降",ja:"失敗時に一定確率で強化数値が下降"},
+  "실패시 강화 초기화":{en:"On failure, enhancement resets",zh:"失败时强化重置",ja:"失敗時に強化がリセット"},
+  "실패시 강화 수치 1 하락":{en:"On failure, enhance level drops by 1",zh:"失败时强化数值下降1",ja:"失敗時に強化数値が1下降"},
+  "실패시 강화 수치 2 하락":{en:"On failure, enhance level drops by 2",zh:"失败时强化数值下降2",ja:"失敗時に強化数値が2下降"},
+  "실패시 강화 수치 3 하락":{en:"On failure, enhance level drops by 3",zh:"失败时强化数值下降3",ja:"失敗時に強化数値が3下降"},
+  "실패시 강화 수치 4 하락":{en:"On failure, enhance level drops by 4",zh:"失败时强化数值下降4",ja:"失敗時に強化数値が4下降"},
+  "실패시 강화 수치 5 하락":{en:"On failure, enhance level drops by 5",zh:"失败时强化数值下降5",ja:"失敗時に強化数値が5下降"},
+  "실패시 강화 수치가 1 하락합니다":{en:"On failure, enhance level drops by 1",zh:"失败时强化数值下降1",ja:"失敗時に強化数値が1下降します"},
+  "강화 실패 시 +10으로 초기화":{en:"On enhance failure, resets to +10",zh:"强化失败时重置为+10",ja:"強化失敗時に+10へリセット"},
+  "강화 실패 시 +20으로 초기화":{en:"On enhance failure, resets to +20",zh:"强化失败时重置为+20",ja:"強化失敗時に+20へリセット"}
 });
 LKI18N.addRules([
+  [/개 장비 아이템 \(강화\/인챈트 정보 보유분만, \+강화 단계 통합\) 검색 가능/g, {en:" equipment items searchable (only those with enhance/enchant data, + levels merged)",zh:" 件装备道具可搜索(仅含强化/附魔数据者，+强化阶段已合并)",ja:" 件の装備アイテムを検索可能(強化/エンチャント情報あり・+強化段階統合)"}],
+  [/· 총 필요 재료: /g, {en:"· Total materials: ",zh:"· 总计所需材料: ",ja:"· 合計必要素材: "}],
+  [/조건: /g, {en:"Requires: ",zh:"条件: ",ja:"条件: "}],
+  [/타입(\d+)/g, {en:"Type $1",zh:"类型$1",ja:"タイプ$1"}],
+  [/\(추가작\)/g, {en:"(bonus roll)",zh:"(追加强化)",ja:"(追加作)"}],
+  [/\(알 수 없는 아이템 #(\d+)\)/g, {en:"(unknown item #$1)",zh:"(未知道具 #$1)",ja:"(不明なアイテム #$1)"}],
   [/(\d+)단계/g, {en:"$1 levels",zh:"$1 阶段",ja:"$1 段階"}]
 ]);
+/* 스탯 라벨 기본명 다국어 (title_search 와 공유하는 표기) */
+window.LK_STAT = {
+  "근력":{en:"STR",zh:"力量",ja:"筋力"},
+  "행운":{en:"LUK",zh:"幸运",ja:"運"},
+  "마법력":{en:"M.ATK",zh:"魔法力",ja:"魔法力"},
+  "체력":{en:"VIT",zh:"体力",ja:"体力"},
+  "근력/마법력":{en:"STR / M.ATK",zh:"力量/魔法力",ja:"筋力/魔法力"},
+  "올스탯":{en:"All stats",zh:"全属性",ja:"全ステータス"},
+  "최대 HP":{en:"Max HP",zh:"最大HP",ja:"最大HP"},
+  "최대HP":{en:"Max HP",zh:"最大HP",ja:"最大HP"},
+  "최대 SP":{en:"Max SP",zh:"最大SP",ja:"最大SP"},
+  "최대SP":{en:"Max SP",zh:"最大SP",ja:"最大SP"},
+  "휴식 회복 HP":{en:"HP recovery while resting",zh:"休息回复HP",ja:"休息時HP回復"},
+  "휴식 회복 SP":{en:"SP recovery while resting",zh:"休息回复SP",ja:"休息時SP回復"},
+  "속성력":{en:"Elemental power",zh:"属性力",ja:"属性力"},
+  "속성 저항력":{en:"Elemental resist",zh:"属性抗性",ja:"属性抵抗力"},
+  "불 저항력":{en:"Fire resist",zh:"火抗性",ja:"火抵抗力"},
+  "저항력":{en:"Resistance",zh:"抗性",ja:"抵抗力"},
+  "스턴 저항력":{en:"Stun resist",zh:"眩晕抗性",ja:"スタン抵抗力"},
+  "혼란 저항력":{en:"Confusion resist",zh:"混乱抗性",ja:"混乱抵抗力"},
+  "상태이상 대미지":{en:"Status-ailment damage",zh:"状态异常伤害",ja:"状態異常ダメージ"},
+  "방어력":{en:"Defense",zh:"防御力",ja:"防御力"},
+  "방어력/저항력":{en:"Defense / Resist",zh:"防御力/抗性",ja:"防御力/抵抗力"},
+  "무기 공격력":{en:"Weapon ATK",zh:"武器攻击力",ja:"武器攻撃力"},
+  "무기 공격력/속성력":{en:"Weapon ATK / Elem. power",zh:"武器攻击力/属性力",ja:"武器攻撃力/属性力"},
+  "최대공격력":{en:"Max ATK",zh:"最大攻击力",ja:"最大攻撃力"},
+  "최소공격력":{en:"Min ATK",zh:"最小攻击力",ja:"最小攻撃力"},
+  "물리 최대 공격력":{en:"Phys. max ATK",zh:"物理最大攻击力",ja:"物理最大攻撃力"},
+  "물리 최소 공격력":{en:"Phys. min ATK",zh:"物理最小攻击力",ja:"物理最小攻撃力"},
+  "근거리 대미지":{en:"Melee damage",zh:"近战伤害",ja:"近距離ダメージ"},
+  "대미지 감소":{en:"Damage reduction",zh:"伤害减免",ja:"ダメージ減少"},
+  "물리대미지 감소":{en:"Phys. damage reduction",zh:"物理伤害减免",ja:"物理ダメージ減少"},
+  "마법대미지 감소":{en:"Magic damage reduction",zh:"魔法伤害减免",ja:"魔法ダメージ減少"},
+  "물리 피해 감소":{en:"Phys. damage taken reduction",zh:"物理受伤减免",ja:"物理被ダメージ減少"},
+  "마법 피해 감소":{en:"Magic damage taken reduction",zh:"魔法受伤减免",ja:"魔法被ダメージ減少"},
+  "물리/마법 피해 감소":{en:"Phys/Mag damage taken reduction",zh:"物理/魔法受伤减免",ja:"物理/魔法被ダメージ減少"},
+  "물리/마법 대미지 감소":{en:"Phys/Mag damage reduction",zh:"物理/魔法伤害减免",ja:"物理/魔法ダメージ減少"},
+  "물리 고정 대미지":{en:"Phys. flat damage",zh:"物理固定伤害",ja:"物理固定ダメージ"},
+  "마법 고정 대미지":{en:"Magic flat damage",zh:"魔法固定伤害",ja:"魔法固定ダメージ"},
+  "물리/마법 고정 대미지":{en:"Phys/Mag flat damage",zh:"物理/魔法固定伤害",ja:"物理/魔法固定ダメージ"},
+  "물리 관통력":{en:"Phys. penetration",zh:"物理穿透",ja:"物理貫通力"},
+  "마법 관통력":{en:"Magic penetration",zh:"魔法穿透",ja:"魔法貫通力"},
+  "물리/마법 관통력":{en:"Phys/Mag penetration",zh:"物理/魔法穿透",ja:"物理/魔法貫通力"},
+  "물리 명중률":{en:"Phys. accuracy",zh:"物理命中率",ja:"物理命中率"},
+  "마법 명중률":{en:"Magic accuracy",zh:"魔法命中率",ja:"魔法命中率"},
+  "물리/마법 명중률":{en:"Phys/Mag accuracy",zh:"物理/魔法命中率",ja:"物理/魔法命中率"},
+  "물리 회피율":{en:"Phys. evasion",zh:"物理回避率",ja:"物理回避率"},
+  "마법 회피율":{en:"Magic evasion",zh:"魔法回避率",ja:"魔法回避率"},
+  "물리/마법 회피율":{en:"Phys/Mag evasion",zh:"物理/魔法回避率",ja:"物理/魔法回避率"},
+  "물리 백어택 대미지":{en:"Phys. back-attack damage",zh:"物理背击伤害",ja:"物理バックアタックダメージ"},
+  "마법 백어택 대미지":{en:"Magic back-attack damage",zh:"魔法背击伤害",ja:"魔法バックアタックダメージ"},
+  "물리/마법 백어택 대미지":{en:"Phys/Mag back-attack damage",zh:"物理/魔法背击伤害",ja:"物理/魔法バックアタックダメージ"},
+  "물리 최대대미지":{en:"Phys. max damage",zh:"物理最大伤害",ja:"物理最大ダメージ"},
+  "물리 최소대미지":{en:"Phys. min damage",zh:"物理最小伤害",ja:"物理最小ダメージ"},
+  "마법 최대대미지":{en:"Magic max damage",zh:"魔法最大伤害",ja:"魔法最大ダメージ"},
+  "마법 최소대미지":{en:"Magic min damage",zh:"魔法最小伤害",ja:"魔法最小ダメージ"},
+  "물리/마법 최대대미지":{en:"Phys/Mag max damage",zh:"物理/魔法最大伤害",ja:"物理/魔法最大ダメージ"},
+  "물리/마법 최소대미지":{en:"Phys/Mag min damage",zh:"物理/魔法最小伤害",ja:"物理/魔法最小ダメージ"},
+  "속성력 최대대미지":{en:"Elem. max damage",zh:"属性最大伤害",ja:"属性最大ダメージ"},
+  "속성력 최소대미지":{en:"Elem. min damage",zh:"属性最小伤害",ja:"属性最小ダメージ"},
+  "물 최대 대미지":{en:"Water max damage",zh:"水最大伤害",ja:"水最大ダメージ"},
+  "속성력대미지(물리공격시)":{en:"Elem. damage (on phys. attack)",zh:"属性伤害(物理攻击时)",ja:"属性ダメージ(物理攻撃時)"},
+  "물리 크리티컬 대미지":{en:"Phys. crit damage",zh:"物理暴击伤害",ja:"物理クリティカルダメージ"},
+  "마법 크리티컬 대미지":{en:"Magic crit damage",zh:"魔法暴击伤害",ja:"魔法クリティカルダメージ"},
+  "물리/마법 크리티컬 대미지":{en:"Phys/Mag crit damage",zh:"物理/魔法暴击伤害",ja:"物理/魔法クリティカルダメージ"},
+  "물리 크리티컬 확률":{en:"Phys. crit rate",zh:"物理暴击率",ja:"物理クリティカル率"},
+  "마법 크리티컬 확률":{en:"Magic crit rate",zh:"魔法暴击率",ja:"魔法クリティカル率"},
+  "물리/마법 크리티컬 확률":{en:"Phys/Mag crit rate",zh:"物理/魔法暴击率",ja:"物理/魔法クリティカル率"},
+  "마법 저항력":{en:"Magic resist",zh:"魔法抗性",ja:"魔法抵抗力"},
+  "보스 고정대미지":{en:"Boss flat damage",zh:"Boss固定伤害",ja:"ボス固定ダメージ"},
+  "보스 몬스터 지배력":{en:"Boss dominance",zh:"Boss支配力",ja:"ボス支配力"},
+  "보스 몬스터 추가 대미지":{en:"Boss added damage",zh:"Boss额外伤害",ja:"ボス追加ダメージ"},
+  "일반 몬스터 지배력":{en:"Normal-mob dominance",zh:"普通怪支配力",ja:"通常モブ支配力"},
+  "일반 몬스터 추가 대미지":{en:"Normal-mob added damage",zh:"普通怪额外伤害",ja:"通常モブ追加ダメージ"},
+  "최소/최대 대미지":{en:"Min/Max damage",zh:"最小/最大伤害",ja:"最小/最大ダメージ"},
+  "최종 물리 최소대미지":{en:"Final phys. min damage",zh:"最终物理最小伤害",ja:"最終物理最小ダメージ"},
+  "최종 마법 최소대미지":{en:"Final magic min damage",zh:"最终魔法最小伤害",ja:"最終魔法最小ダメージ"},
+  "이동속도":{en:"Move speed",zh:"移动速度",ja:"移動速度"},
+  "로프 이동속도":{en:"Rope move speed",zh:"绳索移动速度",ja:"ロープ移動速度"},
+  "사다리 이동속도":{en:"Ladder move speed",zh:"梯子移动速度",ja:"はしご移動速度"},
+  "스킬 쿨타임 감소":{en:"Skill cooldown reduction",zh:"技能冷却缩减",ja:"スキルクールタイム減少"},
+  "경험치 획득":{en:"EXP gain",zh:"经验获取",ja:"経験値獲得"},
+  "엘리 획득":{en:"Ely gain",zh:"艾利获取",ja:"エリ獲得"},
+  "아이템 발생 확률":{en:"Item drop rate",zh:"物品掉落率",ja:"アイテム発生確率"},
+  "옵션 발생 확률":{en:"Option roll rate",zh:"选项出现率",ja:"オプション発生確率"},
+  "옵션 발생확률":{en:"Option roll rate",zh:"选项出现率",ja:"オプション発生確率"},
+  "옵션 재분배 성공확률":{en:"Option reroll success rate",zh:"选项重置成功率",ja:"オプション再分配成功率"},
+  "조합 성공 확률":{en:"Craft success rate",zh:"合成成功率",ja:"合成成功確率"},
+  "낚시 추가 습득 확률":{en:"Bonus fishing catch rate",zh:"钓鱼额外获得率",ja:"釣り追加取得確率"},
+  "퀘스트 보상 강화":{en:"Quest reward boost",zh:"任务奖励强化",ja:"クエスト報酬強化"},
+  "사용레벨":{en:"Required level",zh:"使用等级",ja:"使用レベル"}
+};
 LKI18N.init();
 </script>
 <div id="app">
@@ -343,6 +457,7 @@ LKI18N.init();
 
 const DATA = JSON.parse(document.getElementById('game-data').textContent);
 const items = DATA.items;
+const T = s => (window.LKI18N ? LKI18N.t(s) : s);
 const matNames = DATA.matNames;
 const enchantClasses = DATA.enchantClasses;
 const statusNames = DATA.statusNames;
@@ -353,6 +468,18 @@ function matName(id) {
   return '(알 수 없는 아이템 #' + id + ')';
 }
 
+// 스탯 기본명을 현재 언어로. 없으면 원문 유지(게임 데이터/스킬명 등).
+function trStatBase(base) {
+  if (!window.LKI18N || LKI18N.lang() === 'ko') return base;
+  const e = window.LK_STAT && window.LK_STAT[base];
+  return (e && e[LKI18N.lang()]) || base;
+}
+// 'N (%)' / 'N (고정)' 접미도 언어별로.
+function fixedSuffix() {
+  const L = window.LKI18N && LKI18N.lang();
+  return L === 'en' ? '(fixed)' : (L === 'zh' ? '(固定)' : (L === 'ja' ? '(固定)' : '(고정)'));
+}
+
 function statusName(type) {
   // statusNames는 인챈트 옵션용 strip_option_name() 결과를 재사용한 것이라
   // 끝에 정률/정액 구분용 '+'나 '%'가 붙어있다(예: '근력 +'/'근력 %'). 이게
@@ -360,9 +487,17 @@ function statusName(type) {
   // 소폭 증가분이 같은 아이템에 둘 다 붙어있는 경우가 있음) 접미사를
   // 떼면 "근력"이 두 번 나와서 헷갈린다 - 괄호로 바꿔서 계속 구분해준다.
   const name = statusNames[type] || ('타입' + type);
-  if (name.endsWith(' +')) return name.slice(0, -2) + '(고정)';
-  if (name.endsWith(' %')) return name.slice(0, -2) + '(%)';
-  return name;
+  if (name.endsWith(' +')) return trStatBase(name.slice(0, -2)) + fixedSuffix();
+  if (name.endsWith(' %')) return trStatBase(name.slice(0, -2)) + '(%)';
+  return trStatBase(name);
+}
+// 인챈트 옵션 이름('근력 +' / '근력 %' 꼴)을 현재 언어로. 그룹 키는 원문 유지.
+function trOptName(name) {
+  let suf = '';
+  let raw = name;
+  if (raw.endsWith(' +')) { raw = raw.slice(0, -2); suf = ' +'; }
+  else if (raw.endsWith(' %')) { raw = raw.slice(0, -2); suf = ' %'; }
+  return trStatBase(raw) + suf;
 }
 
 function statDelta(fromId, toId) {
@@ -575,12 +710,12 @@ function safeFileName(s) {
 function downloadCSV(id) {
   const it = items[id];
   const rows = [];
-  rows.push(['아이템', it.n]);
-  rows.push(['레벨', it.lv]);
+  rows.push([T('아이템'), it.n]);
+  rows.push([T('레벨'), it.lv]);
   rows.push([]);
 
-  rows.push(['강화 단계별 필요 재료']);
-  rows.push(['단계', '재료', '성공확률(%)', '수치', '비고']);
+  rows.push([T('강화 단계별 필요 재료')]);
+  rows.push([T('단계'), T('재료'), T('성공확률') + '(%)', T('수치'), T('비고')]);
   buildUpgradeChain(id).forEach(s => {
     const delta = s.toId ? statDelta(s.fromId, s.toId).replace(/<br>/g, ' / ') : '';
     rows.push([
@@ -593,15 +728,15 @@ function downloadCSV(id) {
   });
   rows.push([]);
 
-  rows.push(['인챈트 옵션']);
-  rows.push(['분류', '레벨', '재료', '확률', '수치']);
+  rows.push([T('인챈트 옵션')]);
+  rows.push([T('분류'), T('레벨'), T('재료'), T('확률'), T('수치')]);
   mergedEnchantOptions(id)
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name, 'ko') || (a.level || 0) - (b.level || 0))
     .forEach(e => {
       rows.push([
-        e.name,
-        'Lv' + e.level + (e.add ? ' (추가작)' : ''),
+        trOptName(e.name),
+        'Lv' + e.level + (e.add ? (LKI18N && LKI18N.lang() !== 'ko' ? (LKI18N.lang() === 'en' ? ' (bonus roll)' : LKI18N.lang() === 'zh' ? ' (追加强化)' : ' (追加作)') : ' (추가작)') : ''),
         fmtEnchantMatNames(e.mats, '\n'),
         fmtEnchantMatProbs(e.mats, '\n'),
         e.eMin !== undefined ? e.eMin : '-',
@@ -674,14 +809,14 @@ function selectItem(id, rowEl) {
     const names = [...byName.keys()].sort((a, b) => a.localeCompare(b, 'ko'));
     names.forEach(name => {
       const levels = byName.get(name).sort((a, b) => (a.level || 0) - (b.level || 0));
-      out += '<details class="enchant-group"><summary>' + name + ' <span class="small">(' + levels.length + '단계)</span></summary>';
+      out += '<details class="enchant-group"><summary>' + trOptName(name) + ' <span class="small">(' + levels.length + '단계)</span></summary>';
       out += '<table><thead><tr><th>레벨</th><th>재료</th><th>확률</th><th>수치</th></tr></thead><tbody>';
       levels.forEach(e => {
         // ITEM_OPTION._Option_Min/Max(누적 절대치로 추정)는 스탯마다 내부 단위/배율이
         // 달라 사용자에게 그대로 보여주면 오해를 사므로(실측 확인 결과 근거 불명),
         // 이 인챈트 한 번으로 늘어나는 _Enchant_Min/Max("증가분")만 표시한다.
         const valStr = e.eMin !== undefined ? (e.eMin + (e.eMin !== e.eMax ? ('~' + e.eMax) : '')) : '-';
-        const levelLabel = 'Lv' + e.level + (e.add ? ' (추가작)' : '');
+        const levelLabel = 'Lv' + e.level + (e.add ? ' (추가작)' : '');  // (추가작)은 규칙으로 치환
         out += '<tr><td>' + levelLabel + '</td><td>' + fmtEnchantMatNames(e.mats) + '</td>' +
           '<td class="mono">' + fmtEnchantMatProbs(e.mats) + '</td>' +
           '<td class="mono">' + valStr + '</td></tr>';
@@ -700,6 +835,23 @@ function selectItem(id, rowEl) {
 
 searchBox.addEventListener('input', () => renderResults(searchBox.value.trim()));
 renderResults('');
+
+/* 언어 전환 시 스탯/옵션 이름·조립 문자열을 다시 그린다 */
+function lkRerender() {
+  try {
+    const actId = (document.querySelector('#results .row.active') || {}).dataset ?
+      document.querySelector('#results .row.active').dataset.id : null;
+    renderResults(searchBox.value.trim());
+    if (actId != null) {
+      const row = document.querySelector('#results .row[data-id="' + actId + '"]');
+      selectItem(actId, row);
+    }
+  } catch (_) {}
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest && e.target.closest('.lk-lang button')) setTimeout(lkRerender, 0);
+});
+document.addEventListener('DOMContentLoaded', () => setTimeout(lkRerender, 0));
 
 </script>
 <script>
