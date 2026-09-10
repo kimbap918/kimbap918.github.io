@@ -796,8 +796,23 @@ LKI18N.add({
   "4단계":{en:"Stage 4",zh:"第4阶段",ja:"ステージ4"},
   "5단계":{en:"Stage 5",zh:"第5阶段",ja:"ステージ5"},
   "(일반몹 체력은 5단에서 4단 ×2.2~2.4.) 구형 8인 인던은 5단이 없고 4단이 최고 난이도입니다.":{en:"(Normal-mob HP at T5 is T4 ×2.2–2.4.) Older 8-player dungeons have no T5; T4 is the top difficulty.",zh:"(普通怪 5段生命值为 4段 ×2.2~2.4。) 旧版 8人副本没有 5段，4段为最高难度。",ja:"(一般モブのHPは5段で4段の×2.2~2.4。) 旧8人ダンジョンは5段がなく、4段が最高難易度です。"},
-  "표기된 8인 인던 보스의 스탯은 4단(표준 난이도) 기준이며, 표준 8인 인던 보스는 상세창에서 1~4단(5단이 있는 인던은 5단까지) 전환해 볼 수 있습니다. 난이도별 배율(보스 기준):":{en:"Stats shown for 8-player dungeon bosses are at T4 (standard difficulty); standard 8-player bosses can be switched T1–T4 (up to T5 where available) in the detail panel. Multipliers by difficulty (boss basis):",zh:"所示 8 人副本 Boss 属性以 4 段(标准难度)为准；标准 8 人副本 Boss 可在详情面板切换 1~4 段(有 5 段的副本可至 5 段)。各难度倍率(以 Boss 为准):",ja:"表記された8人ダンジョンボスのステータスは4段(標準難易度)基準です。標準8人ボスは詳細で1~4段(5段があるダンジョンは5段まで)切替可能。難易度別倍率(ボス基準):"}
+  "표기된 8인 인던 보스의 스탯은 4단(표준 난이도) 기준이며, 표준 8인 인던 보스는 상세창에서 1~4단(5단이 있는 인던은 5단까지) 전환해 볼 수 있습니다. 난이도별 배율(보스 기준):":{en:"Stats shown for 8-player dungeon bosses are at T4 (standard difficulty); standard 8-player bosses can be switched T1–T4 (up to T5 where available) in the detail panel. Multipliers by difficulty (boss basis):",zh:"所示 8 人副本 Boss 属性以 4 段(标准难度)为准；标准 8 人副本 Boss 可在详情面板切换 1~4 段(有 5 段的副本可至 5 段)。各难度倍率(以 Boss 为准):",ja:"表記された8人ダンジョンボスのステータスは4段(標準難易度)基準です。標準8人ボスは詳細で1~4段(5段があるダンジョンは5段まで)切替可能。難易度別倍率(ボス基準):"},
+  "물리 면역":{en:"Phys. immune",zh:"物理免疫",ja:"物理免疫"},
+  "마법 면역":{en:"Magic immune",zh:"魔法免疫",ja:"魔法免疫"},
+  "물속성 면역":{en:"Water immune",zh:"水属性免疫",ja:"水属性免疫"}
 });
+LKI18N.addRules([
+  [/(\d+)단 적용/g, {en:"T$1 applied", zh:"应用$1段", ja:"$1段適用"}],
+  [/HP바 ×/g, {en:"HP bars ×", zh:"HP槽 ×", ja:"HPバー ×"}],
+  [/\[계정\]/g, {en:"[Account]", zh:"[账号]", ja:"[アカウント]"}],
+  [/\(파티\)/g, {en:"(Party)", zh:"(组队)", ja:"(パーティ)"}],
+  [/\(솔로\)/g, {en:"(Solo)", zh:"(单人)", ja:"(ソロ)"}],
+  [/\(1인\)/g, {en:"(Solo)", zh:"(单人)", ja:"(ソロ)"}],
+  [/\((\d+)인\)/g, {en:"($1-player)", zh:"($1人)", ja:"($1人用)"}],
+  [/\(레이드\)/g, {en:"(Raid)", zh:"(团队)", ja:"(レイド)"}],
+  [/(\d+)단/g, {en:"T$1", zh:"$1段", ja:"$1段"}],
+  [/(\d+)층/g, {en:"$1F", zh:"$1层", ja:"$1階"}]
+]);
 LKI18N.init();
 </script>
 
@@ -868,9 +883,17 @@ const ALL = DB.bosses;
 const nf = new Intl.NumberFormat("en-US");
 function hpUnit(n){
   if(!n) return "0";
-  if(n>=1e12) return trim(n/1e12)+"조";
-  if(n>=1e8)  return trim(n/1e8)+"억";
-  if(n>=1e4)  return trim(n/1e4)+"만";
+  var L = (window.LKI18N && LKI18N.lang && LKI18N.lang()) || "ko";
+  if(L==="en"){
+    if(n>=1e12) return trim(n/1e12)+"T";
+    if(n>=1e9)  return trim(n/1e9)+"B";
+    if(n>=1e6)  return trim(n/1e6)+"M";
+    return nf.format(n);
+  }
+  var u = L==="zh" ? ["兆","亿","万"] : L==="ja" ? ["兆","億","万"] : ["조","억","만"];
+  if(n>=1e12) return trim(n/1e12)+u[0];
+  if(n>=1e8)  return trim(n/1e8)+u[1];
+  if(n>=1e4)  return trim(n/1e4)+u[2];
   return nf.format(n);
 }
 function trim(x){ return (Math.round(x*100)/100).toString(); }
@@ -1229,6 +1252,13 @@ document.querySelectorAll(".controls .seg button").forEach(btn=>{
 
 renderStats();
 renderList();
+
+/* 언어 전환 시 숫자 단위(조/억/만·T/B/M)·조립 문자열을 다시 그린다 */
+function lkRerender(){ try{ renderStats(); renderList(); if(st.sel!=null) select(st.sel); }catch(_){} }
+document.addEventListener("click", function(e){
+  if(e.target.closest && e.target.closest(".lk-lang button")) setTimeout(lkRerender, 0);
+});
+document.addEventListener("DOMContentLoaded", function(){ setTimeout(lkRerender, 0); });
 
 /* 공유 링크로 진입 시 해당 보스 상세 열기 (?b=<id>) */
 (function(){ try{
