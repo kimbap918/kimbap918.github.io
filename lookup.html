@@ -41,6 +41,20 @@ main{display:flex;height:calc(100vh - 84px);}
 .hint{color:var(--muted);}
 h2{margin-top:0;font-size:20px;}
 h3{font-size:14px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:6px;margin-top:26px;}
+.totmat{display:flex;flex-wrap:wrap;gap:5px 12px;align-items:baseline;margin:22px 0 14px;padding:9px 13px;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:7px;background:var(--panel);background:color-mix(in srgb,var(--accent) 11%,var(--panel));}
+.enh-group{margin-top:22px;}
+.enh-group>summary{list-style:none;display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:700;color:var(--accent);border-bottom:1px solid var(--border);padding:2px 0 6px;margin-bottom:2px;cursor:pointer;}
+.enh-group>summary::-webkit-details-marker{display:none;}
+.enh-group>summary .small{font-weight:400;}
+.enh-toggle{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;}
+.enh-group>summary:hover .enh-toggle{color:var(--accent);text-decoration:underline;}
+.enh-group[open] .enh-toggle .tg-more{display:none;}
+.enh-group:not([open]) .enh-toggle .tg-less{display:none;}
+.enh-group[open]>summary{margin-bottom:8px;}
+.enh-group table{margin-top:0;}
+.totmat-lbl{flex:0 0 auto;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);}
+.totmat-chip{font-size:13px;white-space:nowrap;}
+.totmat-chip b{margin-left:3px;color:var(--accent);font-weight:800;font-variant-numeric:tabular-nums;}
 table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px;}
 th,td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
 th{color:var(--muted);font-weight:600;}
@@ -63,6 +77,9 @@ details.enchant-group table{margin-top:0;}
   #results .row{padding:12px 14px;}
   #detail{padding:16px;}
   h2{font-size:17px;}
+  .totmat{gap:3px 10px;padding:8px 11px;margin:16px 0 12px;}
+  .totmat-chip{font-size:12.5px;}
+  .enh-group>summary{padding:8px 0;font-size:13.5px;}
   /* 재료 칸에 재료 목록이 길게 들어가는데, 표를 통째로 가로 스크롤시키면
      그 칸만 옆으로 쭉 늘어나서 유독 눈에 튀고 보기 불편했다(사용자 확인).
      그 대신 표는 그대로 두고 셀 안에서 자연스럽게 줄바꿈되게 한다. */
@@ -79,7 +96,10 @@ details.enchant-group table{margin-top:0;}
   body{background:#fff;color:#000;}
   th,td,table,details.enchant-group{border-color:#ccc !important;}
   .small,.muted,#results .lv{color:#555 !important;}
+  .enh-toggle{display:none !important;}
+  /* 접힌 표도 인쇄(PDF)에는 반드시 펼쳐진 상태로 나오게 */
   details:not([open]) > *:not(summary){display:block !important;}
+  details:not([open]) > table{display:table !important;}
   details{page-break-inside:avoid;}
 }
 
@@ -301,6 +321,8 @@ LKI18N.add({
   "총 필요 재료":{en:"Total materials needed",zh:"总计所需材料",ja:"合計必要素材"},
   "분류":{en:"Category",zh:"分类",ja:"分類"},
   "검색 결과 없음":{en:"No results",zh:"无搜索结果",ja:"検索結果なし"},
+  "자세히 보기":{en:"View details",zh:"查看详情",ja:"詳細を見る"},
+  "접기":{en:"Collapse",zh:"收起",ja:"折りたたむ"},
   "아이템":{en:"Item",zh:"道具",ja:"アイテム"},
   "(알 수 없음)":{en:"(unknown)",zh:"(未知)",ja:"(不明)"},
   "강화시 재료가 사라집니다":{en:"Materials are consumed on enhancement",zh:"强化时材料会消失",ja:"強化時に素材が消費されます"},
@@ -774,16 +796,19 @@ function selectItem(id, rowEl) {
       totals.set(mid, (totals.get(mid) || 0) + cnt);
     }
   }
-  const totalStr = totals.size
-    ? [...totals.entries()].map(([mid, cnt]) => matName(mid) + ' x' + cnt).join(', ')
+  const totalMats = totals.size
+    ? [...totals.entries()].map(([mid, cnt]) =>
+        '<span class="totmat-chip">' + matName(mid) + '<b>×' + cnt.toLocaleString() + '</b></span>').join('')
     : '';
 
-  out += '<h3>강화 단계별 필요 재료' +
-    (totalStr ? ' <span class="small" style="font-weight:normal;">· 총 필요 재료: ' + totalStr + '</span>' : '') +
-    '</h3>';
+  if (totalMats) {
+    out += '<div class="totmat"><span class="totmat-lbl">' + T('총 필요 재료') + '</span>' + totalMats + '</div>';
+  }
   if (chain.length === 0) {
-    out += '<p class="small">이 아이템은 강화 경로가 없습니다.</p>';
+    out += '<h3>강화 단계별 필요 재료</h3><p class="small">이 아이템은 강화 경로가 없습니다.</p>';
   } else {
+    out += '<details class="enh-group" open><summary>강화 단계별 필요 재료 <span class="small">(' + chain.length + '단계)</span>' +
+      '<span class="enh-toggle"><span class="tg-more">자세히 보기</span><span class="tg-less">접기</span></span></summary>';
     out += '<table><thead><tr><th>단계</th><th>재료</th><th>성공확률</th><th>수치</th><th>비고</th></tr></thead><tbody>';
     chain.forEach((s, i) => {
       const delta = s.toId ? statDelta(s.fromId, s.toId) : '';
@@ -793,7 +818,7 @@ function selectItem(id, rowEl) {
         '<td class="mono small">' + (delta || '-') + '</td>' +
         '<td class="small">' + (s.up.msg || '') + '</td></tr>';
     });
-    out += '</tbody></table>';
+    out += '</tbody></table></details>';
   }
 
   out += '<h3>인챈트 옵션</h3>';
@@ -835,6 +860,19 @@ function selectItem(id, rowEl) {
 
 searchBox.addEventListener('input', () => renderResults(searchBox.value.trim()));
 renderResults('');
+
+/* 인쇄(PDF 저장) 시엔 접힌 표도 전부 펼쳐서 나오게 */
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('#detail details').forEach(d => {
+    d.dataset._wasOpen = d.open ? '1' : '0';
+    d.open = true;
+  });
+});
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('#detail details').forEach(d => {
+    d.open = d.dataset._wasOpen === '1';
+  });
+});
 
 /* 언어 전환 시 스탯/옵션 이름·조립 문자열을 다시 그린다 */
 function lkRerender() {
