@@ -348,6 +348,9 @@ body{
   padding-left:12px;
 }
 .bio strong{color:var(--accent);font-weight:700;}
+/* 번역문은 한국어보다 길어 44ch 안에서 여러 줄로 접힌다 - 외국어에서는
+   폭을 넓혀 <br> 기준 두 줄로 나오게 한다. */
+html:not([lang="ko"]) .bio{max-width:58ch;}
 .visit-stats{
   margin:10px 0 0;
   display:flex;
