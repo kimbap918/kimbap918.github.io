@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방명록</title>
+<script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;
+  --bg:#14171f;--panel:#1c2029;--card:#262d38;
+  --border:#333a48;--text:#eef0f4;--muted:#9298a6;
+  --accent:#e08aa2;--accent-ink:#1a1015;
+  --font:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;}
+:root[data-theme="light"]{
+  --bg:#faf7f5;--panel:#ffffff;--card:#f7f1f3;
+  --border:#e6dde0;--text:#221f26;--muted:#65616c;
+  --accent:#b8506f;--accent-ink:#ffffff;}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#faf7f5;--panel:#ffffff;--card:#f7f1f3;
+  --border:#e6dde0;--text:#221f26;--muted:#65616c;
+  --accent:#b8506f;--accent-ink:#ffffff;}}
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);}
+a{color:inherit;}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;line-height:1;transition:border-color .15s ease,transform .1s ease;}
+.theme-toggle:hover{border-color:var(--accent);}
+.theme-toggle:active{transform:scale(.94);}
+header{padding:22px 20px 16px;max-width:720px;margin:0 auto;}
+.back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted);text-decoration:none;margin-bottom:10px;}
+.back:hover{color:var(--accent);}
+h1{font-size:22px;margin:0 0 6px;}
+.lead{font-size:13px;color:var(--muted);margin:0;}
+#main{padding:0 20px 60px;max-width:720px;margin:0 auto;}
+.gb-form{display:flex;flex-direction:column;gap:10px;padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:12px;margin:18px 0;}
+.gb-row{display:flex;gap:8px;}
+.gb-form input[type=text],.gb-form input[type=password]{flex:0 0 140px;min-width:0;}
+.gb-form input[type=text],.gb-form input[type=password],.gb-form textarea{
+  padding:9px 11px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);
+  font:inherit;font-size:14px;resize:vertical;transition:border-color .15s ease;}
+.gb-form input[type=text]:focus,.gb-form input[type=password]:focus,.gb-form textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+.gb-form textarea{min-height:70px;max-height:220px;}
+.gb-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.gb-charcount{font-size:11px;color:var(--muted);}
+.gb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.gb-freering-btn{
+  width:44px;height:44px;flex:none;padding:0;border:0;background:transparent;cursor:pointer;
+  background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADI0lEQVR4nM1X30sUURT+5jo9SEYk2O76O1qFWAhs+2EllEr1IEQQmmttL+ZrpvjWP9BDCD35sG9pDUiRPVT4YBJIlg8FlflQUOSPdZOEcEGoaSfunb2zMzt3xhlrrQ+WuXP3nPN999xz79wraZqGfwl5I4NY4xmLQuXFuOQlsFc/yS0DNIgycJC1k3Pf2LP/0acNRRh+TfuQTExh6fN33JxdFfoR1yBjcT1IlpwGGoiU2kaX7zc8Pcb8MDVn9Dv5EVdyisWUQe4VslQs9Kv/YU8cEQVoqarUG8FLnkktqV8eEf5/tmGXLQtEFKTnQlB/WR6Bur4Xoe1N3lXsKWUP6qcGDyEaafO3Clro6BuvAcEy3SAwAYTTiKIN6scS1qfMpPXRmooq0d6tKR1xqAfOQ8ZzyEiy/owWQZQbhcqA2UFnATEa9J4gfYEQkEpCDqeZCPVwCRTEmT2frp6jzVD7dHJq6xWybfQUFW8AtNpFMIds8DCgdMWtwVL3nZno6N0ExPjoKbnUCmgTOSsfI/JDTmFfBZR8C0Fs6S8w8nmIyGio+yqGrjzcFMHQ9Rn28wqJfgvM80+KTiHz6zVIUQMzyCzd9hyMlF8W+05aayB2a9D4LhDR/PMAx/Y3eyY3RPj0lY3W6LhRrdT5+Mk43r5c9C3A4ns32xlyEQxeGH0hILmCzJ0nuBiNoHbtFR4/qNGteCDezn/Pgqbc8G2vAarngBMpFpdDrVq3FKLUeeS0pvT260Y0A52yeO1zoi6HdxMyHyIgC19zxOZ9oP4d8CyA2OgwqwOZq5I7XfIkIhIQc5C6WaDO1DFpalcE2FbeMl3pfiDZKpD/QoA8X/zn+70DaD04ge4/xIthodBRugOEViLdmRgKlIV8yDNpPJ1fQHVom7UGWBb+oghjOZqxmEJiepKdkstrd+buBex70NuPTOXu3FLaJKkZFgHNK4idG2app6P/kvxpvZgwER1xtnFwIZuFhZhuPhUBG/no6pr9ZsTPefSMx3cwv2LyyRM33rM5p3Hpk4PW34ZXM0OMD9A5zidyspW83I7drmIieL3AehZQSPwGG0ti5/z0Du4AAAAASUVORK5CYII=");
+  background-size:contain;background-repeat:no-repeat;background-position:center;
+  image-rendering:pixelated;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));
+  transition:filter .15s ease,transform .1s ease;}
+.gb-freering-btn:hover{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)) drop-shadow(0 0 6px var(--accent)) brightness(1.08);transform:translateY(-2px);}
+.gb-freering-btn:active{transform:translateY(0) scale(.92);}
+.gb-freering-btn:disabled{opacity:.45;cursor:default;filter:none;transform:none;}
+@keyframes gbFreeringPop{
+  0%{transform:scale(1) rotate(0);}
+  25%{transform:scale(1.25,.75) rotate(-6deg) translateY(3px);}
+  50%{transform:scale(.82,1.22) rotate(5deg) translateY(-10px);}
+  72%{transform:scale(1.1,.9) rotate(-3deg) translateY(1px);}
+  100%{transform:scale(1) rotate(0) translateY(0);}
+}
+.gb-freering-btn.pop{animation:gbFreeringPop .55s cubic-bezier(.34,1.56,.64,1);}
+@media (prefers-reduced-motion:reduce){.gb-freering-btn.pop{animation:none;}}
+.gb-submit-label{font-size:10.5px;color:var(--muted);font-weight:600;}
+.gb-msg{font-size:12.5px;color:var(--accent);min-height:1.4em;}
+.gb-count-label{font-size:12px;color:var(--muted);margin:4px 2px 0;}
+.gb-list{display:flex;flex-direction:column;gap:10px;}
+.gb-entry{padding:13px 15px;background:var(--panel);border:1px solid var(--border);border-radius:10px;}
+.gb-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.gb-name{font-size:13.5px;font-weight:700;color:var(--text);}
+.gb-time{font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap;}
+.gb-body{font-size:13.5px;color:var(--text);white-space:pre-wrap;word-break:break-word;line-height:1.6;}
+.gb-del{background:none;border:0;color:var(--muted);font-size:11.5px;cursor:pointer;padding:0;margin-left:8px;text-decoration:underline;}
+.gb-del:hover{color:var(--accent);}
+.gb-edited{color:var(--muted);font-size:11.5px;margin-left:4px;}
+.gb-empty{font-size:13.5px;color:var(--muted);padding:30px 0;text-align:center;}
+@media (max-width:520px){
+  .gb-row{flex-direction:column;}
+  .gb-form input[type=text],.gb-form input[type=password]{flex:none;}
+}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
+<header>
+  <a class="back" href="./">← 홈으로</a>
+  <h1>방명록</h1>
+  <p class="lead">하고 싶은 말을 자유롭게 남겨보세요.</p>
+</header>
+<div id="main">
+  <form class="gb-form" id="gbForm">
+    <div class="gb-row">
+      <input type="text" id="gbName" maxlength="24" placeholder="닉네임" required>
+      <input type="password" id="gbPassword" maxlength="32" placeholder="비밀번호 (삭제할 때 필요)" required>
+    </div>
+    <textarea id="gbMessage" maxlength="200" rows="3" placeholder="하고 싶은 말을 자유롭게 남겨보세요" required></textarea>
+    <div class="gb-foot">
+      <span class="gb-charcount" id="gbCharCount">0/200</span>
+      <div class="gb-submit-wrap">
+        <button type="submit" id="gbSubmit" class="gb-freering-btn" aria-label="남기기" title="남기기"></button>
+        <span class="gb-submit-label">남기기</span>
+      </div>
+    </div>
+    <div class="gb-msg" id="gbFormMsg"></div>
+  </form>
+  <p class="gb-count-label" id="gbCount"></p>
+  <div class="gb-list" id="gbList"><p class="gb-empty">불러오는 중...</p></div>
+</div>
+<script>
+/* ---- 다크/라이트 모드 토글 (다른 도구 페이지와 동일) ---- */
+(function () {
+  var btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  function current() {
+    var attr = document.documentElement.getAttribute('data-theme');
+    if (attr) return attr;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function sync() { btn.textContent = current() === 'dark' ? '☀️' : '🌙'; }
+  sync();
+  btn.onclick = function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    sync();
+  };
+})();
+</script>
+
+<!-- LKI18N v1 — 8개 도구 공통 UI 다국어 (_shared/i18n_kit.html) -->
+<style>
+.lk-lang{position:fixed;z-index:9998;top:52px;right:14px;display:flex;gap:1px;
+  padding:2px;border-radius:999px;font-size:11px;line-height:1;
+  border:1px solid var(--border,var(--line,#33384a));
+  background:var(--panel,var(--surface,var(--bg,#1b1f27)));
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.lk-lang button{all:unset;cursor:pointer;padding:4px 8px;border-radius:999px;
+  color:var(--muted,var(--ink-3,#8b95a5));font-family:inherit;transition:color .1s,background .1s}
+.lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
+.lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
+.lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+@media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
+</style>
+<script>
+window.LKI18N=(function(){
+  var LANGS=["ko","en","zh","ja"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var strings={};
+  var rules=[];
+  var cur="ko";
+  var ATTRS=["placeholder","title","aria-label","alt"];
+  var mo=null,tmr=null,host=null,applying=false;
+
+  function norm(s){return (s||"").replace(/\s+/g," ").trim();}
+  function hasKo(s){return /[가-힣]/.test(s||"");}
+  function tr(ko){
+    var e=strings[ko]||strings[norm(ko)];
+    if(!e) return null;
+    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+  }
+  function applyRules(s){
+    if(cur==="ko"||!rules.length) return s;
+    var out=s;
+    for(var i=0;i<rules.length;i++){
+      var rep=rules[i][1][cur];
+      if(rep!=null) out=out.replace(rules[i][0],rep);
+    }
+    return out;
+  }
+  function skip(node){
+    var p=node.nodeType===3?node.parentNode:node;
+    if(!p||!p.nodeName) return true;
+    var t=p.nodeName;
+    if(t==="SCRIPT"||t==="STYLE"||t==="TEXTAREA"||t==="NOSCRIPT") return true;
+    return !!(p.closest && p.closest("[data-noi18n],.lk-lang,.lk-menu,.lk-toast,.lk-sb"));
+  }
+  function walkText(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var n,list=[];
+    while(n=w.nextNode()){
+      if(skip(n)) continue;
+      if(n.__ko!=null || hasKo(n.nodeValue)) list.push(n);
+    }
+    for(var i=0;i<list.length;i++){
+      var node=list[i];
+      if(node.__ko==null) node.__ko=node.nodeValue;
+      var ko=node.__ko;
+      if(cur==="ko"){ if(node.nodeValue!==ko) node.nodeValue=ko; continue; }
+      var t=tr(norm(ko));
+      if(t==null){
+        var rv=applyRules(ko);
+        if(node.nodeValue!==rv) node.nodeValue=rv;
+        continue;
+      }
+      var lead=(ko.match(/^\s*/)||[""])[0], trail=(ko.match(/\s*$/)||[""])[0];
+      var nv=lead+t+trail;
+      if(node.nodeValue!==nv) node.nodeValue=nv;
+    }
+  }
+  function walkAttrs(root){
+    var els=root.querySelectorAll?root.querySelectorAll("*"):[];
+    for(var i=0;i<els.length;i++){
+      var el=els[i];
+      if(el.closest && el.closest("[data-noi18n],.lk-lang")) continue;
+      for(var a=0;a<ATTRS.length;a++){
+        var name=ATTRS[a];
+        if(!el.hasAttribute(name)) continue;
+        var key="__ko_"+name;
+        if(el[key]==null) el[key]=el.getAttribute(name);
+        var ko=el[key];
+        if(!hasKo(ko)) continue;
+        if(cur==="ko"){ el.setAttribute(name,ko); continue; }
+        var t=tr(norm(ko));
+        el.setAttribute(name, t!=null?t:ko);
+      }
+    }
+  }
+  function apply(){
+    if(applying) return;
+    applying=true;
+    if(mo) mo.disconnect();
+    try{ walkText(document.body); walkAttrs(document.body); }catch(e){}
+    document.documentElement.setAttribute("lang",cur);
+    if(mo) mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+    applying=false;
+  }
+  function schedule(){ if(tmr) clearTimeout(tmr); tmr=setTimeout(apply,80); }
+  function paintSwitcher(){
+    if(!host) return;
+    for(var i=0;i<host.children.length;i++){
+      var b=host.children[i];
+      b.setAttribute("aria-pressed", b.dataset.l===cur ? "true":"false");
+    }
+  }
+  function setLang(l){
+    if(LANGS.indexOf(l)<0) l="ko";
+    cur=l;
+    try{ localStorage.setItem("lk_lang",l); }catch(e){}
+    paintSwitcher();
+    apply();
+  }
+  function buildSwitcher(){
+    if(document.querySelector(".lk-lang")) { host=document.querySelector(".lk-lang"); return; }
+    host=document.createElement("div");
+    host.className="lk-lang"; host.setAttribute("data-noi18n","");
+    host.setAttribute("role","group"); host.setAttribute("aria-label","Language");
+    LANGS.forEach(function(l){
+      var b=document.createElement("button");
+      b.type="button"; b.dataset.l=l; b.textContent=LABEL[l]; b.title=FULL[l];
+      b.addEventListener("click",function(){ setLang(l); });
+      host.appendChild(b);
+    });
+    document.body.appendChild(host);
+  }
+  var COMMON={
+    "홈":{en:"Home",zh:"首页",ja:"ホーム"},
+    "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"}
+  };
+  return {
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    init:function(){
+      var self=this;
+      if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
+      this.add(COMMON);
+      buildSwitcher();
+      try{ mo=new MutationObserver(schedule); }catch(e){}
+      var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
+      setLang(saved);
+    },
+    setLang:setLang, apply:apply,
+    lang:function(){ return cur; },
+    t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
+  };
+})();
+LKI18N.add({
+  "방명록":{en:"Guestbook",zh:"留言板",ja:"ゲストブック"},
+  "← 홈으로":{en:"← Home",zh:"← 首页",ja:"← ホームへ"},
+  "하고 싶은 말을 자유롭게 남겨보세요.":{en:"Feel free to leave a message.",zh:"欢迎留下您想说的话。",ja:"言いたいことを自由に残してください。"},
+  "하고 싶은 말을 자유롭게 남겨보세요":{en:"Feel free to leave a message",zh:"欢迎留下您想说的话",ja:"言いたいことを自由に残してください"},
+  "닉네임":{en:"Nickname",zh:"昵称",ja:"ニックネーム"},
+  "비밀번호 (삭제할 때 필요)":{en:"Password (needed to delete)",zh:"密码（删除时需要）",ja:"パスワード（削除時に必要）"},
+  "남기기":{en:"Post",zh:"留言",ja:"投稿"},
+  "닉네임을 입력해주세요.":{en:"Please enter a nickname.",zh:"请输入昵称。",ja:"ニックネームを入力してください。"},
+  "비밀번호를 입력해주세요.":{en:"Please enter a password.",zh:"请输入密码。",ja:"パスワードを入力してください。"},
+  "남겼습니다!":{en:"Posted!",zh:"已留言！",ja:"投稿しました！"},
+  "실패했어요. 잠시 후 다시 시도해주세요.":{en:"Failed. Please try again shortly.",zh:"失败了，请稍后再试。",ja:"失敗しました。しばらくしてからもう一度お試しください。"},
+  "아직 방명록이 없습니다. 첫 글을 남겨보세요!":{en:"No entries yet. Be the first to leave one!",zh:"还没有留言，快来留下第一条吧！",ja:"まだ書き込みがありません。最初のメッセージを残してみましょう！"},
+  "작성할 때 입력한 비밀번호를 입력하세요":{en:"Enter the password you used when posting",zh:"请输入留言时设置的密码",ja:"投稿時に入力したパスワードを入力してください"},
+  "비밀번호가 일치하지 않습니다.":{en:"The password doesn't match.",zh:"密码不正确。",ja:"パスワードが一致しません。"},
+  "이 글을 삭제할까요?":{en:"Delete this entry?",zh:"要删除这条留言吗？",ja:"この投稿を削除しますか？"},
+  "내용을 수정하세요":{en:"Edit your message",zh:"请修改内容",ja:"内容を編集してください"},
+  "내용을 비울 수 없습니다.":{en:"The message can't be empty.",zh:"内容不能为空。",ja:"内容を空にすることはできません。"},
+  "수정에 실패했습니다. 잠시 후 다시 시도해주세요.":{en:"Edit failed. Please try again shortly.",zh:"修改失败，请稍后再试。",ja:"編集に失敗しました。しばらくしてからもう一度お試しください。"},
+  "수정":{en:"Edit",zh:"修改",ja:"編集"},
+  "삭제":{en:"Delete",zh:"删除",ja:"削除"},
+  "(수정됨)":{en:"(edited)",zh:"（已编辑）",ja:"（編集済み）"},
+  "불러오는 중...":{en:"Loading...",zh:"加载中...",ja:"読み込み中..."}
+});
+LKI18N.addRules([
+  [/^(\d+)초 후 다시 남길 수 있어요\.$/, {en:"You can post again in $1s.", zh:"$1秒后可以再次留言。", ja:"$1秒後にまた投稿できます。"}],
+  [/^(\d+)개$/, {en:"$1", zh:"$1条", ja:"$1件"}]
+]);
+LKI18N.init();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+(function () {
+  if (window.top !== window.self) return;
+
+  var OWNER_FLAG = "vc_owner";
+  var isOwner = false;
+  try { isOwner = localStorage.getItem(OWNER_FLAG) === "1"; } catch (e) {}
+
+  // presence/runners 와 같은 Firebase 프로젝트를 재사용한다
+  // (hub/GUESTBOOK_FIREBASE_RULES.md 참고).
+  var firebaseConfig = {
+    apiKey: "AIzaSyDlPJ9fYaOdsGlHDyXgyv_lgs3H0RAtZ2E",
+    authDomain: "lataletkit-presence.firebaseapp.com",
+    databaseURL: "https://lataletkit-presence-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lataletkit-presence",
+    storageBucket: "lataletkit-presence.firebasestorage.app",
+    messagingSenderId: "849796620478",
+    appId: "1:849796620478:web:75d646dbc423c17bd27eef"
+  };
+  var app = initializeApp(firebaseConfig);
+  var db = getDatabase(app);
+
+  var GB_MAX_LEN = 200;
+  var GB_NAME_MAX = 24;
+  var GB_PW_MAX = 32;
+  var GB_RATE_LIMIT_MS = 30000;
+  var form = document.getElementById("gbForm");
+  var nameInput = document.getElementById("gbName");
+  var pwInput = document.getElementById("gbPassword");
+  var msgInput = document.getElementById("gbMessage");
+  var charCount = document.getElementById("gbCharCount");
+  var formMsg = document.getElementById("gbFormMsg");
+  var submitBtn = document.getElementById("gbSubmit");
+  var listEl = document.getElementById("gbList");
+  var countEl = document.getElementById("gbCount");
+
+  // 버튼을 누르면 프리링이 통통 튀는 리액션(순수 장식 - 제출 자체는
+  // form의 submit 이벤트가 따로 처리한다).
+  submitBtn.addEventListener("click", function () {
+    submitBtn.classList.remove("pop");
+    void submitBtn.offsetWidth;
+    submitBtn.classList.add("pop");
+  });
+
+  // 닉네임/비밀번호는 한 번 쓰면 이 브라우저에 저장해뒀다가 다음에
+  // 다시 채워준다(디시인사이드 식 - 계정 없이 매번 새로 적지 않아도 됨).
+  try {
+    var savedName = localStorage.getItem("gb_name");
+    var savedPw = localStorage.getItem("gb_pw");
+    if (savedName) nameInput.value = savedName;
+    if (savedPw) pwInput.value = savedPw;
+  } catch (e) {}
+
+  function fmtDate(ts) {
+    var d = new Date(ts);
+    var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "." + pad(d.getMonth() + 1) + "." + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  // 비밀번호는 원문을 Firebase에 저장하지 않고 SHA-256 해시만 저장한다.
+  // 다만 그 해시도 .read:true 로 누구나 읽을 수 있으니 진짜 인증은
+  // 아니다 - 아무나 지우는 것을 "실수로/장난으로 막는" 정도의 장치일
+  // 뿐, guestbook/FIREBASE_RULES.md 에 적어둔 것처럼 Firebase를 직접
+  // 두드리면 우회 가능한 한계는 여전히 있다.
+  function sha256hex(str) {
+    var enc = new TextEncoder().encode(str);
+    return crypto.subtle.digest("SHA-256", enc).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return b.toString(16).padStart(2, "0");
+      }).join("");
+    });
+  }
+
+  msgInput.addEventListener("input", function () {
+    charCount.textContent = msgInput.value.length + "/" + GB_MAX_LEN;
+  });
+
+  function moveToTrash(key, data) {
+    var trashData = {};
+    for (var k in data) trashData[k] = data[k];
+    trashData.deletedAt = Date.now();
+    set(ref(db, "guestbook_trash/" + key), trashData)
+      .then(function () { return remove(ref(db, "guestbook/" + key)); })
+      .catch(function () {});
+  }
+
+  // 소유자면 비밀번호 없이, 아니면 작성 시 비밀번호를 물어보고 해시를
+  // 비교한 뒤에만 onOk를 실행한다. 이 확인은 클라이언트에서만 이뤄지는
+  // 예의상의 장치일 뿐 진짜 인증은 아니다(guestbook/FIREBASE_RULES.md
+  // 참고).
+  function t(ko) { return (window.LKI18N && LKI18N.t) ? LKI18N.t(ko) : ko; }
+
+  function withOwnerOrPassword(item, onOk) {
+    if (isOwner) { onOk(); return; }
+    var pw = prompt(t("작성할 때 입력한 비밀번호를 입력하세요"));
+    if (pw == null || pw === "") return;
+    sha256hex(pw).then(function (hash) {
+      if (hash === item.data.pwHash) {
+        onOk();
+      } else {
+        alert(t("비밀번호가 일치하지 않습니다."));
+      }
+    });
+  }
+
+  function editMessage(item) {
+    var next = prompt(t("내용을 수정하세요"), item.data.message || "");
+    if (next == null) return;
+    next = next.trim();
+    if (!next) { alert(t("내용을 비울 수 없습니다.")); return; }
+    update(ref(db, "guestbook/" + item.key), {
+      message: next.slice(0, GB_MAX_LEN),
+      editedAt: Date.now()
+    }).catch(function () {
+      alert(t("수정에 실패했습니다. 잠시 후 다시 시도해주세요."));
+    });
+  }
+
+  function renderList(items) {
+    listEl.innerHTML = "";
+    if (!items.length) {
+      var empty = document.createElement("p");
+      empty.className = "gb-empty";
+      empty.textContent = "아직 방명록이 없습니다. 첫 글을 남겨보세요!";
+      listEl.appendChild(empty);
+      if (countEl) countEl.textContent = "";
+      return;
+    }
+    if (countEl) countEl.textContent = items.length + "개";
+    items.forEach(function (item) {
+      var entry = document.createElement("div");
+      entry.className = "gb-entry";
+      var head = document.createElement("div");
+      head.className = "gb-head";
+      var name = document.createElement("span");
+      name.className = "gb-name";
+      name.textContent = item.data.name || "익명";
+      head.appendChild(name);
+      var time = document.createElement("span");
+      time.className = "gb-time";
+      time.textContent = fmtDate(item.data.createdAt);
+      head.appendChild(time);
+      var edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "gb-del";
+      edit.textContent = "수정";
+      edit.addEventListener("click", function () {
+        withOwnerOrPassword(item, function () { editMessage(item); });
+      });
+      head.appendChild(edit);
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "gb-del";
+      del.textContent = "삭제";
+      del.addEventListener("click", function () {
+        if (isOwner && !confirm(t("이 글을 삭제할까요?"))) return;
+        withOwnerOrPassword(item, function () { moveToTrash(item.key, item.data); });
+      });
+      head.appendChild(del);
+      entry.appendChild(head);
+      var body = document.createElement("div");
+      body.className = "gb-body";
+      body.textContent = item.data.message || "";
+      if (item.data.editedAt) {
+        var edited = document.createElement("span");
+        edited.className = "gb-edited";
+        edited.textContent = "(수정됨)";
+        body.appendChild(edited);
+      }
+      entry.appendChild(body);
+      listEl.appendChild(entry);
+    });
+  }
+
+  onValue(query(ref(db, "guestbook"), limitToLast(80)), function (snap) {
+    var items = [];
+    snap.forEach(function (child) {
+      items.push({ key: child.key, data: child.val() });
+    });
+    items.sort(function (a, b) { return b.data.createdAt - a.data.createdAt; });
+    renderList(items);
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var message = msgInput.value.trim();
+    var name = nameInput.value.trim().slice(0, GB_NAME_MAX);
+    var password = pwInput.value.slice(0, GB_PW_MAX);
+    if (!name) { formMsg.textContent = "닉네임을 입력해주세요."; nameInput.focus(); return; }
+    if (!password) { formMsg.textContent = "비밀번호를 입력해주세요."; pwInput.focus(); return; }
+    if (!message) return;
+    var last = 0;
+    try { last = parseInt(localStorage.getItem("gb_last_post") || "0", 10); } catch (err) {}
+    var remain = GB_RATE_LIMIT_MS - (Date.now() - last);
+    if (remain > 0) {
+      formMsg.textContent = Math.ceil(remain / 1000) + "초 후 다시 남길 수 있어요.";
+      return;
+    }
+    submitBtn.disabled = true;
+    sha256hex(password).then(function (pwHash) {
+      return push(ref(db, "guestbook"), {
+        name: name,
+        pwHash: pwHash,
+        message: message.slice(0, GB_MAX_LEN),
+        createdAt: Date.now()
+      });
+    }).then(function () {
+      try {
+        localStorage.setItem("gb_last_post", "" + Date.now());
+        localStorage.setItem("gb_name", name);
+        localStorage.setItem("gb_pw", password);
+      } catch (err) {}
+      msgInput.value = "";
+      charCount.textContent = "0/" + GB_MAX_LEN;
+      formMsg.textContent = "남겼습니다!";
+      setTimeout(function () { formMsg.textContent = ""; }, 2500);
+    }).catch(function () {
+      formMsg.textContent = "실패했어요. 잠시 후 다시 시도해주세요.";
+    }).finally(function () {
+      submitBtn.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
