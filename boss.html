@@ -79,8 +79,9 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
 .brand .sub{color:var(--ink-2);font-size:13px;margin-top:6px;max-width:52ch}
 .brand .sub b{color:var(--gold);font-weight:700}
 /* 다크/라이트 토글 - 다른 도구 페이지와 동일한 위치/형식 (고정 우상단 알약 버튼) */
-.theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);font-size:14px;font-family:inherit;line-height:1;box-shadow:var(--shadow);cursor:pointer}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);font-size:14px;font-family:inherit;line-height:1;box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s ease,transform .1s ease}
 .theme-toggle:hover{border-color:var(--accent)}
+.theme-toggle:active{transform:scale(.94)}
 
 .statsrow{
   display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
@@ -105,8 +106,10 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
 .search input::placeholder{color:var(--ink-3)}
 .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none}
 .seg{display:flex;background:var(--surface-2);border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
-.seg button{padding:8px 12px;font-size:12.5px;color:var(--ink-2);border-right:1px solid var(--line-2)}
+.seg button{padding:8px 12px;font-size:12.5px;color:var(--ink-2);border-right:1px solid var(--line-2);transition:background .15s ease,color .15s ease}
 .seg button:last-child{border-right:0}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-3)}
+.seg button:active{background:var(--surface-3)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
 .toggle{display:inline-flex;gap:7px;align-items:center;font-size:12.5px;color:var(--ink-2);user-select:none}
 .toggle input{appearance:none;width:34px;height:19px;border-radius:999px;background:var(--surface-3);border:1px solid var(--line-2);position:relative;cursor:pointer;transition:background .15s}
@@ -132,6 +135,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin
   transition:background .12s
 }
 .row:hover{background:var(--surface-2)}
+.row:active{background:var(--surface-3)}
 .row[aria-current="true"]{background:var(--surface-3);box-shadow:inset 3px 0 0 var(--accent)}
 .row .nm{font-weight:500;font-size:13.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
 .row .nm .grp{display:block;font-size:11px;color:var(--ink-3);font-weight:400}
@@ -259,7 +263,9 @@ footer.pg code{font-family:var(--mono);background:var(--surface-2);padding:1px 5
   .dbar{display:flex;position:sticky;top:0;z-index:2;align-items:center;gap:10px;
     padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
   .dbar button{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;
-    border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-weight:600;font-size:13px}
+    border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-weight:600;font-size:13px;
+    transition:background .15s ease,transform .1s ease}
+  .dbar button:active{transform:scale(.96);background:var(--surface-3)}
 }
 @media (prefers-reduced-motion:reduce){.detail{transition:none}}
 @media(max-width:640px){

@@ -151,10 +151,19 @@ tr.reward-row.best td{color:var(--best);}
 .modal-box.gold-glow{border-color:var(--best);animation:goldGlow 1.8s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){.modal-box.gold-glow{animation:none;box-shadow:0 0 0 2px var(--best),0 0 24px 6px rgba(232,185,58,0.45);}}
 .mythic-item-card.royal-selected{outline:2px solid var(--accent);outline-offset:-2px;}
+.n-presets button:hover{border-color:var(--accent);}
+.theme-toggle,.n-presets button,.mode-tab,.mythic-tab,.mythic-item-card,.modal-actions button{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
+.theme-toggle:active,.n-presets button:not(:disabled):active,.mode-tab:active,.mythic-tab:active,.modal-actions button:active{transform:scale(.96);}
+.mythic-item-card:active{transform:scale(.97);}
+tr.reward-row{transition:background .15s ease;}
+tr.reward-row:active{background:var(--elev);}
+:where(.theme-toggle,select,.n-presets input,.n-presets button,.mode-tab,.mythic-tab,.mythic-item-card,.modal-actions button,tr.reward-row):focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 @media (max-width:720px){
   #main{padding:14px;}
   .calc-grid{grid-template-columns:1fr;}
   table{font-size:12px;}
+  .mode-tab,.mythic-tab{padding:10px 16px;}
+  .n-presets button{padding:8px 12px;}
 }
 
 </style>
