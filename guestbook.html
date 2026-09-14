@@ -42,6 +42,9 @@ h1{font-size:22px;margin:0 0 6px;}
   font:inherit;font-size:14px;resize:vertical;transition:border-color .15s ease;}
 .gb-form input[type=text]:focus,.gb-form input[type=password]:focus,.gb-form textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
 .gb-form textarea{min-height:70px;max-height:220px;}
+.gb-secret-row{display:flex;align-items:center;gap:6px;}
+.gb-secret-row label{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+.gb-secret-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;}
 .gb-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .gb-charcount{font-size:11px;color:var(--muted);}
 .gb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:1px;}
@@ -75,6 +78,9 @@ h1{font-size:22px;margin:0 0 6px;}
 .gb-del{background:none;border:0;color:var(--muted);font-size:11.5px;cursor:pointer;padding:0;margin-left:8px;text-decoration:underline;}
 .gb-del:hover{color:var(--accent);}
 .gb-edited{color:var(--muted);font-size:11.5px;margin-left:4px;}
+.gb-lock-tag{color:var(--muted);font-size:11.5px;margin-left:4px;}
+.gb-body.gb-locked{color:var(--muted);cursor:pointer;}
+.gb-body.gb-locked:hover{color:var(--accent);}
 .gb-empty{font-size:13.5px;color:var(--muted);padding:30px 0;text-align:center;}
 @media (max-width:520px){
   .gb-row{flex-direction:column;}
@@ -96,6 +102,9 @@ h1{font-size:22px;margin:0 0 6px;}
       <input type="password" id="gbPassword" maxlength="32" placeholder="비밀번호 (삭제할 때 필요)" required>
     </div>
     <textarea id="gbMessage" maxlength="200" rows="3" placeholder="하고 싶은 말을 자유롭게 남겨보세요" required></textarea>
+    <div class="gb-secret-row">
+      <label><input type="checkbox" id="gbSecret"> 🔒 비밀글로 남기기</label>
+    </div>
     <div class="gb-foot">
       <span class="gb-charcount" id="gbCharCount">0/200</span>
       <div class="gb-submit-wrap">
@@ -298,7 +307,10 @@ LKI18N.add({
   "수정":{en:"Edit",zh:"修改",ja:"編集"},
   "삭제":{en:"Delete",zh:"删除",ja:"削除"},
   "(수정됨)":{en:"(edited)",zh:"（已编辑）",ja:"（編集済み）"},
-  "불러오는 중...":{en:"Loading...",zh:"加载中...",ja:"読み込み中..."}
+  "불러오는 중...":{en:"Loading...",zh:"加载中...",ja:"読み込み中..."},
+  "🔒 비밀글로 남기기":{en:"🔒 Post as secret",zh:"🔒 设为悄悄话",ja:"🔒 秘密の書き込みにする"},
+  "🔒 비밀글입니다. 클릭하여 확인하세요.":{en:"🔒 This is a secret message. Click to view.",zh:"🔒 这是悄悄话。点击查看。",ja:"🔒 秘密の書き込みです。クリックして確認してください。"},
+  "🔒 비밀글":{en:"🔒 Secret",zh:"🔒 悄悄话",ja:"🔒 秘密"}
 });
 LKI18N.addRules([
   [/^(\d+)초 후 다시 남길 수 있어요\.$/, {en:"You can post again in $1s.", zh:"$1秒后可以再次留言。", ja:"$1秒後にまた投稿できます。"}],
@@ -339,6 +351,8 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
   var nameInput = document.getElementById("gbName");
   var pwInput = document.getElementById("gbPassword");
   var msgInput = document.getElementById("gbMessage");
+  var secretInput = document.getElementById("gbSecret");
+  var revealedSecrets = new Set();
   var charCount = document.getElementById("gbCharCount");
   var formMsg = document.getElementById("gbFormMsg");
   var submitBtn = document.getElementById("gbSubmit");
@@ -471,12 +485,34 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
       entry.appendChild(head);
       var body = document.createElement("div");
       body.className = "gb-body";
-      body.textContent = item.data.message || "";
-      if (item.data.editedAt) {
-        var edited = document.createElement("span");
-        edited.className = "gb-edited";
-        edited.textContent = "(수정됨)";
-        body.appendChild(edited);
+      var locked = !!item.data.secret && !isOwner && !revealedSecrets.has(item.key);
+      function fillBody() {
+        body.textContent = item.data.message || "";
+        if (item.data.secret) {
+          var tag = document.createElement("span");
+          tag.className = "gb-lock-tag";
+          tag.textContent = t("🔒 비밀글");
+          body.appendChild(tag);
+        }
+        if (item.data.editedAt) {
+          var edited = document.createElement("span");
+          edited.className = "gb-edited";
+          edited.textContent = "(수정됨)";
+          body.appendChild(edited);
+        }
+      }
+      if (locked) {
+        body.classList.add("gb-locked");
+        body.textContent = t("🔒 비밀글입니다. 클릭하여 확인하세요.");
+        body.addEventListener("click", function () {
+          withOwnerOrPassword(item, function () {
+            revealedSecrets.add(item.key);
+            body.classList.remove("gb-locked");
+            fillBody();
+          });
+        });
+      } else {
+        fillBody();
       }
       entry.appendChild(body);
       listEl.appendChild(entry);
@@ -508,13 +544,16 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
       return;
     }
     submitBtn.disabled = true;
+    var isSecret = !!(secretInput && secretInput.checked);
     sha256hex(password).then(function (pwHash) {
-      return push(ref(db, "guestbook"), {
+      var entry = {
         name: name,
         pwHash: pwHash,
         message: message.slice(0, GB_MAX_LEN),
         createdAt: Date.now()
-      });
+      };
+      if (isSecret) entry.secret = true;
+      return push(ref(db, "guestbook"), entry);
     }).then(function () {
       try {
         localStorage.setItem("gb_last_post", "" + Date.now());
@@ -522,6 +561,7 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
         localStorage.setItem("gb_pw", password);
       } catch (err) {}
       msgInput.value = "";
+      if (secretInput) secretInput.checked = false;
       charCount.textContent = "0/" + GB_MAX_LEN;
       formMsg.textContent = "남겼습니다!";
       setTimeout(function () { formMsg.textContent = ""; }, 2500);
