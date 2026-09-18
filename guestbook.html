@@ -24,6 +24,7 @@
   --accent:#b8506f;--accent-ink:#ffffff;}}
 *{box-sizing:border-box;}
 body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);}
+button{-webkit-tap-highlight-color:transparent;}
 a{color:inherit;}
 .theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;line-height:1;transition:border-color .15s ease,transform .1s ease;}
 .theme-toggle:hover{border-color:var(--accent);}
@@ -53,8 +54,11 @@ h1{font-size:22px;margin:0 0 6px;}
   background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADI0lEQVR4nM1X30sUURT+5jo9SEYk2O76O1qFWAhs+2EllEr1IEQQmmttL+ZrpvjWP9BDCD35sG9pDUiRPVT4YBJIlg8FlflQUOSPdZOEcEGoaSfunb2zMzt3xhlrrQ+WuXP3nPN999xz79wraZqGfwl5I4NY4xmLQuXFuOQlsFc/yS0DNIgycJC1k3Pf2LP/0acNRRh+TfuQTExh6fN33JxdFfoR1yBjcT1IlpwGGoiU2kaX7zc8Pcb8MDVn9Dv5EVdyisWUQe4VslQs9Kv/YU8cEQVoqarUG8FLnkktqV8eEf5/tmGXLQtEFKTnQlB/WR6Bur4Xoe1N3lXsKWUP6qcGDyEaafO3Clro6BuvAcEy3SAwAYTTiKIN6scS1qfMpPXRmooq0d6tKR1xqAfOQ8ZzyEiy/owWQZQbhcqA2UFnATEa9J4gfYEQkEpCDqeZCPVwCRTEmT2frp6jzVD7dHJq6xWybfQUFW8AtNpFMIds8DCgdMWtwVL3nZno6N0ExPjoKbnUCmgTOSsfI/JDTmFfBZR8C0Fs6S8w8nmIyGio+yqGrjzcFMHQ9Rn28wqJfgvM80+KTiHz6zVIUQMzyCzd9hyMlF8W+05aayB2a9D4LhDR/PMAx/Y3eyY3RPj0lY3W6LhRrdT5+Mk43r5c9C3A4ns32xlyEQxeGH0hILmCzJ0nuBiNoHbtFR4/qNGteCDezn/Pgqbc8G2vAarngBMpFpdDrVq3FKLUeeS0pvT260Y0A52yeO1zoi6HdxMyHyIgC19zxOZ9oP4d8CyA2OgwqwOZq5I7XfIkIhIQc5C6WaDO1DFpalcE2FbeMl3pfiDZKpD/QoA8X/zn+70DaD04ge4/xIthodBRugOEViLdmRgKlIV8yDNpPJ1fQHVom7UGWBb+oghjOZqxmEJiepKdkstrd+buBex70NuPTOXu3FLaJKkZFgHNK4idG2app6P/kvxpvZgwER1xtnFwIZuFhZhuPhUBG/no6pr9ZsTPefSMx3cwv2LyyRM33rM5p3Hpk4PW34ZXM0OMD9A5zidyspW83I7drmIieL3AehZQSPwGG0ti5/z0Du4AAAAASUVORK5CYII=");
   background-size:contain;background-repeat:no-repeat;background-position:center;
   image-rendering:pixelated;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));
-  transition:filter .15s ease,transform .1s ease;}
-.gb-freering-btn:hover{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)) drop-shadow(0 0 6px var(--accent)) brightness(1.08);transform:translateY(-2px);}
+  transition:filter .15s ease,transform .1s ease;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+@media (hover:hover) and (pointer:fine){
+  .gb-freering-btn:hover{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)) drop-shadow(0 0 6px var(--accent)) brightness(1.08);transform:translateY(-2px);}
+}
 .gb-freering-btn:active{transform:translateY(0) scale(.92);}
 .gb-freering-btn:disabled{opacity:.45;cursor:default;filter:none;transform:none;}
 @keyframes gbFreeringPop{
@@ -360,11 +364,14 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
   var countEl = document.getElementById("gbCount");
 
   // 버튼을 누르면 프리링이 통통 튀는 리액션(순수 장식 - 제출 자체는
-  // form의 submit 이벤트가 따로 처리한다).
+  // form의 submit 이벤트가 따로 처리한다). 모바일에서 탭 후 포커스가
+  // 버튼에 남아있으면 hover/focus 스타일이 계속 남아 보이므로 바로
+  // blur 처리한다.
   submitBtn.addEventListener("click", function () {
     submitBtn.classList.remove("pop");
     void submitBtn.offsetWidth;
     submitBtn.classList.add("pop");
+    submitBtn.blur();
   });
 
   // 닉네임/비밀번호는 한 번 쓰면 이 브라우저에 저장해뒀다가 다음에
@@ -374,6 +381,45 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
     var savedPw = localStorage.getItem("gb_pw");
     if (savedName) nameInput.value = savedName;
     if (savedPw) pwInput.value = savedPw;
+  } catch (e) {}
+
+  // 방명록 댓글 본문을 선택된 언어로 번역한다. 무료 비공식 Google 번역
+  // 엔드포인트를 클라이언트에서 직접 호출하므로 API 키가 필요 없지만,
+  // 정식 API가 아니라 언제든 막힐 수 있다 - 실패하면 원문을 그대로 둔다.
+  var GB_TRANS_CACHE = {};
+  var gbActiveSpans = [];
+
+  function gbCurLang() {
+    return (window.LKI18N && LKI18N.lang) ? LKI18N.lang() : "ko";
+  }
+
+  function gbTranslate(text, lang) {
+    if (!text || lang === "ko") return Promise.resolve(text);
+    var key = lang + "::" + text;
+    if (GB_TRANS_CACHE[key] != null) return Promise.resolve(GB_TRANS_CACHE[key]);
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl="
+      + encodeURIComponent(lang) + "&dt=t&q=" + encodeURIComponent(text);
+    return fetch(url).then(function (res) { return res.json(); }).then(function (data) {
+      var out = (data && data[0]) ? data[0].map(function (seg) { return seg[0]; }).join("") : text;
+      GB_TRANS_CACHE[key] = out;
+      return out;
+    }).catch(function () { return text; });
+  }
+
+  function gbApplyTranslation(span, original) {
+    var lang = gbCurLang();
+    if (lang === "ko") { span.textContent = original; return; }
+    gbTranslate(original, lang).then(function (translated) {
+      if (gbCurLang() === lang) span.textContent = translated;
+    });
+  }
+
+  // 언어 전환 버튼(LKI18N)을 누르면 <html lang> 속성이 바뀐다 - 그걸
+  // 감지해서 현재 화면에 그려진 댓글들을 새 언어로 다시 번역한다.
+  try {
+    new MutationObserver(function () {
+      gbActiveSpans.forEach(function (rec) { gbApplyTranslation(rec.span, rec.original); });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   } catch (e) {}
 
   function fmtDate(ts) {
@@ -443,6 +489,7 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
 
   function renderList(items) {
     listEl.innerHTML = "";
+    gbActiveSpans = [];
     if (!items.length) {
       var empty = document.createElement("p");
       empty.className = "gb-empty";
@@ -487,7 +534,14 @@ import { getDatabase, ref, push, set, update, remove, onValue, query, limitToLas
       body.className = "gb-body";
       var locked = !!item.data.secret && !isOwner && !revealedSecrets.has(item.key);
       function fillBody() {
-        body.textContent = item.data.message || "";
+        body.textContent = "";
+        var msgSpan = document.createElement("span");
+        msgSpan.className = "gb-body-text";
+        var original = item.data.message || "";
+        msgSpan.textContent = original;
+        body.appendChild(msgSpan);
+        gbActiveSpans.push({ span: msgSpan, original: original });
+        gbApplyTranslation(msgSpan, original);
         if (item.data.secret) {
           var tag = document.createElement("span");
           tag.className = "gb-lock-tag";
