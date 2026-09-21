@@ -835,7 +835,7 @@ LKI18N.init();
 <script>
 LKI18N.add({
   "라테일 몬스터 도감":{en:"LaTale Monster Codex",zh:"LaTale 怪物图鉴",ja:"LaTale モンスター図鑑"},
-  "인던(인스턴스 던전) 몬스터의 스탯을 검색하고 한눈에 볼 수 있습니다.":{en:"Search LaTale dungeon monster stats and see them at a glance.",zh:"搜索并一览 LaTale 副本怪物属性。",ja:"LaTaleのダンジョンモンスターのステータスを検索して一目で確認できます。"},
+  "라테일 일반 몬스터의 스탯을 검색하고 한눈에 볼 수 있습니다.":{en:"Search LaTale regular monster stats and see them at a glance.",zh:"搜索并一览 LaTale 一般怪物属性。",ja:"LaTaleの一般モンスターのステータスを検索して一目で確認できます。"},
   "몬스터 이름 · 던전명 검색  (예: 고블린, 라이오캣, 증명의탑)":{en:"Search monster / dungeon name  (e.g. 고블린, 라이오캣, 증명의탑)",zh:"搜索怪物·副本名  (例: 고블린, 라이오캣, 증명의탑)",ja:"モンスター・ダンジョン名で検索  (例: 고블린, 라이오캣, 증명의탑)"},
   "정렬":{en:"Sort",zh:"排序",ja:"並び替え"},
   "최근순":{en:"Recent",zh:"最新",ja:"新着順"},
@@ -912,14 +912,17 @@ LKI18N.init();
 
 <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
 
-<div class="modeseg" role="group" aria-label="도감 종류" style="position:fixed;top:14px;left:14px;z-index:9999;display:flex;background:var(--surface);border:1px solid var(--line-2);border-radius:999px;padding:3px;box-shadow:var(--shadow)">
-  <button type="button" data-mode="boss" aria-pressed="true" style="padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-2)">보스 도감</button>
-  <button type="button" data-mode="mob" aria-pressed="false" style="padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-2)">일반 몬스터</button>
+<div class="modewrap">
+  <div class="seg modeseg" role="group" aria-label="도감 종류">
+    <button type="button" data-mode="boss" aria-pressed="true">보스 도감</button>
+    <button type="button" data-mode="mob" aria-pressed="false">일반 몬스터</button>
+  </div>
 </div>
 <style>
-.modeseg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.modewrap{max-width:1280px;margin:0 auto;padding:14px 22px 0}
+.modeseg{width:max-content}
 #app-boss.hidden,#app-mob.hidden{display:none}
-@media(max-width:680px){.modeseg{top:auto;bottom:60px;right:12px;left:auto}}
+@media(max-width:680px){.modewrap{padding:10px 16px 0}}
 </style>
 <div id="app-boss">
 <div class="wrap">
@@ -982,7 +985,7 @@ LKI18N.init();
   <header class="top">
     <div class="brand">
       <h1>일반 몬스터 도감<span class="updateDate"><span>최근 업데이트</span> 2026.09.18</span></h1>
-      <p class="sub">인던(인스턴스 던전) 몬스터의 스탯을 검색하고 한눈에 볼 수 있습니다.</p>
+      <p class="sub">라테일 일반 몬스터의 스탯을 검색하고 한눈에 볼 수 있습니다.</p>
     </div>
   </header>
 
