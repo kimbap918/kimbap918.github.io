@@ -146,8 +146,12 @@ main{display:flex;height:calc(100dvh - 96px);}
   --pointer-x:50%;--pointer-y:50%;--card-opacity:0;}
 .grade-summary .gs-icon{width:52px;height:52px;border-radius:11px;background:var(--elev);image-rendering:pixelated;
   border:1.5px solid color-mix(in srgb,#e8b923 35%,var(--border-strong));position:relative;z-index:6;}
+.gs-title-wrap{flex:1 1 auto;min-width:0;}
+/* 아이템 전체 이름(예: "카울리니의 스파이럴소드 [신화]")이 좁은 화면에서
+   글자 중간을 끊어 줄바꿈하던 문제 수정(사용자 지적, 2026-09-22 -
+   모바일에서 "스파이럴소"/"드"처럼 단어가 잘림) - 어절 단위로만 줄바꿈. */
 .grade-summary h2{background:linear-gradient(100deg,#f0cf6a,#e8b923 45%,var(--accent-strong));-webkit-background-clip:text;
-  background-clip:text;color:transparent;letter-spacing:-.01em;}
+  background-clip:text;color:transparent;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:break-word;}
 .grade-summary h2.transcend{background:none;-webkit-text-fill-color:#a78bfa;color:#a78bfa;}
 /* 4옵션 이상 + 90%급 이상일 때만 붙는 보상 연출 - 빨간 후광 대신, 실제
    포켓몬 카드 홀로 텍스트처럼 진주빛 무지개가 글자 위로 천천히 스치는
@@ -354,9 +358,14 @@ td:first-child .stage-arrow{display:inline-block;}
   #detail{padding:18px 16px 32px;}
   #detail>*{max-width:none;}
   #gradeMain{flex-direction:column;height:auto;}
-  #gradeRosterView{width:100%;max-height:38vh;border-right:none;border-bottom:1px solid var(--border);}
+  #gradeRosterView{width:100%;max-height:44vh;border-right:none;border-bottom:1px solid var(--border);}
   #gradeDetail{padding:18px 16px 32px;}
   #gradeDetail>*{max-width:none;}
+  /* 아이템 이름이 길면(예: "카울리니의 스파이럴소드 [신화]") 아이콘/버튼과
+     한 줄에 끼여 좁게 눌리던 것을 버튼을 아래 줄로 내려 이름 칸을 넓혀준다
+     (사용자 지적, 2026-09-22). */
+  .grade-summary{flex-wrap:wrap;}
+  .grade-export-btn{flex:1 1 100%;margin-left:0;margin-top:2px;text-align:center;}
   .grade-opt-row .go-top{flex-wrap:wrap;}
   .grade-opt-row .go-name{min-width:120px;}
   h2{font-size:19px;}
@@ -625,6 +634,35 @@ LKI18N.add({
   "강화 실패 시 +10으로 초기화":{en:"On enhance failure, resets to +10",zh:"强化失败时重置为+10",ja:"強化失敗時に+10へリセット"},
   "강화 실패 시 +20으로 초기화":{en:"On enhance failure, resets to +20",zh:"强化失败时重置为+20",ja:"強化失敗時に+20へリセット"}
 });
+/* "인챈트 수치 확인" 탭 다국어(사용자 요청, 2026-09-22) */
+LKI18N.add({
+  "아이템 검색":{en:"Item Search",zh:"道具搜索",ja:"アイテム検索"},
+  "인챈트 수치 확인":{en:"Enchant Value Check",zh:"附魔数值查询",ja:"エンチャント数値確認"},
+  "왼쪽 목록에서 장비를 선택하세요.":{en:"Select equipment from the list on the left.",zh:"请从左侧列表选择装备。",ja:"左のリストから装備を選択してください。"},
+  "데이터 없음":{en:"No data",zh:"无数据",ja:"データなし"},
+  "부위 선택":{en:"Select slot",zh:"选择部位",ja:"部位を選択"},
+  "옵션":{en:" options",zh:"个选项",ja:"個のオプション"},
+  "실제 장비에 붙은 옵션을 칸마다 골라 수치를 입력하면, 이 강화 단계까지 나올 수 있는 값의 범위 안에서 몇 %에 해당하는지 계산합니다. 옵션을 고르지 않았거나 수치를 입력하지 않은 칸은 종합 등급 계산에서 제외됩니다.":
+    {en:"Pick the option that landed in each slot and enter its actual value — this calculates what percentile that falls in within the range possible at this enhancement level. Slots left unpicked or empty are excluded from the overall grade.",
+     zh:"为每一栏选择实际获得的选项并输入数值，即可计算该数值在当前强化阶段可能范围内所处的百分比。未选择选项或未输入数值的栏位不计入综合等级。",
+     ja:"実際の装備に付いたオプションを枠ごとに選んで数値を入力すると、この強化段階で出る値の範囲内で何%に当たるか計算します。オプションを選んでいないか数値を入力していない枠は総合等級の計算から除外されます。"},
+  "이미지 저장":{en:"Save Image",zh:"保存图片",ja:"画像を保存"},
+  "강화 단계":{en:"Enhancement level",zh:"强化阶段",ja:"強化段階"},
+  "기본(0강)":{en:"Base (+0)",zh:"基础(+0)",ja:"基本(+0)"},
+  "기본":{en:"Base",zh:"基础",ja:"基本"},
+  "초월":{en:"Transcend",zh:"超越",ja:"超越"},
+  "이 강화 단계에서는 아직 열린 인챈트 옵션이 없습니다.":{en:"No enchant options are open at this enhancement level yet.",zh:"该强化阶段尚未开放附魔选项。",ja:"この強化段階ではまだ開放されたエンチャントオプションがありません。"},
+  "옵션 선택":{en:"Select option",zh:"选择选项",ja:"オプションを選択"},
+  "실제 수치":{en:"Actual value",zh:"实际数值",ja:"実際の数値"},
+  "추가옵션":{en:"Bonus option",zh:"追加选项",ja:"追加オプション"},
+  "칸 제거":{en:"Remove slot",zh:"删除栏位",ja:"枠を削除"},
+  "옵션 추가":{en:"Add option",zh:"添加选项",ja:"オプション追加"},
+  "가능범위":{en:"Possible range",zh:"可能范围",ja:"可能範囲"},
+  "현재":{en:"Current",zh:"当前",ja:"現在"},
+  "총":{en:"Total",zh:"总计",ja:"合計"},
+  "급 장비입니다":{en:"-grade equipment",zh:"级装备",ja:"級装備です"},
+  "풀강(초월) 시 예상":{en:"Projected at full enhancement (Transcend)",zh:"满强化(超越)时预测",ja:"完全強化(超越)時の予想"}
+});
 LKI18N.addRules([
   [/개 장비 아이템 \(강화\/인챈트 정보 보유분만, \+강화 단계 통합\) 검색 가능/g, {en:" equipment items searchable (only those with enhance/enchant data, + levels merged)",zh:" 件装备道具可搜索(仅含强化/附魔数据者，+强化阶段已合并)",ja:" 件の装備アイテムを検索可能(強化/エンチャント情報あり・+強化段階統合)"}],
   [/· 총 필요 재료: /g, {en:"· Total materials: ",zh:"· 总计所需材料: ",ja:"· 合計必要素材: "}],
@@ -694,6 +732,11 @@ window.LK_STAT = {
   "물리/마법 최소대미지":{en:"Phys/Mag min damage",zh:"物理/魔法最小伤害",ja:"物理/魔法最小ダメージ"},
   "속성력 최대대미지":{en:"Elem. max damage",zh:"属性最大伤害",ja:"属性最大ダメージ"},
   "속성력 최소대미지":{en:"Elem. min damage",zh:"属性最小伤害",ja:"属性最小ダメージ"},
+  "땅속성 최대대미지":{en:"Earth attr. max damage",zh:"地属性最大伤害",ja:"地属性最大ダメージ"},
+  "물속성 최대대미지":{en:"Water attr. max damage",zh:"水属性最大伤害",ja:"水属性最大ダメージ"},
+  "바람속성 최대대미지":{en:"Wind attr. max damage",zh:"风属性最大伤害",ja:"風属性最大ダメージ"},
+  "불속성 최대대미지":{en:"Fire attr. max damage",zh:"火属性最大伤害",ja:"火属性最大ダメージ"},
+  "어둠속성 최대대미지":{en:"Dark attr. max damage",zh:"暗属性最大伤害",ja:"闇属性最大ダメージ"},
   "물 최대 대미지":{en:"Water max damage",zh:"水最大伤害",ja:"水最大ダメージ"},
   "속성력대미지(물리공격시)":{en:"Elem. damage (on phys. attack)",zh:"属性伤害(物理攻击时)",ja:"属性ダメージ(物理攻撃時)"},
   "물리 크리티컬 대미지":{en:"Phys. crit damage",zh:"物理暴击伤害",ja:"物理クリティカルダメージ"},
@@ -813,11 +856,16 @@ function statusName(type) {
   return trStatBase(name);
 }
 // 인챈트 옵션 이름('근력 +' / '근력 %' 꼴)을 현재 언어로. 그룹 키는 원문 유지.
+// 극소수(약 0.3%, build_dataset()의 strip_desc_fallback 참고) 예외 옵션은
+// ITEM_OPTION에 매칭되는 행이 없어 "+"/"%" 접미사 없이 "...변화" 꼴 설명문
+// 그대로 온다(예: "땅속성 최대대미지 변화") - 이것도 접미사로 인식해 떼고
+// 번역한다(사용자 지적, 2026-09-22 - "최대대미지 이런것도 적용해줘").
 function trOptName(name) {
   let suf = '';
   let raw = name;
   if (raw.endsWith(' +')) { raw = raw.slice(0, -2); suf = ' +'; }
   else if (raw.endsWith(' %')) { raw = raw.slice(0, -2); suf = ' %'; }
+  else if (raw.endsWith(' 변화')) { raw = raw.slice(0, -3); }
   return trStatBase(raw) + suf;
 }
 
@@ -1402,7 +1450,7 @@ function selectGradeItem(id) {
   out += '<div class="grade-panel">';
   out += '<div class="grade-summary">' +
     (item.icon ? '<img class="gs-icon" src="' + item.icon + '" alt="">' : '<div class="gs-icon"></div>') +
-    '<div><h2 style="margin:0" id="gradeItemName" class="' + (tierIndex >= 7 ? 'transcend' : '') + '">' + tierName(chainIds[tierIndex]) + '</h2><span class="small">' + T(grp.label) + ' · ' + T(item.slot) + '</span></div>' +
+    '<div class="gs-title-wrap"><h2 style="margin:0" id="gradeItemName" class="' + (tierIndex >= 7 ? 'transcend' : '') + '">' + tierName(chainIds[tierIndex]) + '</h2><span class="small">' + T(grp.label) + ' · ' + T(item.slot) + '</span></div>' +
     '<button type="button" class="grade-export-btn" id="gradeExportBtn" disabled>' + T('이미지 저장') + '</button>' +
     '<div class="holo-shine"></div><div class="holo-glare"></div></div>';
 
@@ -1480,18 +1528,25 @@ function tierChain(startId) {
 // hollow 1개) 규칙으로 계산된다(사용자 지정, 2026-09-22). 텍스트 라벨은
 // 툴팁/접근성용으로 tierLabel()에 남겨두고, 칩 안쪽은 금색 별 아이콘으로
 // 인게임 강화창처럼 보이게 한다.
-const GRADE_TIER_STAR_LABELS = ['1강 ☆', '2강 ★', '3강 ★☆', '4강 ★★', '5강 ★★☆', '6강 ★★★'];
+const GRADE_TIER_STARS = ['☆', '★', '★☆', '★★', '★★☆', '★★★'];
+// "N강" 표기는 한국 라테일 UI 고유 표현이라 언어별로 자연스러운 형태가
+// 다르다(다른 언어권에선 보통 "+N" 표기를 씀) - T() 사전 치환 대신 언어별로
+// 직접 조립한다(사용자 요청, 2026-09-22, 탭 다국어 작업 중 발견).
+function tierNumLabel(index) {
+  const L = window.LKI18N && LKI18N.lang();
+  return (!L || L === 'ko') ? (index + '강') : ('+' + index);
+}
 function tierLabel(index) {
   if (index === 0) return T('기본(0강)');
-  if (index - 1 < GRADE_TIER_STAR_LABELS.length) return GRADE_TIER_STAR_LABELS[index - 1];
+  if (index - 1 < GRADE_TIER_STARS.length) return tierNumLabel(index) + ' ' + GRADE_TIER_STARS[index - 1];
   return T('초월');
 }
 function tierChipHtml(index) {
   if (index === 0) return '<span class="tc-txt">' + T('기본') + '</span>';
-  if (index - 1 >= GRADE_TIER_STAR_LABELS.length) return '<span class="tc-txt">' + T('초월') + '</span>';
+  if (index - 1 >= GRADE_TIER_STARS.length) return '<span class="tc-txt">' + T('초월') + '</span>';
   const filled = Math.floor(index / 2);
   const hollow = index % 2;
-  return '<span class="tc-txt">' + index + T('강') + '</span>' +
+  return '<span class="tc-txt">' + tierNumLabel(index) + '</span>' +
     (filled ? '<span class="tier-star filled">' + '★'.repeat(filled) + '</span>' : '') +
     (hollow ? '<span class="tier-star hollow">☆</span>' : '');
 }
@@ -2064,6 +2119,10 @@ function setGradeMode(mode) {
   else url.searchParams.delete('mode');
   history.replaceState(null, '', url.pathname + url.search);
   if (mode === 'grade' && !gradeRosterView.innerHTML) renderGradeRoster();
+  // 검색 탭에서 결과를 한참 내려보다가 이 탭으로 넘어오면 스크롤 위치가
+  // 그대로 남아 장비 선택 목록이 화면 밖으로 밀려 보여서 못 찾는다는 지적
+  // (사용자 지적, 2026-09-22) - 탭 전환 시 항상 맨 위로 되돌린다.
+  window.scrollTo(0, 0);
 }
 
 document.querySelectorAll('.mode-tab').forEach(b => {
