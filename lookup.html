@@ -86,7 +86,7 @@ main{display:flex;height:calc(100dvh - 96px);}
 .grade-group-tab.active img{box-shadow:0 0 0 2px color-mix(in srgb,#e8b923 45%,transparent);}
 .grade-picker{border-top:1px solid var(--border);padding-top:12px;}
 .grade-note{font-size:11.5px;color:var(--muted);margin:0 0 10px;line-height:1.45;}
-.grade-item-select{width:100%;padding:9px 11px;font-size:13px;font-family:inherit;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);}
+.grade-item-select{width:100%;padding:9px 11px;font-size:13px;font-family:inherit;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;}
 .grade-item-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent);}
 .grade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;}
 .grade-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px;border-radius:9px;border:1px solid transparent;background:var(--card);cursor:pointer;transition:border-color .13s,background .13s;}
@@ -135,7 +135,10 @@ main{display:flex;height:calc(100dvh - 96px);}
     hsla(0,0%,100%,.45) 0%,hsla(0,0%,100%,.16) 24%,hsla(0,0%,0%,.16) 90%);
   mix-blend-mode:overlay;}
 @media (prefers-reduced-motion:reduce){.holo-shine,.holo-glare{display:none;}}
-@media (hover:none){.holo-shine,.holo-glare{display:none;}}
+/* 터치 기기는 마우스가 없어 마우스무브로 켜던 효과가 아예 안 보였다
+   (사용자 지적, 2026-09-23 - "모바일에서도 제목의 빛나는 효과"). 이전엔
+   hover:none에서 아예 꺼버렸는데, updateGradeSummary()가 같은 조건에서
+   --card-opacity를 직접 켜주도록 바꿨으므로 더는 강제로 숨기지 않는다. */
 .grade-panel::before{content:"";position:absolute;left:18px;right:18px;top:0;height:1px;
   background:linear-gradient(90deg,transparent,color-mix(in srgb,#e8b923 55%,transparent),transparent);}
 .grade-panel::after{content:"◆";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
@@ -168,7 +171,9 @@ main{display:flex;height:calc(100dvh - 96px);}
 @media (prefers-reduced-motion:reduce){.grade-summary h2.legendary{animation:none;background-position:30% 50%;}}
 .grade-summary .gs-num{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;}
 .grade-summary .gs-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
-.grade-export-btn{margin-left:auto;flex:0 0 auto;padding:8px 14px;border-radius:9px;border:1px solid color-mix(in srgb,#e8b923 40%,var(--border));
+/* 헤더에서 결과 카드 바로 위로 옮겼다(사용자 지정, 2026-09-23) - 카드
+   묶음 오른쪽 위에 붙여 "이 결과를 저장한다"는 게 바로 보이게. */
+.grade-export-btn{display:block;margin:14px 0 12px auto;padding:8px 14px;border-radius:9px;border:1px solid color-mix(in srgb,#e8b923 40%,var(--border));
   background:var(--panel);color:var(--text);font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;transition:border-color .13s,background .13s,opacity .13s;white-space:nowrap;
   position:relative;z-index:6;}
 .grade-export-btn:hover:not(:disabled){border-color:#e8b923;background:color-mix(in srgb,#e8b923 12%,var(--panel));}
@@ -206,7 +211,8 @@ main{display:flex;height:calc(100dvh - 96px);}
 .go-lv{flex:0 0 auto;min-width:30px;text-align:center;padding:3px 7px;border-radius:6px;font-size:12px;font-weight:800;
   color:#e8b923;background:color-mix(in srgb,#e8b923 16%,transparent);border:1px solid color-mix(in srgb,#e8b923 35%,transparent);}
 .grade-opt-row .go-name{flex:1 1 auto;min-width:160px;font-size:13px;font-weight:600;}
-.grade-opt-row select{flex:1 1 200px;min-width:160px;padding:7px 9px;font-size:13px;font-family:inherit;border-radius:7px;border:1px solid var(--border);background:var(--panel);color:var(--text);}
+.grade-opt-row select{flex:1 1 200px;min-width:160px;padding:7px 9px;font-size:13px;font-family:inherit;border-radius:7px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;}
+.grade-opt-row select:disabled{cursor:not-allowed;}
 .grade-opt-row select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent);}
 .grade-opt-row .go-range{flex:0 0 auto;width:120px;font-size:12px;color:var(--muted);}
 .grade-opt-row input{width:90px;padding:6px 9px;font-size:13px;font-family:inherit;border-radius:7px;border:1px solid var(--border);background:var(--panel);color:var(--text);}
@@ -364,8 +370,7 @@ td:first-child .stage-arrow{display:inline-block;}
   /* 아이템 이름이 길면(예: "카울리니의 스파이럴소드 [신화]") 아이콘/버튼과
      한 줄에 끼여 좁게 눌리던 것을 버튼을 아래 줄로 내려 이름 칸을 넓혀준다
      (사용자 지적, 2026-09-22). */
-  .grade-summary{flex-wrap:wrap;}
-  .grade-export-btn{flex:1 1 100%;margin-left:0;margin-top:2px;text-align:center;}
+  .grade-export-btn{width:100%;margin:14px 0 12px;text-align:center;}
   .grade-opt-row .go-top{flex-wrap:wrap;}
   .grade-opt-row .go-name{min-width:120px;}
   h2{font-size:19px;}
@@ -1341,6 +1346,18 @@ function renderGradePicker() {
 
 let gradeIsPerfectTier = false; // 종합 90%+일 때만 홀로그램 이스터에그 활성 (사용자 지정, 2026-09-22)
 
+// 터치 기기(hover 불가)에서는 마우스 오버로 켜던 제목 글로우가 아예 안
+// 보였다(사용자 지적, 2026-09-23) - 포인터를 따라다닐 수 없으니 조건이
+// 맞으면 카드 중앙에 고정으로 켜준다.
+function syncNoHoverGradeGlow(on) {
+  if (!window.matchMedia || !window.matchMedia('(hover: none)').matches) return;
+  const panel = document.querySelector('.grade-summary');
+  if (!panel) return;
+  panel.style.setProperty('--pointer-x', '50%');
+  panel.style.setProperty('--pointer-y', '35%');
+  panel.style.setProperty('--card-opacity', on ? '1' : '0');
+}
+
 function updateGradeSummary() {
   const vals = [...gradeRowValues.values()].filter(v => v !== null && v !== undefined);
   const numEl = document.getElementById('gradeOverallNum');
@@ -1359,6 +1376,7 @@ function updateGradeSummary() {
     gradeIsPerfectTier = false;
     const nameElEmpty = document.getElementById('gradeItemName');
     if (nameElEmpty) nameElEmpty.classList.remove('legendary');
+    syncNoHoverGradeGlow(false);
     return;
   }
   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
@@ -1372,6 +1390,7 @@ function updateGradeSummary() {
   gradeIsPerfectTier = avg >= 90 && vals.length >= 4;
   const nameEl = document.getElementById('gradeItemName');
   if (nameEl) nameEl.classList.toggle('legendary', gradeIsPerfectTier);
+  syncNoHoverGradeGlow(gradeIsPerfectTier);
 }
 
 
@@ -1451,7 +1470,6 @@ function selectGradeItem(id) {
   out += '<div class="grade-summary">' +
     (item.icon ? '<img class="gs-icon" src="' + item.icon + '" alt="">' : '<div class="gs-icon"></div>') +
     '<div class="gs-title-wrap"><h2 style="margin:0" id="gradeItemName" class="' + (tierIndex >= 7 ? 'transcend' : '') + '">' + tierName(chainIds[tierIndex]) + '</h2><span class="small">' + T(grp.label) + ' · ' + T(item.slot) + '</span></div>' +
-    '<button type="button" class="grade-export-btn" id="gradeExportBtn" disabled>' + T('이미지 저장') + '</button>' +
     '<div class="holo-shine"></div><div class="holo-glare"></div></div>';
 
   if (chainIds.length > 1) {
@@ -1470,13 +1488,9 @@ function selectGradeItem(id) {
   // 결과판(grade-overall, renderGradeOptionRows에서 만들어짐이라 거기서
   // 따로 건다). 옵션 선택/입력 영역은 실제 폼 조작부라 효과를 안 준다.
   initGradeHolo(gradeDetail.querySelector('.grade-summary'));
-
-  const exportBtn = document.getElementById('gradeExportBtn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      downloadGradeCard(tierName(chainIds[tierIndex]), grp, item);
-    });
-  }
+  // "이미지 저장" 버튼은 결과 카드 바로 위로 옮겼다(사용자 지정,
+  // 2026-09-23) - renderGradeOptionRows()가 매번 다시 그리므로 리스너도
+  // 거기서 같이 붙인다.
 
   const chipsWrap = document.getElementById('gradeTierChips');
   if (chipsWrap) {
@@ -1641,6 +1655,9 @@ function renderGradeOptionRows(chainIds, tierIndex, slotState, visibleSlots, onA
     if (visibleSlots < GRADE_SLOT_COUNT) {
       out += '<button type="button" class="grade-add-slot" id="gradeAddSlot">+ ' + T('옵션 추가') + '</button>';
     }
+    // "이미지 저장" 버튼은 헤더가 아니라 결과 카드 바로 위에 둔다(사용자
+    // 지정, 2026-09-23) - 뭘 저장하는 버튼인지 결과와 붙어 있어야 명확해서.
+    out += '<button type="button" class="grade-export-btn" id="gradeExportBtn" disabled>' + T('이미지 저장') + '</button>';
     out += '<div class="grade-results-row">' +
       '<div class="grade-overall-wrap" id="gradeCurrentSection"></div>' +
       (isMaxTier ? '' : '<div class="grade-overall-proj-wrap" id="gradeProjSection"></div>') +
@@ -1652,6 +1669,12 @@ function renderGradeOptionRows(chainIds, tierIndex, slotState, visibleSlots, onA
   if (addBtn && onAddSlot) addBtn.addEventListener('click', onAddSlot);
   const removeBtn = container.querySelector('.go-remove-slot');
   if (removeBtn && onRemoveSlot) removeBtn.addEventListener('click', onRemoveSlot);
+  const exportBtn = document.getElementById('gradeExportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      downloadGradeCard(tierNameFn(chainIds[tierIndex]));
+    });
+  }
   const selects = [...container.querySelectorAll('.grade-opt-row select')];
 
   // 실제 장비 한 개엔 같은 옵션이 두 번 붙을 수 없으므로(사용자 확인,
@@ -1883,7 +1906,12 @@ function renderGradeOptionRows(chainIds, tierIndex, slotState, visibleSlots, onA
    의존 금지) 캔버스에 직접 그린다. 사용자가 참고로 준 게임 내 "증명카드"
    스크린샷 구성(아이콘+제목 헤더 / 옵션별 Lv·이름·수치·[퍼센트]+막대바 /
    하단 총평 막대바)을 그대로 재현한다 - 2026-09-22. */
-const GRADE_TIER_HEX = { gray: '#9aa0ab', yellow: '#ffce1f', orange: '#ff8a1e', red: '#ff3b30' };
+// sky 등급(50~59%)이 추가됐을 때 여기 갱신을 빠뜨려서 내보낸 이미지에서만
+// 회색으로 나오던 것도 같이 고친다(2026-09-23).
+const GRADE_TIER_HEX = { gray: '#9aa0ab', sky: '#5ab4d8', yellow: '#ffce1f', orange: '#ff8a1e', red: '#ff3b30' };
+// 옵션 값 숫자(예: "200%"의 200)를 이름과 구분되게 파란색으로 - 실제
+// 페이지의 .go-val(--info) 처리와 맞춘다(사용자 요청, 2026-09-23).
+const GRADE_VALUE_HEX = '#7fb2e6';
 
 function gradeRoundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -1904,43 +1932,89 @@ function gradeLoadImage(src) {
   });
 }
 
-function gradeFmtOptionText(name, value) {
-  if (name.endsWith(' %')) return name.slice(0, -2) + ' +' + value + '%';
-  if (name.endsWith(' +')) return name.slice(0, -2) + ' +' + value;
-  return name + ' ' + value;
+// name은 이미 드롭다운에 그려진 번역된 텍스트(예: "근력/마법력 +")를 그대로
+// 받는다 - 실제 페이지 결과 카드와 똑같이 이름 뒤에 값만 이어 붙이고
+// (%부호를 값에 또 붙이지 않음, 이름 자체의 " %" 접미사로 이미 표시됨),
+// 그리는 쪽에서 이름/값을 다른 색으로 칠할 수 있게 문자열만 합치지 않고
+// 그대로 둔다.
+
+// #gradeCurrentSection/#gradeProjSection에 이미 렌더링된 결과 카드를 그대로
+// 읽어온다(사용자 요청, 2026-09-23 - 풀강이 아닐 때 예상 카드도 같이
+// 저장) - 입력폼을 다시 계산하지 않고 화면에 보이는 값을 그대로 써서
+// 어긋날 일이 없다.
+function readGradeCardData(sectionId) {
+  const section = document.getElementById(sectionId);
+  const overall = section && section.querySelector('.grade-overall');
+  if (!overall) return null;
+  const rows = [...overall.querySelectorAll('.grade-result-rows > .grade-opt-row-proj')].map(row => {
+    const lvText = row.querySelector('.go-lv').textContent;
+    const valEl = row.querySelector('.go-val');
+    const value = valEl ? valEl.textContent : '';
+    const nameFull = row.querySelector('.go-name-static').textContent;
+    const name = (valEl && nameFull.endsWith(value)) ? nameFull.slice(0, nameFull.length - value.length).trim() : nameFull.trim();
+    const pillEl = row.querySelector('.grade-pill');
+    const tier = (pillEl.className.match(/g-(\w+)/) || [, 'gray'])[1];
+    const pct = parseFloat(pillEl.textContent.replace(/[^\d.]/g, '')) || 0;
+    return { lvText, name, value, pct, tier };
+  });
+  const countEl = overall.querySelector('.go-line > .small:first-child');
+  const numEl = overall.querySelector('.go-num');
+  const barEl = overall.querySelector(':scope > .grade-bar-track > .grade-bar-fill');
+  return {
+    rows,
+    countPrefix: countEl ? countEl.textContent.trim() : '',
+    overallNum: numEl ? numEl.textContent : '-',
+    overallPct: numEl ? parseFloat(numEl.textContent) || 0 : 0,
+    overallNumTier: (numEl && numEl.className.match(/g-(\w+)/) || [, 'gray'])[1],
+    overallBarTier: (barEl && barEl.className.match(/g-(\w+)/) || [, 'gray'])[1],
+    cardTag: (overall.querySelector('.gch-tag') || {}).textContent || '',
+    // 90%급 레인보우 글로우도 화면 그대로 저장한다(사용자 요청, 2026-09-23).
+    isRainbow: overall.classList.contains('grade-glow-rainbow')
+  };
 }
 
-async function buildGradeCardCanvas(titleText, grp, item) {
-  const rows = [...document.querySelectorAll('.grade-opt-row')];
-  const filled = [];
-  rows.forEach(row => {
-    const sel = row.querySelector('select');
-    const input = row.querySelector('input');
-    const pillEl = row.querySelector('.grade-pill');
-    if (!sel || sel.value === '' || !input.value) return;
-    const lvText = row.querySelector('.go-lv').textContent;
-    const name = sel.selectedOptions[0].textContent;
-    const tierMatch = pillEl.className.match(/g-(\w+)/);
-    const tier = tierMatch ? tierMatch[1] : 'gray';
-    const pct = parseFloat(pillEl.textContent.replace(/[^\d.]/g, '')) || 0;
-    filled.push({ lvText, name, value: input.value, pct, tier });
-  });
-  const overallNumEl = document.getElementById('gradeOverallNum');
-  const overallBarEl = document.getElementById('gradeOverallBar');
-  const overallNum = overallNumEl ? overallNumEl.textContent : '-';
-  const overallPct = parseFloat(overallNum) || 0;
-  // 숫자 색(옵션 개수 등급)과 막대바 색(실제 % 품질)은 서로 다른 기준이라
-  // DOM에 이미 따로 반영돼 있는 클래스를 각각 읽는다(사용자 지정,
-  // 2026-09-22).
-  const overallNumTier = (overallNumEl && overallNumEl.className.match(/g-(\w+)/) || [, 'gray'])[1];
-  const overallBarTier = (overallBarEl && overallBarEl.className.match(/g-(\w+)/) || [, 'gray'])[1];
-  const isLegendary = !!(document.getElementById('gradeItemName') &&
-    document.getElementById('gradeItemName').classList.contains('legendary'));
+// CSS conic-gradient 링(.grade-glow-rainbow::before)과 같은 색 순서를
+// 캔버스에도 그린다. createConicGradient 미지원 브라우저는 대각선
+// 그라데이션으로 대체(완전히 똑같진 않지만 무지개색 자체는 유지).
+function gradeDrawRainbowBorder(ctx, x, y, w, h, r) {
+  const stops = ['#ff5a6e', '#ffb84d', '#f2e14d', '#6fd68a', '#5ab4d8', '#9b8cf0', '#ff5a6e'];
+  let grad;
+  if (ctx.createConicGradient) {
+    grad = ctx.createConicGradient(0, x + w / 2, y + h / 2);
+    stops.forEach((c, i) => grad.addColorStop(i / (stops.length - 1), c));
+  } else {
+    grad = ctx.createLinearGradient(x, y, x + w, y + h);
+    stops.forEach((c, i) => grad.addColorStop(i / (stops.length - 1), c));
+  }
+  ctx.save();
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 3;
+  gradeRoundRect(ctx, x + 1.5, y + 1.5, w - 3, h - 3, r);
+  ctx.stroke();
+  ctx.restore();
+}
+
+async function buildGradeCardCanvas(titleText) {
+  const curData = readGradeCardData('gradeCurrentSection');
+  const projData = readGradeCardData('gradeProjSection');
+  // 풀강이 아니면 예상 카드도 같이 저장한다(사용자 요청, 2026-09-23).
+  const hasProj = !!(projData && projData.rows.length);
+
+  const iconEl = document.querySelector('.grade-summary .gs-icon');
+  const iconSrc = iconEl && iconEl.tagName === 'IMG' ? iconEl.src : null;
+  const subtitleText = (document.querySelector('.grade-summary .small') || {}).textContent || '';
+  const gradeNameEl = document.getElementById('gradeItemName');
+  const isLegendary = !!(gradeNameEl && gradeNameEl.classList.contains('legendary'));
+  const isTranscend = !!(gradeNameEl && gradeNameEl.classList.contains('transcend') && !isLegendary);
 
   await (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve());
 
-  const W = 640, padX = 28, headerH = 92, rowH = 70, footerH = 116;
-  const H = headerH + filled.length * rowH + footerH;
+  const padX = 28, outerHeaderH = 92, rowH = 70, miniHeadH = hasProj ? 30 : 0, cardGap = 16;
+  const rowsN = hasProj ? Math.max(curData.rows.length, projData.rows.length) : (curData ? curData.rows.length : 0);
+  const cardBodyH = miniHeadH + rowsN * rowH + 18 + 90;
+  const W = hasProj ? 900 : 640;
+  const cardW = hasProj ? (W - padX * 2 - cardGap) / 2 : (W - padX * 2);
+  const H = outerHeaderH + cardBodyH + padX;
   const scale = 2;
   const canvas = document.createElement('canvas');
   canvas.width = W * scale;
@@ -1949,9 +2023,6 @@ async function buildGradeCardCanvas(titleText, grp, item) {
   ctx.scale(scale, scale);
 
   gradeRoundRect(ctx, 0, 0, W, H, 20);
-  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0, '#161c33');
-  bgGrad.addColorStop(1, '#10142470');
   ctx.fillStyle = '#141a2e';
   ctx.fill();
   ctx.strokeStyle = 'rgba(232,185,35,.35)';
@@ -1959,9 +2030,9 @@ async function buildGradeCardCanvas(titleText, grp, item) {
   gradeRoundRect(ctx, .75, .75, W - 1.5, H - 1.5, 20);
   ctx.stroke();
 
-  if (item.icon) {
+  if (iconSrc) {
     try {
-      const img = await gradeLoadImage(item.icon);
+      const img = await gradeLoadImage(iconSrc);
       ctx.save();
       gradeRoundRect(ctx, padX, 24, 46, 46, 10);
       ctx.clip();
@@ -1972,118 +2043,150 @@ async function buildGradeCardCanvas(titleText, grp, item) {
     } catch (e) {}
   }
   ctx.textBaseline = 'alphabetic';
+  ctx.font = '700 20px "Noto Sans KR"';
+  const titleX = padX + 58;
   if (isLegendary) {
     ctx.save();
     ctx.shadowColor = 'rgba(232,185,35,.85)';
     ctx.shadowBlur = 14;
     ctx.fillStyle = '#f0cf6a';
-    ctx.font = '700 20px "Noto Sans KR"';
-    ctx.fillText(titleText, padX + 58, 46);
+    ctx.fillText(titleText, titleX, 46);
     ctx.restore();
+  } else if (isTranscend) {
+    ctx.fillStyle = '#a78bfa';
+    ctx.fillText(titleText, titleX, 46);
   } else {
-    ctx.fillStyle = '#f3f4f8';
-    ctx.font = '700 20px "Noto Sans KR"';
-    ctx.fillText(titleText, padX + 58, 46);
+    // 실 페이지 기본 제목도 금색→포인트색 그라데이션이라(사용자 지적,
+    // 2026-09-23 - "아이템 이름에도 색상표시") 평범한 흰색 대신 캔버스에도
+    // 같은 그라데이션을 그린다.
+    const titleW = ctx.measureText(titleText).width;
+    const titleGrad = ctx.createLinearGradient(titleX, 0, titleX + titleW, 0);
+    titleGrad.addColorStop(0, '#f0cf6a');
+    titleGrad.addColorStop(.45, '#e8b923');
+    titleGrad.addColorStop(1, '#f0a5ba');
+    ctx.fillStyle = titleGrad;
+    ctx.fillText(titleText, titleX, 46);
   }
   ctx.fillStyle = 'rgba(255,255,255,.5)';
   ctx.font = '500 12px "Noto Sans KR"';
-  ctx.fillText(T(grp.label) + ' · ' + T(item.slot), padX + 58, 63);
+  ctx.fillText(subtitleText, titleX, 63);
 
   ctx.strokeStyle = 'rgba(255,255,255,.12)';
   ctx.beginPath();
-  ctx.moveTo(padX, headerH);
-  ctx.lineTo(W - padX, headerH);
+  ctx.moveTo(padX, outerHeaderH);
+  ctx.lineTo(W - padX, outerHeaderH);
   ctx.stroke();
 
-  let y = headerH + 20;
-  filled.forEach(r => {
-    const color = GRADE_TIER_HEX[r.tier] || GRADE_TIER_HEX.gray;
-    ctx.fillStyle = '#e7e9f2';
+  // 카드 한 장(풀강) 또는 두 장(현재+풀강 예상, 나란히)을 그린다.
+  function drawCard(x, w, data) {
+    if (!data) return;
+    let cy = outerHeaderH + 18;
+    if (hasProj) {
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      ctx.font = '700 12.5px "Noto Sans KR"';
+      ctx.fillText(data.cardTag, x, cy + 9);
+      cy += miniHeadH;
+    }
+    data.rows.forEach(r => {
+      const color = GRADE_TIER_HEX[r.tier] || GRADE_TIER_HEX.gray;
+      ctx.font = '600 14px "Noto Sans KR"';
+      const nameText = r.lvText + ' ' + r.name;
+      ctx.fillStyle = '#e7e9f2';
+      ctx.fillText(nameText, x, cy);
+      const nameW = ctx.measureText(nameText).width;
+      ctx.font = '700 14px "Noto Sans KR"';
+      ctx.fillStyle = GRADE_VALUE_HEX;
+      ctx.fillText(' ' + r.value, x + nameW, cy);
+
+      ctx.save();
+      if (r.tier !== 'gray') { ctx.shadowColor = color; ctx.shadowBlur = 7; }
+      ctx.fillStyle = color;
+      ctx.font = '800 14px "Noto Sans KR"';
+      const pctStr = '[ ' + Math.round(r.pct) + '% ]';
+      const pw = ctx.measureText(pctStr).width;
+      ctx.fillText(pctStr, x + w - pw, cy);
+      ctx.restore();
+
+      const barY = cy + 12, barH = 9;
+      ctx.fillStyle = 'rgba(255,255,255,.09)';
+      gradeRoundRect(ctx, x, barY, w, barH, 4.5);
+      ctx.fill();
+      ctx.save();
+      if (r.tier !== 'gray') { ctx.shadowColor = color; ctx.shadowBlur = 6; }
+      ctx.fillStyle = color;
+      gradeRoundRect(ctx, x, barY, w * Math.max(0, Math.min(100, r.pct)) / 100, barH, 4.5);
+      ctx.fill();
+      ctx.restore();
+      cy += rowH;
+    });
+
+    // 두 카드의 옵션 수가 다를 수 있으니, 실제 페이지처럼 총평 줄은 더 긴
+    // 쪽(rowsN) 기준으로 맞춰 바닥선을 나란히 둔다.
+    const footY = outerHeaderH + 18 + miniHeadH + rowsN * rowH + 18;
+    ctx.strokeStyle = 'rgba(255,255,255,.12)';
+    ctx.beginPath();
+    ctx.moveTo(x, footY);
+    ctx.lineTo(x + w, footY);
+    ctx.stroke();
+
+    const numColor = GRADE_TIER_HEX[data.overallNumTier] || GRADE_TIER_HEX.gray;
+    const barColor = GRADE_TIER_HEX[data.overallBarTier] || GRADE_TIER_HEX.gray;
+    const countMatch = data.countPrefix.match(/^(\d+)(.*)$/);
+    ctx.font = '700 12px "Noto Sans KR"';
+    if (countMatch) {
+      ctx.fillStyle = numColor;
+      ctx.fillText(countMatch[1], x, footY + 20);
+      const cw = ctx.measureText(countMatch[1]).width;
+      ctx.fillStyle = 'rgba(255,255,255,.55)';
+      ctx.font = '500 12px "Noto Sans KR"';
+      ctx.fillText(countMatch[2], x + cw, footY + 20);
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,.55)';
+      ctx.font = '500 12px "Noto Sans KR"';
+      ctx.fillText(data.countPrefix, x, footY + 20);
+    }
+
+    ctx.fillStyle = 'rgba(255,255,255,.72)';
     ctx.font = '600 14px "Noto Sans KR"';
-    ctx.fillText(r.lvText + ' ' + gradeFmtOptionText(r.name, r.value), padX, y);
-
+    ctx.fillText(T('총'), x, footY + 44);
+    ctx.font = '800 26px "Noto Sans KR"';
+    const numW = ctx.measureText(data.overallNum).width;
     ctx.save();
-    if (r.tier !== 'gray') { ctx.shadowColor = color; ctx.shadowBlur = 7; }
-    ctx.fillStyle = color;
-    ctx.font = '800 14px "Noto Sans KR"';
-    const pctStr = '[ ' + Math.round(r.pct) + '% ]';
-    const pw = ctx.measureText(pctStr).width;
-    ctx.fillText(pctStr, W - padX - pw, y);
-    ctx.restore();
-
-    const barY = y + 12, barW = W - padX * 2, barH = 9;
-    ctx.fillStyle = 'rgba(255,255,255,.09)';
-    gradeRoundRect(ctx, padX, barY, barW, barH, 4.5);
-    ctx.fill();
-    ctx.save();
-    if (r.tier !== 'gray') { ctx.shadowColor = color; ctx.shadowBlur = 6; }
-    ctx.fillStyle = color;
-    gradeRoundRect(ctx, padX, barY, barW * Math.max(0, Math.min(100, r.pct)) / 100, barH, 4.5);
-    ctx.fill();
-    ctx.restore();
-    y += rowH;
-  });
-
-  const footY = headerH + filled.length * rowH + 18;
-  ctx.strokeStyle = 'rgba(255,255,255,.12)';
-  ctx.beginPath();
-  ctx.moveTo(padX, footY);
-  ctx.lineTo(W - padX, footY);
-  ctx.stroke();
-
-  const numColor = GRADE_TIER_HEX[overallNumTier] || GRADE_TIER_HEX.gray;
-  const barColor = GRADE_TIER_HEX[overallBarTier] || GRADE_TIER_HEX.gray;
-  const countEl = document.getElementById('gradeOverallCount');
-  const countPrefix = countEl ? countEl.textContent.trim() : '';
-  const countMatch = countPrefix.match(/^(\d+)(.*)$/);
-
-  ctx.font = '700 12px "Noto Sans KR"';
-  if (countMatch) {
+    if (data.overallNumTier !== 'gray') { ctx.shadowColor = numColor; ctx.shadowBlur = 10; }
     ctx.fillStyle = numColor;
-    ctx.fillText(countMatch[1], padX, footY + 20);
-    const cw = ctx.measureText(countMatch[1]).width;
-    ctx.fillStyle = 'rgba(255,255,255,.55)';
-    ctx.font = '500 12px "Noto Sans KR"';
-    ctx.fillText(countMatch[2], padX + cw, footY + 20);
-  } else {
-    ctx.fillStyle = 'rgba(255,255,255,.55)';
-    ctx.font = '500 12px "Noto Sans KR"';
-    ctx.fillText(countPrefix, padX, footY + 20);
+    ctx.fillText(data.overallNum, x + 30, footY + 47);
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.72)';
+    ctx.font = '600 13px "Noto Sans KR"';
+    ctx.fillText(T('급 장비입니다'), x + 30 + numW + 7, footY + 44);
+
+    const fbarY = footY + 60, fbarH = 12;
+    ctx.fillStyle = 'rgba(255,255,255,.09)';
+    gradeRoundRect(ctx, x, fbarY, w, fbarH, 6);
+    ctx.fill();
+    ctx.save();
+    if (data.overallBarTier !== 'gray') { ctx.shadowColor = barColor; ctx.shadowBlur = 9; }
+    ctx.fillStyle = barColor;
+    gradeRoundRect(ctx, x, fbarY, w * Math.max(0, Math.min(100, data.overallPct)) / 100, fbarH, 6);
+    ctx.fill();
+    ctx.restore();
+
+    if (data.isRainbow) {
+      gradeDrawRainbowBorder(ctx, x - 10, outerHeaderH + 6, w + 20, (fbarY + fbarH + 14) - (outerHeaderH + 6), 14);
+    }
   }
 
-  ctx.fillStyle = 'rgba(255,255,255,.72)';
-  ctx.font = '600 14px "Noto Sans KR"';
-  ctx.fillText(T('총'), padX, footY + 44);
-  ctx.font = '800 28px "Noto Sans KR"';
-  const numW = ctx.measureText(overallNum).width;
-  ctx.save();
-  if (overallNumTier !== 'gray') { ctx.shadowColor = numColor; ctx.shadowBlur = 10; }
-  ctx.fillStyle = numColor;
-  ctx.fillText(overallNum, padX + 32, footY + 48);
-  ctx.restore();
-  ctx.fillStyle = 'rgba(255,255,255,.72)';
-  ctx.font = '600 14px "Noto Sans KR"';
-  ctx.fillText(T('급 장비입니다'), padX + 32 + numW + 8, footY + 44);
-
-  const fbarY = footY + 62, fbarW = W - padX * 2, fbarH = 13;
-  ctx.fillStyle = 'rgba(255,255,255,.09)';
-  gradeRoundRect(ctx, padX, fbarY, fbarW, fbarH, 6.5);
-  ctx.fill();
-  ctx.save();
-  if (overallBarTier !== 'gray') { ctx.shadowColor = barColor; ctx.shadowBlur = 9; }
-  ctx.fillStyle = barColor;
-  gradeRoundRect(ctx, padX, fbarY, fbarW * Math.max(0, Math.min(100, overallPct)) / 100, fbarH, 6.5);
-  ctx.fill();
-  ctx.restore();
+  drawCard(padX, cardW, curData);
+  if (hasProj) drawCard(padX + cardW + cardGap, cardW, projData);
 
   return canvas;
 }
 
-async function downloadGradeCard(titleText, grp, item) {
+async function downloadGradeCard(titleText) {
   const btn = document.getElementById('gradeExportBtn');
   if (btn) btn.disabled = true;
   try {
-    const canvas = await buildGradeCardCanvas(titleText, grp, item);
+    const canvas = await buildGradeCardCanvas(titleText);
     canvas.toBlob(async blob => {
       if (!blob) { if (btn) btn.disabled = false; return; }
       const fileName = titleText.replace(/[\\/:*?"<>|]/g, '') + '_인챈트등급.png';
