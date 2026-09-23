@@ -2007,34 +2007,8 @@ function readGradeCardData(sectionId) {
     overallNumTier: (numEl && numEl.className.match(/g-(\w+)/) || [, 'gray'])[1],
     overallBarTier: (barEl && barEl.className.match(/g-(\w+)/) || [, 'gray'])[1],
     cardTag: (overall.querySelector('.gch-tag') || {}).textContent || '',
-    cardName: (overall.querySelector('.gch-name') || {}).textContent || '',
-    // 90%급 레인보우 글로우도 화면 그대로 저장한다(사용자 요청, 2026-09-23).
-    isRainbow: overall.classList.contains('grade-glow-rainbow')
+    cardName: (overall.querySelector('.gch-name') || {}).textContent || ''
   };
-}
-
-// CSS conic-gradient 링(.grade-glow-rainbow::before)과 같은 색 순서를
-// 캔버스에도 그린다. createConicGradient 미지원 브라우저는 대각선
-// 그라데이션으로 대체(완전히 똑같진 않지만 무지개색 자체는 유지).
-function gradeDrawRainbowBorder(ctx, x, y, w, h, r) {
-  const stops = ['#ff5a6e', '#ffb84d', '#f2e14d', '#6fd68a', '#5ab4d8', '#9b8cf0', '#ff5a6e'];
-  let grad;
-  if (ctx.createConicGradient) {
-    grad = ctx.createConicGradient(0, x + w / 2, y + h / 2);
-    stops.forEach((c, i) => grad.addColorStop(i / (stops.length - 1), c));
-  } else {
-    grad = ctx.createLinearGradient(x, y, x + w, y + h);
-    stops.forEach((c, i) => grad.addColorStop(i / (stops.length - 1), c));
-  }
-  ctx.save();
-  // 원색 그대로면 너무 화려해서 촌스러워 보인다는 지적(2026-09-23) - 얇게,
-  // 투명도를 낮춰 은은하게만 비치게 한다(다른 곳의 홀로 효과와 같은 톤).
-  ctx.globalAlpha = 0.38;
-  ctx.strokeStyle = grad;
-  ctx.lineWidth = 2;
-  gradeRoundRect(ctx, x + 1, y + 1, w - 2, h - 2, r);
-  ctx.stroke();
-  ctx.restore();
 }
 
 async function buildGradeCardCanvas(titleText) {
@@ -2239,11 +2213,10 @@ async function buildGradeCardCanvas(titleText) {
     gradeRoundRect(ctx, x, fbarY, w * Math.max(0, Math.min(100, data.overallPct)) / 100, fbarH, 6);
     ctx.fill();
     ctx.restore();
-
-    if (data.isRainbow) {
-      const glowPad = hasProj ? 8 : 10;
-      gradeDrawRainbowBorder(ctx, x - glowPad, outerHeaderH + 6, w + glowPad * 2, (fbarY + fbarH + 14) - (outerHeaderH + 6), 14);
-    }
+    // 정지 이미지에서는 실 페이지의 회전 무지개 글로우가 그냥 알록달록한
+    // 테두리로만 보여 촌스럽다는 판단(사용자 확인, 2026-09-23) - 캡처에선
+    // 레인보우 테두리를 넣지 않는다. 카드 자체(제목/카드명 색, 등급색)로만
+    // 90%급을 표현한다.
   }
 
   drawCard(padX, cardW, curData);
