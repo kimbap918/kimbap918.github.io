@@ -22,10 +22,10 @@ a,button{cursor:url("data:image/x-icon;base64,AAACAAEAICAAAAAAAADkCwAAFgAAAIlQTk
 
 /* 팔레트: kimbap918.github.io 허브와 동일 (dusty rose + 웜 뉴트럴).
    --best/--box-orange/--mythic-purple 은 의미색이라 유지. */
-:root{color-scheme:light dark;--bg:#14171f;--panel:#1c2029;--panel-2:#242a35;--card:#262d38;--elev:#2c333f;--border:#333a48;--border-strong:#3b4353;--text:#eef0f4;--muted:#9298a6;--accent:#e08aa2;--accent-ink:#1a1015;--accent-soft:#332631;--home:#dd8a78;--best:#e8b93a;--box-orange:#ff9d3d;--mythic-purple:#c48aff;}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#faf7f5;--panel:#ffffff;--panel-2:#f2ecee;--card:#f7f1f3;--elev:#efe6ea;--border:#e6dde0;--border-strong:#dcd0d4;--text:#221f26;--muted:#65616c;--accent:#b8506f;--accent-ink:#ffffff;--accent-soft:#f4dde3;--home:#c05f4f;--best:#a8790a;--box-orange:#c2600a;--mythic-purple:#6b2fa0;}}
-:root[data-theme="dark"]{--bg:#14171f;--panel:#1c2029;--panel-2:#242a35;--card:#262d38;--elev:#2c333f;--border:#333a48;--border-strong:#3b4353;--text:#eef0f4;--muted:#9298a6;--accent:#e08aa2;--accent-ink:#1a1015;--accent-soft:#332631;--home:#dd8a78;--best:#e8b93a;--box-orange:#ff9d3d;--mythic-purple:#c48aff;}
-:root[data-theme="light"]{--bg:#faf7f5;--panel:#ffffff;--panel-2:#f2ecee;--card:#f7f1f3;--elev:#efe6ea;--border:#e6dde0;--border-strong:#dcd0d4;--text:#221f26;--muted:#65616c;--accent:#b8506f;--accent-ink:#ffffff;--accent-soft:#f4dde3;--home:#c05f4f;--best:#a8790a;--box-orange:#c2600a;--mythic-purple:#6b2fa0;}
+:root{color-scheme:light dark;--bg:#14171f;--panel:#1c2029;--panel-2:#242a35;--card:#262d38;--elev:#2c333f;--border:#333a48;--border-strong:#3b4353;--text:#eef0f4;--muted:#9298a6;--accent:#e08aa2;--accent-ink:#1a1015;--accent-soft:#332631;--home:#dd8a78;--best:#e8b93a;--box-orange:#ff9d3d;--mythic-purple:#c48aff;--holo-strength:.55;}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#faf7f5;--panel:#ffffff;--panel-2:#f2ecee;--card:#f7f1f3;--elev:#efe6ea;--border:#e6dde0;--border-strong:#dcd0d4;--text:#221f26;--muted:#65616c;--accent:#b8506f;--accent-ink:#ffffff;--accent-soft:#f4dde3;--home:#c05f4f;--best:#a8790a;--box-orange:#c2600a;--mythic-purple:#6b2fa0;--holo-strength:1;}}
+:root[data-theme="dark"]{--bg:#14171f;--panel:#1c2029;--panel-2:#242a35;--card:#262d38;--elev:#2c333f;--border:#333a48;--border-strong:#3b4353;--text:#eef0f4;--muted:#9298a6;--accent:#e08aa2;--accent-ink:#1a1015;--accent-soft:#332631;--home:#dd8a78;--best:#e8b93a;--box-orange:#ff9d3d;--mythic-purple:#c48aff;--holo-strength:.55;}
+:root[data-theme="light"]{--bg:#faf7f5;--panel:#ffffff;--panel-2:#f2ecee;--card:#f7f1f3;--elev:#efe6ea;--border:#e6dde0;--border-strong:#dcd0d4;--text:#221f26;--muted:#65616c;--accent:#b8506f;--accent-ink:#ffffff;--accent-soft:#f4dde3;--home:#c05f4f;--best:#a8790a;--box-orange:#c2600a;--mythic-purple:#6b2fa0;--holo-strength:1;}
 *{box-sizing:border-box;}
 body{margin:0;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--text);}
 header{padding:16px 56px 16px 20px;border-bottom:1px solid var(--border);position:relative;}
@@ -102,7 +102,7 @@ tr.reward-row.best td{color:var(--best);}
 .modal-box .modal-desc{white-space:pre-line;font-size:13px;color:var(--text);margin:8px 0;}
 .modal-box .modal-stats{margin:10px 0;font-size:12px;}
 .modal-box .modal-stats div{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;position:relative;z-index:6;}
 .modal-actions button{padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:url("data:image/x-icon;base64,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") 0 0, pointer;font-size:13px;}
 .modal-actions button.confirm{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:bold;}
 .easter-egg{margin:10px 0 0;padding:8px 10px;border-radius:6px;background:var(--accent-soft, rgba(110,168,255,0.12));font-size:12px;}
@@ -128,6 +128,24 @@ tr.reward-row.best td{color:var(--best);}
 }
 .modal-box.mythic-glow{border-color:var(--mythic-purple);animation:mythicGlow 1.8s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){.modal-box.mythic-glow{animation:none;box-shadow:0 0 0 2px var(--mythic-purple),0 0 24px 6px rgba(196,138,255,0.45);}}
+/* 포켓몬 카드 홀로그램(simeydotme/pokemon-cards-css) 방식 - 포인터 위치를
+   CSS 변수(--pointer-x/y)로 넘겨 무지개 샤인 + 글레어가 마우스를 따라
+   은은하게 스치게 한다(사용자 요청, 2026-09-23, 신화 상자 획득 모달).
+   평소엔 --card-opacity:0이라 아무 효과 없다가 마우스를 올릴 때만 켜진다.
+   클릭은 그대로 통과해야 하므로 두 레이어 다 pointer-events:none. */
+.modal-box{position:relative;overflow-x:hidden;--pointer-x:50%;--pointer-y:50%;--card-opacity:0;}
+.holo-shine,.holo-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;
+  opacity:calc(var(--card-opacity) * var(--holo-strength, 1));transition:opacity .5s ease;}
+.holo-shine{background-image:repeating-linear-gradient(110deg,
+    hsla(2,90%,75%,.22) 0%,hsla(53,90%,72%,.22) 12%,hsla(93,90%,72%,.22) 24%,
+    hsla(176,90%,78%,.22) 36%,hsla(228,90%,76%,.22) 48%,hsla(283,90%,76%,.22) 60%,
+    hsla(2,90%,75%,.22) 72%);
+  background-size:300% 300%;background-position:var(--pointer-x) var(--pointer-y);
+  filter:brightness(1) contrast(1.1) saturate(1);mix-blend-mode:color-dodge;}
+.holo-glare{background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0,0%,100%,.45) 0%,hsla(0,0%,100%,.16) 24%,hsla(0,0%,0%,.16) 90%);
+  mix-blend-mode:overlay;}
+@media (prefers-reduced-motion:reduce){.holo-shine,.holo-glare{display:none;}}
 .mythic-log-entry.royal{color:var(--best);font-weight:bold;}
 @keyframes goldFlash{
   0%{box-shadow:0 0 0 1px var(--best);transform:scale(1);}
@@ -690,7 +708,7 @@ LKI18N.init();
 <div id="app">
   <header>
     <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
-    <h1>확률형 상자 기대값 계산기 <span class="updateDate"><span>최근 업데이트</span> 2026.09.02</span></h1>
+    <h1>확률형 상자 기대값 계산기 <span class="updateDate"><span>최근 업데이트</span> 2026.09.10</span></h1>
     <p class="lead">실제 공개된 확률(게임산업법 확률 공개용 수치)과 캐시샵 가격을 그대로 계산에 씁니다.</p>
     <div class="mode-tabs">
       <button id="modeRoyalBtn" class="mode-tab active">로얄 상자 시뮬레이터</button>
@@ -742,6 +760,38 @@ function showModal(html, extraClass) {
   modalBox.className = 'modal-box' + (extraClass ? ' ' + extraClass : '');
   modalBox.innerHTML = html;
   modalOverlay.classList.remove('hidden');
+}
+// 포켓몬 카드 홀로그램 효과 - 마우스 위치를 CSS 변수로 넘겨 무지개 샤인이
+// 포인터를 따라 은은하게 스치게 한다(사용자 요청, 2026-09-23, 신화 상자
+// 획득 모달 전용 - showModal 전체가 아니라 이 함수를 쓴 모달에만 건다).
+// 터치 기기는 마우스오버가 없어 효과가 아예 안 보이므로, hover:none이면
+// 모달이 뜬 순간 중앙 고정으로 살짝 켜준다.
+function attachModalHolo(panel) {
+  const shine = document.createElement('div');
+  shine.className = 'holo-shine';
+  const glare = document.createElement('div');
+  glare.className = 'holo-glare';
+  panel.appendChild(shine);
+  panel.appendChild(glare);
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  panel.addEventListener('mousemove', (e) => {
+    const rect = panel.getBoundingClientRect();
+    const px = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
+    const py = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
+    panel.style.setProperty('--pointer-x', px.toFixed(1) + '%');
+    panel.style.setProperty('--pointer-y', py.toFixed(1) + '%');
+    panel.style.setProperty('--card-opacity', '1');
+  });
+  panel.addEventListener('mouseleave', () => {
+    panel.style.setProperty('--pointer-x', '50%');
+    panel.style.setProperty('--pointer-y', '50%');
+    panel.style.setProperty('--card-opacity', '0');
+  });
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+    panel.style.setProperty('--pointer-x', '50%');
+    panel.style.setProperty('--pointer-y', '35%');
+    panel.style.setProperty('--card-opacity', '1');
+  }
 }
 function hideModal() {
   modalOverlay.classList.add('hidden');
@@ -1499,6 +1549,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
   html += '<div class="modal-actions"><button id="mythicContinueBtn" class="confirm">이어하기</button></div>';
   pendingModalContinue = onContinue;
   showModal(html, 'mythic-glow');
+  attachModalHolo(modalBox);
   (function () {
     var s = document.getElementById('mythicShareSlot');
     if (!s || !window.LKShare) return;
