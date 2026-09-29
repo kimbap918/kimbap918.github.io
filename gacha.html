@@ -576,6 +576,14 @@ window.LKI18N=(function(){
 <!-- LKI18N 사전 — gacha_ev (아이템·존 이름은 게임 데이터라 한국어 유지) -->
 <script>
 LKI18N.add({
+  "☞ 쉽게 발견 할 수 없는 매우 희귀한 장비 ☞ 인챈트시 최소 보정 80%":{en:"\n\n☞ A very rare item that's hard to find\n\n☞ Minimum enchant correction 80%",zh:"\n\n☞ 极为稀有、不易获得的装备\n\n☞ 附魔时最低修正80%",ja:"\n\n☞ 簡単には見つからない非常に希少な装備\n\n☞ エンチャント時最低補正80%"},
+  "☞ 쉽게 발견 할 수 없는 매우 희귀한 장비 ☞인챈트시 최소 보정 80%":{en:"\n\n☞ A very rare item that's hard to find\n\n☞ Minimum enchant correction 80%",zh:"\n\n☞ 极为稀有、不易获得的装备\n\n☞ 附魔时最低修正80%",ja:"\n\n☞ 簡単には見つからない非常に希少な装備\n\n☞ エンチャント時最低補正80%"},
+  "※참고※ ☞ 강화 시 능력치 상승 ☞ 특별한 인챈트가 가능한 방어구":{en:"※Note※\n☞ Stats increase on enhancement\n☞ Armor eligible for special enchanting",zh:"※参考※\n☞ 强化时属性提升\n☞ 可进行特殊附魔的防具",ja:"※参考※\n☞ 強化時に能力値上昇\n☞ 特殊エンチャントが可能な防具"},
+  "※참고※ ☞ 강화 시 능력치 상승 ☞ 특별한 인챈트가 가능한 액세서리":{en:"※Note※\n☞ Stats increase on enhancement\n☞ Accessory eligible for special enchanting",zh:"※参考※\n☞ 强化时属性提升\n☞ 可进行特殊附魔的饰品",ja:"※参考※\n☞ 強化時に能力値上昇\n☞ 特殊エンチャントが可能なアクセサリー"},
+  "☞강화시 능력치 상승 ☞ 정령석과 세트":{en:"☞ Stats increase on enhancement\n☞ Set with the Spirit Stone",zh:"☞ 强化时属性提升\n☞ 与精灵石为套装",ja:"☞ 強化時に能力値上昇\n☞ 精霊石とセット"},
+  "아마란스 노바의 신화급 무기가 들어 있는 상자 ※참고※ ☞ 사용 시 아마란스 노바 신화 장비중 하나를 획득 ☞ 아마란스 노바 입구 옆의 NPC 아리엘에게서 신화 무기 상자와 플래티넘 망치로 무기 선택 교환 가능":{en:"A box containing a mythic-grade weapon of 아마란스 노바\n\n※Note※\n☞ Using it grants one 아마란스 노바 mythic gear piece\n☞ Exchangeable for a weapon of your choice with a mythic weapon box and a Platinum Hammer, from NPC 아리엘 next to the 아마란스 노바 entrance",zh:"装有아마란스 노바神话级武器的箱子\n\n※参考※\n☞ 使用后获得一件아마란스 노바神话装备\n☞ 可在아마란스 노바入口旁的NPC 아리엘处，用神话武器箱与铂金锤兑换任选武器",ja:"아마란스 노바の神話級武器が入った箱\n\n※参考※\n☞ 使用すると아마란스 노바神話装備のうち1つを獲得\n☞ 아마란스 노바入口横のNPC 아리엘で、神話武器ボックスとプラチナハンマーで武器を選んで交換可能"},
+  "☞ 정령석과 세트":{en:"☞ Set with the Spirit Stone",zh:"☞ 与精灵石为套装",ja:"☞ 精霊石とセット"},
+  "☞ 단절 또는 카울리니 무기와 세트":{en:"\n☞ Set with 단절 or a 카울리니 weapon",zh:"\n☞ 与단절或카울리니武器为套装",ja:"\n☞ 단절または카울리니武器とセット"},
   "확률형 상자 기대값 계산기":{en:"Gacha Box EV Calculator",zh:"概率型宝箱期望值计算器",ja:"確率型ボックス期待値計算機"},
   "최근 업데이트":{en:"Last updated",zh:"最近更新",ja:"最終更新"},
   "로얄 상자 시뮬레이터":{en:"Royal Box Simulator",zh:"皇家宝箱模拟器",ja:"ロイヤルボックスシミュレーター"},
@@ -1318,7 +1326,7 @@ function showItemDetail(it) {
   html += '<div class="modal-icon-row">';
   if (it.icon) html += '<img src="' + it.icon + '" alt="">';
   html += '</div>';
-  if (it.desc) html += '<div class="modal-desc">' + it.desc + '</div>';
+  if (it.desc) html += '<div class="modal-desc">' + LKI18N.t(it.desc) + '</div>';
   html += statLine(it.stats);
   html += choiceGridHtml(it.choices);
   html += '<div class="modal-actions"><button id="modalCloseBtn">닫기</button></div>';
