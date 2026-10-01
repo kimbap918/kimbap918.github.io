@@ -236,6 +236,69 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
     repeating-linear-gradient(125deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px)}
 .rcard.t3 .spark{position:absolute;z-index:4;pointer-events:none;width:20px;height:20px;background:linear-gradient(135deg,#fff,#d9f4ff);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);opacity:0;animation:tw 3.2s ease-in-out infinite}
 @keyframes tw{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(20deg)}}
+/* 50콤보: 카드를 기울인 각도에 따라 빛이 움직이는 슈퍼 홀로(자동 회전 없음). 값은 스크립트(--hx/--hy/--hpx/--hpy/--hd)가 부드럽게 갱신한다 */
+.rwrap{--hx:62;--hy:30;--hpx:.24;--hpy:-.4;--hd:.35}
+.rglow.t4{box-shadow:0 0 30px 4px rgba(246,200,100,.34),0 0 80px 10px rgba(160,130,255,.24)}
+.rcard.t4{border:0;padding:26px 22px 16px;gap:6px;background:radial-gradient(120% 80% at 50% 28%,#1c2554 0%,#0b1030 52%,#05060f 100%);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 50px -18px rgba(0,0,0,.8)}
+.rcard.t4 .rtop,.rcard.t4 .rart,.rcard.t4 .rcombo,.rcard.t4 .rname,.rcard.t4 .rsub,.rcard.t4 .rfoot{position:relative;z-index:5}
+.rcard.t4 .rtop{justify-content:center;font-size:10px;opacity:.7}
+.rcard.t4 .rart{background:none;border-color:transparent}
+.rcard.t4 .rcombo b{background:linear-gradient(180deg,#fffdf0 0%,#ffe08a 30%,#e0a43a 55%,#fff0b8 80%,#e9b64a 100%);background-size:100% 220%;background-position:0 calc(40% + var(--hpy)*35%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 6px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,200,100,.35))}
+.rcard.t4 .rcombo span{color:#ffe9b0;opacity:.9}
+.h4-stars,.h4-stars2{position:absolute;inset:-12%;z-index:0;pointer-events:none;
+  background-image:radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#cfe,transparent),radial-gradient(1.4px 1.4px at 40% 44%,#fff,transparent),radial-gradient(1px 1px at 86% 40%,#fff,transparent),radial-gradient(1.2px 1.2px at 24% 70%,#dff,transparent),radial-gradient(1px 1px at 64% 78%,#fff,transparent),radial-gradient(1.3px 1.3px at 90% 88%,#fff,transparent),radial-gradient(1px 1px at 8% 90%,#fff,transparent);
+  background-size:220px 220px;opacity:.8;transform:translate3d(calc(var(--hpx)*-7px),calc(var(--hpy)*-7px),0)}
+.h4-stars2{background-size:140px 140px;opacity:.5;transform:translate3d(calc(var(--hpx)*-16px),calc(var(--hpy)*-16px),0)}
+/* 뒤 채광: 자동으로 돌지 않고 카드를 기울인 각도에 맞춰 회전/이동/밝기가 바뀐다 */
+.h4-rays{position:absolute;left:calc(50% + var(--hpx)*7%);top:calc(41% + var(--hpy)*5%);width:160%;aspect-ratio:1;translate:-50% -50%;z-index:1;pointer-events:none;
+  background:repeating-conic-gradient(from calc(var(--hpx)*34deg + var(--hpy)*14deg),rgba(255,236,190,0) 0deg 8deg,rgba(255,236,190,.16) 8deg 12deg);
+  -webkit-mask:radial-gradient(circle,#000 0,transparent 60%);mask:radial-gradient(circle,#000 0,transparent 60%);
+  opacity:calc(.35 + var(--hd)*.65)}
+.h4-halo{position:absolute;left:calc(50% + var(--hpx)*5%);top:calc(41% + var(--hpy)*4%);width:78%;aspect-ratio:1;translate:-50% -50%;z-index:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,226,160,.36),rgba(255,200,120,.08) 55%,transparent 72%);opacity:calc(.55 + var(--hd)*.45)}
+/* 홀로그램 층: 모두 포인터 위치로 색/무늬가 흐른다 */
+.h4-hf{position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:inherit;pointer-events:none}
+.h4-hf .h4-a{position:absolute;inset:-45%;mix-blend-mode:color-dodge;filter:blur(16px);opacity:calc(.2 + var(--hd)*.2);
+  background:repeating-linear-gradient(112deg,#ff9fb8 0%,#ffd0a0 8%,#f4f0a8 16%,#a8f2cc 24%,#a4d8ff 32%,#c4b4ff 40%,#ffa8e4 48%,#ff9fb8 56%);
+  background-size:300% 300%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%)}
+.h4-hf .h4-b{position:absolute;inset:0;mix-blend-mode:screen;opacity:calc(.24 + var(--hd)*.26);filter:saturate(.6) brightness(1.25);
+  background:repeating-linear-gradient(64deg,#ff5d8f 0%,#ffb35d 7%,#f7f06a 14%,#5df2a0 21%,#4dc3ff 28%,#9a7bff 35%,#ff5dd0 42%,#ff5d8f 49%);background-size:260% 260%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px}
+/* 회절격자: 가는 줄무늬가 각도에 따라 무지개색으로 바뀌는 유희왕 슈퍼 홀로 질감 */
+.h4-hf .h4-g{position:absolute;inset:0;mix-blend-mode:screen;opacity:calc(.14 + var(--hd)*.3);
+  background:linear-gradient(112deg,#ff9fb8,#ffd9a0,#f4f0a8,#a8f2cc,#a4d8ff,#c4b4ff,#ffa8e4,#ff9fb8);background-size:240% 240%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%);
+  -webkit-mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 5px);mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 5px)}
+.h4-hf .h4-c{position:absolute;inset:0;opacity:calc(.35 + var(--hd)*.5);transform:translate3d(calc((var(--hx) - 50)*.9%),0,0);
+  background:linear-gradient(112deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 52%,transparent 60%)}
+.h4-gl{position:absolute;inset:0;z-index:9;pointer-events:none;mix-blend-mode:overlay;border-radius:inherit;opacity:.7;
+  background:radial-gradient(circle at calc(var(--hx)*1%) calc(var(--hy)*1%),rgba(255,255,255,.6),transparent 36%),repeating-linear-gradient(112deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px)}
+/* 금속 프레임: 빛이 닿는 방향이 포인터를 따라 바뀐다 */
+.h4-frame{position:absolute;inset:0;border-radius:inherit;z-index:6;pointer-events:none;padding:7px;
+  background:conic-gradient(from calc(var(--hpx)*80deg + var(--hpy)*50deg),#f6dc8e,#fff6d4,#c8932f,#f6dc8e 25%,#ffe9a8,#b7791f,#f6dc8e 60%,#fff6d4,#d9a640,#f6dc8e);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.h4-bevel{position:absolute;inset:0;border-radius:inherit;z-index:7;pointer-events:none;padding:7px;
+  background:linear-gradient(calc(135deg + var(--hpx)*55deg + var(--hpy)*20deg),rgba(255,255,255,.85) 0%,rgba(255,255,255,.25) 18%,rgba(255,255,255,0) 42%,rgba(70,35,0,0) 58%,rgba(70,35,0,.55) 84%,rgba(40,18,0,.75) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.h4-bevel::before{content:"";position:absolute;inset:0;border-radius:24px;box-shadow:inset 0 0 0 1px rgba(255,244,200,.8),inset 0 2px 3px rgba(255,255,255,.55)}
+.h4-groove{position:absolute;inset:7px;border-radius:17px;z-index:7;pointer-events:none;border:1px solid rgba(70,35,0,.75);box-shadow:0 0 0 1px rgba(255,236,170,.6),inset 0 1px 3px rgba(0,0,0,.6)}
+.h4-inner{position:absolute;inset:14px;border-radius:11px;z-index:6;pointer-events:none;border:1px solid rgba(246,220,142,.4)}
+.h4-corner{position:absolute;z-index:7;width:26px;height:26px;pointer-events:none;
+  background:linear-gradient(#f6dc8e,#f6dc8e) 0 0/100% 3px no-repeat,linear-gradient(#f6dc8e,#f6dc8e) 0 0/3px 100% no-repeat;filter:drop-shadow(0 1px 0 rgba(255,250,215,.7)) drop-shadow(0 -1px 0 rgba(70,35,0,.7)) drop-shadow(0 0 4px rgba(246,200,100,.5))}
+.h4-corner.tl{top:19px;left:19px}.h4-corner.tr{top:19px;right:19px;transform:scaleX(-1)}
+.h4-corner.bl{bottom:19px;left:19px;transform:scaleY(-1)}.h4-corner.br{bottom:19px;right:19px;transform:scale(-1)}
+.h4-ribbon{position:relative;z-index:5;margin-top:2px;padding:4px 18px 5px;font-size:11px;font-weight:900;letter-spacing:.34em;text-indent:.34em;color:#3a2606;
+  background:linear-gradient(180deg,#fff0bd,#e7bb55 55%,#c58f2c);border-radius:4px;box-shadow:0 2px 10px rgba(246,200,100,.4),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -2px 3px rgba(120,70,0,.55);
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%)}
+.h4-sp{position:absolute;z-index:10;width:14px;height:14px;pointer-events:none;background:#fff;opacity:var(--o,0);
+  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);transform:scale(calc(.4 + var(--o,0)*.7)) rotate(calc(var(--o,0)*40deg))}
+.h4-ribbon{position:relative;z-index:5;margin-top:2px;padding:4px 18px 5px;font-size:11px;font-weight:900;letter-spacing:.34em;text-indent:.34em;color:#3a2606;
+  background:linear-gradient(180deg,#fff0bd,#e7bb55 55%,#c58f2c);border-radius:4px;box-shadow:0 2px 10px rgba(246,200,100,.4),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -2px 3px rgba(120,70,0,.55);
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%)}
+
+@media (prefers-reduced-motion:reduce){.h4-stars,.h4-stars2,.h4-rays,.h4-hf *{transition:none}}
+
 
 .ovbtns{display:flex;gap:10px;flex:none;width:min(100%,420px)}
 .ovbtns button{flex:1;height:48px;border:1px solid transparent;border-radius:14px;font-weight:800;font-size:14.5px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .12s,background .15s}
@@ -671,13 +734,13 @@ function setMode(m,keepHash){
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&b.dataset.m!==mode)setMode(b.dataset.m);});
 
 /* ───── 결과 카드 ───── */
-const tierOf = c => c>=30?3 : c>=20?2 : c>=10?1 : 0;
+const tierOf = c => c>=50?4 : c>=30?3 : c>=20?2 : c>=10?1 : 0;
 function findMon(m,id){ return (DATA[m]||[]).find(x=>x.i===id); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function cardHTML(r,mon){
   const tr=tierOf(r.combo);
-  return `<div class="rtop"><span>${esc(TITLE())}</span></div>
+  return `${tr===4?'<div class="h4-ribbon">LEGEND</div>':""}<div class="rtop"><span>${esc(TITLE())}</span></div>
     <div class="rart"><img src="${imgUrl(mon)}" alt="${esc(mon.n)}"></div>
     <div class="rcombo"><b>${r.combo}</b><span>COMBO</span></div>
     <div class="rname">${esc(mon.n)}</div>
@@ -691,6 +754,11 @@ function renderCard(r){
   el.className="rcard t"+tr; el.innerHTML=cardHTML(r,mon);
   $("rglow").className="rglow t"+tr;
   rest();
+  if(tr===4){
+    el.insertAdjacentHTML("afterbegin",'<div class="h4-stars"></div><div class="h4-stars2"></div><div class="h4-rays"></div><div class="h4-halo"></div><div class="h4-hf"><div class="h4-a"></div><div class="h4-b"></div><div class="h4-g"></div><div class="h4-c"></div></div>');
+    el.insertAdjacentHTML("beforeend",'<div class="h4-inner"></div><div class="h4-frame"></div><div class="h4-bevel"></div><div class="h4-groove"></div><i class="h4-corner tl"></i><i class="h4-corner tr"></i><i class="h4-corner bl"></i><i class="h4-corner br"></i><div class="h4-gl"></div><i class="h4-sp" data-sx="16" data-sy="26" style="left:16%;top:26%"></i><i class="h4-sp" data-sx="80" data-sy="32" style="left:80%;top:32%;width:10px;height:10px"></i><i class="h4-sp" data-sx="66" data-sy="72" style="left:66%;top:72%;width:12px;height:12px"></i><i class="h4-sp" data-sx="30" data-sy="58" style="left:30%;top:58%;width:9px;height:9px"></i>');
+    h4Reset();
+  }
   if(tr===2) el.insertAdjacentHTML("afterbegin",'<i class="aur a1"></i><i class="aur a2"></i>');
   if(tr===3){
     el.insertAdjacentHTML("beforeend",'<i class="rgloss"></i>');
@@ -745,6 +813,34 @@ function rest(){ host.style.setProperty("--rx","0deg"); host.style.setProperty("
   $("ov").addEventListener("pointermove",move); $("ov").addEventListener("pointerleave",rest);
 })();
 
+
+/* 50콤보 홀로: 포인터(또는 저장 시 가상 궤도)에 맞춰 빛 변수를 갱신한다 */
+const H4={cur:{x:.62,y:.3},tgt:{x:.62,y:.3},raf:0};
+function h4Set(x,y){
+  const px=(x-.5)*2, py=(y-.5)*2, d=Math.min(1,Math.hypot(px,py)/1.15);
+  const st=$("rwrap").style;
+  st.setProperty("--hx",(x*100).toFixed(2)); st.setProperty("--hy",(y*100).toFixed(2));
+  st.setProperty("--hpx",px.toFixed(3)); st.setProperty("--hpy",py.toFixed(3)); st.setProperty("--hd",d.toFixed(3));
+  document.querySelectorAll(".h4-sp").forEach(s=>{const dd=Math.hypot(x*100-(+s.dataset.sx),y*100-(+s.dataset.sy)); s.style.setProperty("--o",Math.max(0,1-dd/38).toFixed(3));});
+}
+function h4Tick(){
+  const c=H4.cur,t=H4.tgt; let done=true;
+  for(const k of ["x","y"]){ const d=t[k]-c[k]; c[k]+=d*.16; if(Math.abs(d)>.002) done=false; }
+  h4Set(c.x,c.y); H4.raf=done?0:requestAnimationFrame(h4Tick);
+}
+function h4Go(){ if(!H4.raf) H4.raf=requestAnimationFrame(h4Tick); }
+function h4Reset(){ H4.cur.x=H4.tgt.x=.62; H4.cur.y=H4.tgt.y=.3; h4Set(.62,.3); }
+(function(){
+  const ov=$("ov"), el=$("rcard");
+  function mv(e){
+    if(!el.classList.contains("t4")) return;
+    const r=el.getBoundingClientRect(); let x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+    if(x<0||x>1||y<0||y>1){ H4.tgt.x=.62; H4.tgt.y=.3; } else { H4.tgt.x=x; H4.tgt.y=y; }
+    h4Go();
+  }
+  ov.addEventListener("pointermove",mv); ov.addEventListener("pointerdown",mv);
+  ov.addEventListener("pointerleave",()=>{ H4.tgt.x=.62; H4.tgt.y=.3; h4Go(); });
+})();
 /* ───── 공유: 링크 복사 + 카드 이미지 저장 ───── */
 function shareUrl(r){ return location.origin+location.pathname+location.search+"#r="+r.mode+"."+r.combo+"."+r.id; }
 function parseHash(){
@@ -819,12 +915,15 @@ function loadSvg(svg){ return new Promise((res,rej)=>{ const im=new Image(); im.
 async function snapCard(r,animated,fmt){
   const mon=findMon(r.mode,r.id), wrap=document.querySelector(".rtilt");
   const rect=wrap.getBoundingClientRect(), w=rect.width, h=rect.height, pad=44;
-  const tpl=snapTemplate(wrap);
-  const im=tpl.querySelector("img"); if(im) im.setAttribute("src",await blobToData(await (await fetch(imgUrl(mon))).blob()));
+  const imgData=await blobToData(await (await fetch(imgUrl(mon))).blob());
+  const build=()=>{ const t=snapTemplate(wrap), im=t.querySelector("img"); if(im) im.setAttribute("src",imgData); return t; };
+  let tpl=build();
+  const isH4=wrap.querySelector(".rcard").classList.contains("t4");
   const css=await embeddedFonts(wrap.textContent+"0123456789");
   const SC=animated?Math.min(2,Math.max(1,SNAP.width/(w+pad*2))):2, W=Math.round((w+pad*2)*SC), H=Math.round((h+pad*2)*SC);
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H; const c=cv.getContext("2d",{willReadFrequently:true});
-  async function frame(tm){
+  async function frame(tm,ph){
+    if(isH4&&ph!==undefined){ const a=ph*Math.PI; h4Set(.5+.4*Math.cos(a+.3),.34+.26*Math.sin(a)); tpl=build(); }
     const img=await loadSvg(snapFrameSvg(tpl,w,h,pad,tm,css));
     c.setTransform(1,0,0,1,0,0);
     const g=c.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,Math.max(W,H)*.75); g.addColorStop(0,"#1a1d29"); g.addColorStop(1,"#0a0b10");
@@ -834,12 +933,12 @@ async function snapCard(r,animated,fmt){
     await frame(0);
     return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png"));
   }
-  const HALF=SNAP.half, DELAY=SNAP.delay, frames=[];
-  for(let i=0;i<HALF;i++){ await frame(i/(HALF-1)*3.5); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
+  const HALF=isH4?30:SNAP.half, DELAY=SNAP.delay, frames=[];
+  for(let i=0;i<HALF;i++){ await frame(i/(HALF-1)*3.5,i/(HALF-1)); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
   if(fmt==="webp"){
     const wp=await import(WEBP_URL), order=[];
     for(let k=0;k<HALF;k++) order.push(k); for(let k=HALF-2;k>0;k--) order.push(k);
-    const out=await wp.encodeAnimation(W,H,true,order.map(k=>({data:new Uint8Array(frames[k].buffer,frames[k].byteOffset,frames[k].byteLength),duration:DELAY,config:{lossless:0,quality:SNAP.q}})));
+    const out=await wp.encodeAnimation(W,H,true,order.map(k=>({data:new Uint8Array(frames[k].buffer,frames[k].byteOffset,frames[k].byteLength),duration:DELAY,config:{lossless:0,quality:isH4?72:SNAP.q}})));
     if(!out) throw new Error("webp");
     return new Blob([out],{type:"image/webp"});
   }
@@ -868,6 +967,7 @@ async function shareResult(r,still){
   let saved=false, blob=null;
   const anim=!still&&tierOf(r.combo)>=2;
   for(const f of anim?["webp","gif","png"]:["png"]){ try{ blob=await snapCard(r,f!=="png",f); break; }catch(e){} }
+  if(tierOf(r.combo)>=4) h4Set(H4.cur.x,H4.cur.y);
   const ext=blob&&blob.type==="image/webp"?"webp":blob&&blob.type==="image/gif"?"gif":"png", fname=`${TITLE().replace(/\s+/g,"")}_${r.combo}combo.${ext}`;
   if(blob){
     const file=new File([blob],fname,{type:blob.type});
