@@ -713,6 +713,8 @@ window.LKI18N=(function(){
     "라테일 몬스터 도감":{en:"Monster Codex",zh:"怪物图鉴",ja:"モンスター図鑑"},
     "경험치 인던 (beta)":{en:"EXP Dungeons (beta)",zh:"经验副本 (beta)",ja:"経験値ダンジョン (beta)"},
     "몬스터 HP 미니게임":{en:"Monster HP Minigame",zh:"怪物HP小游戏",ja:"モンスターHPミニゲーム"},
+    "나도 해보기":{en:"Try it myself",zh:"我也试试",ja:"自分もやってみる"},
+    "공유된 획득 결과예요. 직접 도전해 볼까요?":{en:"This is a shared result. Want to try it yourself?",zh:"这是分享的获得结果。要不要亲自挑战一下？",ja:"共有された獲得結果です。自分でも挑戦してみませんか？"},
     "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"},
     "오늘":{en:"Today",zh:"今日",ja:"今日"},
     "실시간":{en:"Live",zh:"实时",ja:"リアルタイム"},
@@ -1333,17 +1335,18 @@ function runRoyalSimulation(box, trials) {
 
 function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
   const { chosen, sinceLast, isBonus } = hit;
+  const viewOnly = !!hit.view;
   let html = '<h3>TOP 아이템 획득!' + (isBonus ? ' <span class="small stat-orange">(보너스 뽑기)</span>' : '') + '<span class="lk-slot" id="royalShareSlot"></span></h3>';
   html += '<div class="modal-icon-row">';
   if (chosen.icon) html += '<img src="' + chosen.icon + '" alt="">';
   html += '<div class="gold-shine" style="font-size:15px;">' + chosen.name + '</div>';
   html += '</div>';
   html += '<p class="modal-desc">' + sinceLast.toLocaleString('ko-KR') + '번째 뽑기 만에 획득했습니다!</p>';
-  html += '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + totalRolls.toLocaleString('ko-KR') + '회</p>';
-  html += '<div class="modal-actions"><button id="royalContinueBtn" class="confirm">이어하기</button></div>';
+  html += viewOnly ? '<p class="small">공유된 획득 결과예요. 직접 도전해 볼까요?</p>' : '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + totalRolls.toLocaleString('ko-KR') + '회</p>';
+  html += '<div class="modal-actions"><button id="royalContinueBtn" class="confirm">' + (viewOnly ? '나도 해보기' : '이어하기') + '</button></div>';
   pendingModalContinue = onContinue;
   // 카드를 직접 눌러 대상으로 골라 둔 TOP 아이템이 뽑히면 신화 상자와 같은 홀로그램 효과를 입힌다(별도 안내 문구 없음)
-  const wished = chosen.best && target.kind === 'row' && box.rewards[target.idx] && box.rewards[target.idx].id === chosen.id;
+  const wished = viewOnly ? !!hit.wished : (chosen.best && target.kind === 'row' && box.rewards[target.idx] && box.rewards[target.idx].id === chosen.id);
   showModal(html, wished ? 'gold-glow holo-wish' : 'gold-glow');
   if (wished) attachModalHolo(modalBox);
   (function () {
@@ -1351,14 +1354,14 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
     if (!s || !window.LKShare) return;
     LKShare.attach(s, function () {
       return {
-        page: 'gacha.html', params: 'mode=royal&box=' + boxSelect.value,
+        page: 'gacha.html', params: 'mode=royal&box=' + boxSelect.value + '&r=' + chosen.id + '.' + sinceLast + '.' + (isBonus ? 1 : 0) + '.' + (wished ? 1 : 0),
         title: chosen.name, subtitle: '라테일 확률 계산기 · 로얄 상자',
         emoji: '🎰', accent: '#f0c650', pill: 'ROYAL',
         lines: [box.title, sinceLast.toLocaleString('ko-KR') + '번째 뽑기에 획득', isBonus ? '보너스 뽑기' : ''].filter(Boolean)
       };
     }, wished ? { holo: true, captureEl: function () { return document.getElementById('modalBox'); } } : { captureEl: function () { return document.getElementById('modalBox'); } });
   })();
-  document.getElementById('royalContinueBtn').onclick = hideModal;
+  document.getElementById('royalContinueBtn').onclick = viewOnly ? function () { hideModal(); if (window.LKShare) LKShare.clearParam('r'); } : hideModal;
 }
 
 function renderRoyalSim(box) {
@@ -1741,19 +1744,21 @@ function runMythicSimulation(zone, trials) {
 
 function showMythicHitModal(zone, hit, done, trials, onContinue) {
   const { chosen, elapsed, sinceLast, isFirstMythic } = hit;
+  const viewOnly = !!hit.view;
   let html = '<h3>신화 아이템 획득!<span class="lk-slot" id="mythicShareSlot"></span></h3>';
   html += '<div class="modal-icon-row">';
   if (chosen.icon) html += '<img src="' + chosen.icon + '" alt="">';
   html += '<div class="mythic-shine" style="font-size:15px;">' + chosen.name + (zone.secondBox ? ' (미개봉)' : '') + '</div>';
   html += '</div>';
   html += '<p class="modal-desc">' + zone.name + ' 인던 ' + sinceLast.toLocaleString('ko-KR') + '회, ' + elapsed + ' 만에 획득했습니다!</p>';
-  html += '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + trials.toLocaleString('ko-KR') + '회</p>';
-  if (sinceLast <= 100) {
+  html += viewOnly ? '<p class="small">공유된 획득 결과예요. 직접 도전해 볼까요?</p>' : '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + trials.toLocaleString('ko-KR') + '회</p>';
+  if (viewOnly) {
+  } else if (sinceLast <= 100) {
     html += '<p class="easter-egg">🍀 당신은 운이 아주 좋으시네요! <a href="#" id="mythicEasterEggLink">로얄 까러가보시는건 어떨까요?</a></p>';
   } else if (isFirstMythic && sinceLast >= 30000) {
     html += '<p class="easter-egg">😅 이 정도면 템은 사 드셔야겠는데요??</p>';
   }
-  html += '<div class="modal-actions"><button id="mythicContinueBtn" class="confirm">이어하기</button></div>';
+  html += '<div class="modal-actions"><button id="mythicContinueBtn" class="confirm">' + (viewOnly ? '나도 해보기' : '이어하기') + '</button></div>';
   pendingModalContinue = onContinue;
   showModal(html, 'mythic-glow');
   attachModalHolo(modalBox);
@@ -1762,14 +1767,14 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
     if (!s || !window.LKShare) return;
     LKShare.attach(s, function () {
       return {
-        page: 'gacha.html', params: 'mode=mythic&zone=' + mythicZoneIdx,
+        page: 'gacha.html', params: 'mode=mythic&zone=' + mythicZoneIdx + '&r=' + chosen.id + '.' + sinceLast,
         title: chosen.name, subtitle: '라테일 확률 계산기 · 신화 상자',
         emoji: '✨', accent: '#cf9bff', pill: 'MYTHIC',
         lines: [zone.name, sinceLast.toLocaleString('ko-KR') + '회차에 등장', elapsed + ' 만에 획득'].filter(Boolean)
       };
     }, { holo: true, captureEl: function () { return document.getElementById('modalBox'); } });
   })();
-  document.getElementById('mythicContinueBtn').onclick = hideModal;
+  document.getElementById('mythicContinueBtn').onclick = viewOnly ? function () { hideModal(); if (window.LKShare) LKShare.clearParam('r'); } : hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
   if (eggLink) {
     eggLink.onclick = (e) => {
@@ -2011,6 +2016,28 @@ boxSelect.addEventListener('change', () => {
   render();
 });
 
+// 공유 링크의 획득 결과(?r=아이템.횟수[.보너스.위시])를 그대로 보여 준다
+function showSharedHit(P) {
+  const rr = P.get('r');
+  if (!rr) return;
+  const a = rr.split('.');
+  const since = parseInt(a[1], 10);
+  if (!(since > 0)) return;
+  setTimeout(function () {
+    try {
+      if (P.get('mode') === 'mythic') {
+        const zone = mythicZones[mythicZoneIdx];
+        const it = zone && zone.itemset.find(x => String(x.id) === a[0]);
+        if (it) showMythicHitModal(zone, { chosen: it, elapsed: formatMythicDuration(since * mythicClearMinutes), sinceLast: since, isFirstMythic: false, view: true }, 0, 0, null);
+      } else {
+        const box = boxes[boxSelect.value];
+        const it = box && box.rewards.find(x => String(x.id) === a[0]);
+        if (it) showRoyalHitModal(box, { chosen: it, sinceLast: since, isBonus: a[2] === '1', wished: a[3] === '1', view: true }, 0, 0, null);
+      }
+    } catch (e) {}
+  }, 350);
+}
+
 // 공유 링크로 진입 시 모드·상자·존 복원 (?mode=royal|mythic&box=<i>&zone=<i>)
 (function () {
   try {
@@ -2019,7 +2046,8 @@ boxSelect.addEventListener('change', () => {
     if (bx !== null && boxSelect.options[+bx]) { boxSelect.value = bx; target = { kind: 'row', idx: 0 }; royalRecentEvents = []; }
     const zn = P.get('zone');
     if (zn !== null && mythicZones[+zn]) mythicZoneIdx = +zn;
-    if (P.get('mode') === 'mythic') { switchMode('mythic'); return; }
+    if (P.get('mode') === 'mythic') { switchMode('mythic'); showSharedHit(P); return; }
+    switchMode('royal'); showSharedHit(P); return;
   } catch (e) {}
   switchMode('royal');
 })();
