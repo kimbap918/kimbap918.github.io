@@ -298,6 +298,75 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
   clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%)}
 
 @media (prefers-reduced-motion:reduce){.h4-stars,.h4-stars2,.h4-rays,.h4-hf *{transition:none}}
+/* 70콤보: 50콤보 구성에서 색만 붉은색 */
+.rcard.t5{background:radial-gradient(120% 80% at 50% 28%,#4b1020 0%,#220811 52%,#080204 100%);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 50px -18px rgba(0,0,0,.8)}
+.rcard.t5 .h4-rays{background:repeating-conic-gradient(from calc(var(--hpx)*34deg + var(--hpy)*14deg),rgba(255,160,140,0) 0deg 8deg,rgba(255,160,140,.17) 8deg 12deg)}
+.rcard.t5 .h4-halo{background:radial-gradient(circle,rgba(255,120,100,.38),rgba(255,70,70,.09) 55%,transparent 72%)}
+.rcard.t5 .h4-frame{background:conic-gradient(from calc(var(--hpx)*80deg + var(--hpy)*50deg),#ffb3a6,#ffe6e0,#c2433a,#ffb3a6 25%,#ffd2c9,#8f2a24,#ffb3a6 60%,#ffe6e0,#d9564a,#ffb3a6)}
+.rcard.t5 .h4-groove{border-color:rgba(60,8,8,.8);box-shadow:0 0 0 1px rgba(255,190,180,.55),inset 0 1px 3px rgba(0,0,0,.6)}
+.rcard.t5 .h4-inner{border-color:rgba(255,170,155,.4)}
+.rcard.t5 .h4-corner{background:linear-gradient(#ffb3a6,#ffb3a6) 0 0/100% 3px no-repeat,linear-gradient(#ffb3a6,#ffb3a6) 0 0/3px 100% no-repeat;filter:drop-shadow(0 1px 0 rgba(255,235,230,.7)) drop-shadow(0 -1px 0 rgba(60,8,8,.7)) drop-shadow(0 0 4px rgba(255,100,90,.5))}
+.rcard.t5 .h4-ribbon{color:#3d0707;background:linear-gradient(180deg,#ffe2dc,#f0766a 55%,#b4332b);box-shadow:0 2px 10px rgba(255,110,100,.45),inset 0 1px 0 rgba(255,255,255,.85),inset 0 -2px 3px rgba(110,15,15,.55)}
+.rcard.t5 .rcombo b{background:linear-gradient(180deg,#fff3f0 0%,#ffa598 30%,#e0453d 55%,#ffd2c9 80%,#ec6a5e 100%);background-size:100% 220%;background-position:0 calc(40% + var(--hpy)*35%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 6px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,90,80,.4))}
+.rcard.t5 .rcombo span{color:#ffd0c8}
+
+.rcard.t5 .h4-hf .h4-a{background:repeating-linear-gradient(112deg,#ff8a7a 0%,#ffc2a0 8%,#ffe0b0 16%,#ff9aa8 24%,#ff7a96 32%,#ffb0a0 40%,#ff8fb0 48%,#ff8a7a 56%)}
+.rcard.t5 .h4-hf .h4-b{background:repeating-linear-gradient(64deg,#ff4d5d 0%,#ff9a5d 7%,#ffd06a 14%,#ff6f8f 21%,#ff4d7d 28%,#ff8d6d 35%,#ff5da0 42%,#ff4d5d 49%);background-size:260% 260%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%);filter:saturate(.8) brightness(1.15)}
+.rcard.t5 .h4-hf .h4-g{background:linear-gradient(112deg,#ff9a8a,#ffd0a0,#ffb0b8,#ff8aa0,#ffc0a0,#ff9a8a);background-size:240% 240%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%)}
+.rcard.t5{background:radial-gradient(120% 80% at 50% 28%,#5a0f1f 0%,#2a0711 52%,#090204 100%)}
+
+.rglow.t5{box-shadow:0 0 30px 4px rgba(255,110,100,.36),0 0 80px 10px rgba(200,40,60,.28)}
+.rglow.t6{box-shadow:0 0 34px 4px rgba(150,170,255,.38),0 0 90px 12px rgba(200,110,255,.3)}
+
+/* 100콤보: 몬스터가 틀 밖으로 튀어나오는 차원 균열. 배경/틀/몬스터/숫자가 서로 다른 깊이로 움직인다 */
+.rtilt:has(.rcard.t6){transform-style:preserve-3d}
+.rcard.t6{isolation:auto;overflow:visible;border:0;background:none;box-shadow:none;padding:0;transform-style:preserve-3d;color:#fff}
+.rcard.t6 .h6-win{position:absolute;inset:0;border-radius:24px;overflow:hidden;
+  background:radial-gradient(90% 70% at 50% 40%,#101533 0%,#07091c 55%,#020208 100%)}
+.rcard.t6 .h6-nebula{position:absolute;inset:-20%;background:radial-gradient(40% 30% at calc(30% + var(--hpx)*-6%) 30%,rgba(120,80,255,.38),transparent 70%),radial-gradient(36% 28% at calc(72% + var(--hpx)*-6%) 62%,rgba(0,220,230,.3),transparent 70%),radial-gradient(34% 26% at 50% 86%,rgba(255,80,200,.26),transparent 70%)}
+.rcard.t6 .h4-stars,.rcard.t6 .h4-stars2{opacity:.9}
+.rcard.t6 .h6-rift{position:absolute;left:calc(50% + var(--hpx)*-5%);top:calc(40% + var(--hpy)*-4%);width:92%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(circle,#000 0 38%,transparent 39%),conic-gradient(from calc(var(--hpx)*120deg),#6ff,#a6f,#f6c,#fd6,#6f9,#6ff);
+  -webkit-mask:radial-gradient(circle,transparent 0 36%,#000 38%,#000 46%,transparent 62%);mask:radial-gradient(circle,transparent 0 36%,#000 38%,#000 46%,transparent 62%);
+  filter:blur(1.5px);opacity:calc(.5 + var(--hd)*.5)}
+.rcard.t6 .h6-riftglow{position:absolute;left:calc(50% + var(--hpx)*-5%);top:calc(40% + var(--hpy)*-4%);width:96%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,0) 36%,rgba(150,200,255,.34) 46%,rgba(180,90,255,.2) 58%,transparent 70%);opacity:calc(.6 + var(--hd)*.4)}
+.rcard.t6 .h6-prism{position:absolute;inset:0;mix-blend-mode:screen;opacity:calc(.12 + var(--hd)*.35);
+  background:linear-gradient(112deg,#ff9fb8,#ffd9a0,#f4f0a8,#a8f2cc,#a4d8ff,#c4b4ff,#ffa8e4,#ff9fb8);background-size:260% 260%;background-position:calc(var(--hx)*1%) calc(var(--hy)*1%);
+  -webkit-mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 6px);mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 6px)}
+.rcard.t6 .h6-edge{position:absolute;inset:0;border-radius:24px;pointer-events:none;padding:2.5px;
+  background:conic-gradient(from calc(var(--hpx)*140deg + var(--hpy)*60deg),#7ff,#a7f,#f7c,#fe9,#7fa,#7ff);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  filter:drop-shadow(0 0 8px rgba(160,140,255,.55))}
+.rcard.t6 .h6-edge2{position:absolute;inset:7px;border-radius:18px;border:1px solid rgba(255,255,255,.18);transform:translateZ(1px);pointer-events:none}
+.rcard.t6 .h6-ribbon{position:absolute;left:50%;top:3.3%;translate:-50% 0;transform:translateZ(30px);padding:4px 20px 5px;font-size:11px;font-weight:900;letter-spacing:.4em;text-indent:.4em;color:#0b0d22;z-index:5;
+  background:linear-gradient(100deg,#aef,#caf 35%,#fbd 65%,#fe9);border-radius:4px;box-shadow:0 2px 14px rgba(170,150,255,.6),inset 0 1px 0 rgba(255,255,255,.9)}
+.rcard.t6 .h6-ttl{position:absolute;left:0;right:0;top:10.5%;text-align:center;font-size:10px;font-weight:800;letter-spacing:.16em;opacity:.7;transform:translateZ(30px);z-index:5}
+.rcard.t6 .h6-mon{position:absolute;left:-5%;top:7%;width:110%;height:52%;transform:translateZ(80px) translate3d(calc(var(--hpx)*8px),calc(var(--hpy)*6px),0);pointer-events:none;z-index:4}
+.rcard.t6 .h6-mon img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 18px 18px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(150,170,255,.35))}
+.rcard.t6 .h6-num{position:absolute;left:0;right:0;bottom:18.6%;display:flex;justify-content:center;align-items:baseline;gap:6px;line-height:1;transform:translateZ(50px) translate3d(calc(var(--hpx)*-5px),0,0);z-index:5}
+.rcard.t6 .h6-num b{font-size:calc(var(--h)*.219);font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(112deg,#9ff,#b9f 25%,#fbd 50%,#fe9 75%,#9fc);background-size:260% 100%;background-position:calc(var(--hx)*1%) 0;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(170,150,255,.5))}
+.rcard.t6 .h6-num span{font-size:12px;font-weight:800;letter-spacing:.2em;color:#d8e6ff}
+.rcard.t6 .h6-txt{position:absolute;left:0;right:0;bottom:4.3%;display:flex;flex-direction:column;align-items:center;gap:2px;transform:translateZ(36px);z-index:5}
+.rcard.t6 .h4-gl{border-radius:24px}
+
+/* 100콤보 유성우: 배경 안쪽에서 대각선으로 흘러내린다. 저장 이미지는 한 바퀴를 3.5초로 맞춰 끊김 없이 반복된다 */
+.rcard.t6 .h6-met{position:absolute;top:-18%;width:2.5px;height:17%;border-radius:2px;opacity:0;pointer-events:none;transform:rotate(30deg);
+  background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(210,230,255,.95));filter:drop-shadow(0 0 5px rgba(170,200,255,.9));animation:h6fall 7s linear infinite}
+@keyframes h6fall{0%{opacity:0;transform:translate3d(0,0,0) rotate(30deg)}5%{opacity:.95}30%{opacity:.9}40%{opacity:0;transform:translate3d(-210px,360px,0) rotate(30deg)}100%{opacity:0;transform:translate3d(-210px,360px,0) rotate(30deg)}}
+body.lk-snap .rcard.t6 .h6-met{animation-duration:3.5s}
+@media (prefers-reduced-motion:reduce){.rcard.t6 .h6-met{display:none}}
+/* 저장 이미지: 3D 를 걷어 내고 배경이 틀과 정확히 맞게 평면으로 그린다 */
+body.lk-snap .rtilt{transform-style:flat}
+body.lk-snap .rcard.t6{transform-style:flat}
+body.lk-snap .rcard.t6 .h6-win{transform:none}
+body.lk-snap .rcard.t6 .h6-edge2,body.lk-snap .rcard.t6 .h6-ribbon,body.lk-snap .rcard.t6 .h6-ttl,body.lk-snap .rcard.t6 .h6-txt{transform:none}
+body.lk-snap .rcard.t6 .h6-ribbon{transform:none}
+body.lk-snap .rcard.t6 .h6-mon{transform:translate3d(calc(var(--hpx)*8px),calc(var(--hpy)*6px),0)}
+body.lk-snap .rcard.t6 .h6-num{transform:translate3d(calc(var(--hpx)*-5px),0,0)}
+
 
 
 .ovbtns{display:flex;gap:10px;flex:none;width:min(100%,420px)}
@@ -734,13 +803,14 @@ function setMode(m,keepHash){
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&b.dataset.m!==mode)setMode(b.dataset.m);});
 
 /* ───── 결과 카드 ───── */
-const tierOf = c => c>=50?4 : c>=30?3 : c>=20?2 : c>=10?1 : 0;
+const tierOf = c => c>=100?6 : c>=70?5 : c>=50?4 : c>=30?3 : c>=20?2 : c>=10?1 : 0;
 function findMon(m,id){ return (DATA[m]||[]).find(x=>x.i===id); }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 function cardHTML(r,mon){
   const tr=tierOf(r.combo);
-  return `${tr===4?'<div class="h4-ribbon">LEGEND</div>':""}<div class="rtop"><span>${esc(TITLE())}</span></div>
+  if(tr===6) return `<div class="h6-win"><div class="h6-nebula"></div><div class="h4-stars"></div><div class="h4-stars2"></div><div class="h6-riftglow"></div><div class="h6-rift"></div><div class="h6-prism"></div><i class="h6-met" style="left:88%;animation-delay:-0.4s"></i><i class="h6-met" style="left:64%;animation-delay:-1.6s"></i><i class="h6-met" style="left:96%;animation-delay:-2.9s"></i><i class="h6-met" style="left:48%;animation-delay:-4.1s"></i><i class="h6-met" style="left:76%;animation-delay:-5.3s"></i><i class="h6-met" style="left:34%;animation-delay:-6.4s"></i></div><div class="h6-edge"></div><div class="h6-edge2"></div><div class="h6-ribbon">BEYOND</div><div class="h6-ttl">${esc(TITLE())}</div><div class="h6-mon"><img src="${imgUrl(mon)}" alt="${esc(mon.n)}"></div><div class="h6-num"><b>${r.combo}</b><span>COMBO</span></div><div class="h6-txt"><div class="rname">${esc(mon.n)}</div><div class="rsub">${esc(tf("{m} · 체력 {hp}",{m:MODE_NAME(r.mode),hp:fmt(mon.hp)}))}</div><div class="rfoot">${esc(tf("{m} 퀴즈 결과",{m:MODE_NAME(r.mode)}))}</div></div><div class="h4-gl"></div>`;
+  return `${tr>=4?`<div class="h4-ribbon">${tr===5?"MYTHIC":"LEGEND"}</div>`:""}<div class="rtop"><span>${esc(TITLE())}</span></div>
     <div class="rart"><img src="${imgUrl(mon)}" alt="${esc(mon.n)}"></div>
     <div class="rcombo"><b>${r.combo}</b><span>COMBO</span></div>
     <div class="rname">${esc(mon.n)}</div>
@@ -754,7 +824,9 @@ function renderCard(r){
   el.className="rcard t"+tr; el.innerHTML=cardHTML(r,mon);
   $("rglow").className="rglow t"+tr;
   rest();
-  if(tr===4){
+  if(tr>=4) el.classList.add("hp");
+  if(tr===6) h4Reset();
+  if(tr===4||tr===5){
     el.insertAdjacentHTML("afterbegin",'<div class="h4-stars"></div><div class="h4-stars2"></div><div class="h4-rays"></div><div class="h4-halo"></div><div class="h4-hf"><div class="h4-a"></div><div class="h4-b"></div><div class="h4-g"></div><div class="h4-c"></div></div>');
     el.insertAdjacentHTML("beforeend",'<div class="h4-inner"></div><div class="h4-frame"></div><div class="h4-bevel"></div><div class="h4-groove"></div><i class="h4-corner tl"></i><i class="h4-corner tr"></i><i class="h4-corner bl"></i><i class="h4-corner br"></i><div class="h4-gl"></div><i class="h4-sp" data-sx="16" data-sy="26" style="left:16%;top:26%"></i><i class="h4-sp" data-sx="80" data-sy="32" style="left:80%;top:32%;width:10px;height:10px"></i><i class="h4-sp" data-sx="66" data-sy="72" style="left:66%;top:72%;width:12px;height:12px"></i><i class="h4-sp" data-sx="30" data-sy="58" style="left:30%;top:58%;width:9px;height:9px"></i>');
     h4Reset();
@@ -833,7 +905,7 @@ function h4Reset(){ H4.cur.x=H4.tgt.x=.62; H4.cur.y=H4.tgt.y=.3; h4Set(.62,.3); 
 (function(){
   const ov=$("ov"), el=$("rcard");
   function mv(e){
-    if(!el.classList.contains("t4")) return;
+    if(!el.classList.contains("hp")) return;
     const r=el.getBoundingClientRect(); let x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
     if(x<0||x>1||y<0||y>1){ H4.tgt.x=.62; H4.tgt.y=.3; } else { H4.tgt.x=x; H4.tgt.y=y; }
     h4Go();
@@ -913,17 +985,22 @@ function snapFrameSvg(tpl,w,h,pad,tm,css){
 }
 function loadSvg(svg){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg); }); }
 async function snapCard(r,animated,fmt){
+  try{ return await snapCardRun(r,animated,fmt); } finally { document.body.classList.remove("lk-snap"); }
+}
+async function snapCardRun(r,animated,fmt){
   const mon=findMon(r.mode,r.id), wrap=document.querySelector(".rtilt");
   const rect=wrap.getBoundingClientRect(), w=rect.width, h=rect.height, pad=44;
   const imgData=await blobToData(await (await fetch(imgUrl(mon))).blob());
   const build=()=>{ const t=snapTemplate(wrap), im=t.querySelector("img"); if(im) im.setAttribute("src",imgData); return t; };
   let tpl=build();
-  const isH4=wrap.querySelector(".rcard").classList.contains("t4");
+  const isH4=wrap.querySelector(".rcard").classList.contains("hp");
+  const t6=wrap.querySelector(".rcard").classList.contains("t6");
+  if(t6){ document.body.classList.add("lk-snap"); tpl=build(); }
   const css=await embeddedFonts(wrap.textContent+"0123456789");
   const SC=animated?Math.min(2,Math.max(1,SNAP.width/(w+pad*2))):2, W=Math.round((w+pad*2)*SC), H=Math.round((h+pad*2)*SC);
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H; const c=cv.getContext("2d",{willReadFrequently:true});
   async function frame(tm,ph){
-    if(isH4&&ph!==undefined){ const a=ph*Math.PI; h4Set(.5+.4*Math.cos(a+.3),.34+.26*Math.sin(a)); tpl=build(); }
+    if(isH4&&ph!==undefined){ const a=ph*(t6?2:1)*Math.PI; h4Set(.5+.4*Math.cos(a+.3),.34+.26*Math.sin(a)); tpl=build(); }
     const img=await loadSvg(snapFrameSvg(tpl,w,h,pad,tm,css));
     c.setTransform(1,0,0,1,0,0);
     const g=c.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,Math.max(W,H)*.75); g.addColorStop(0,"#1a1d29"); g.addColorStop(1,"#0a0b10");
@@ -934,10 +1011,10 @@ async function snapCard(r,animated,fmt){
     return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png"));
   }
   const HALF=isH4?30:SNAP.half, DELAY=SNAP.delay, frames=[];
-  for(let i=0;i<HALF;i++){ await frame(i/(HALF-1)*3.5,i/(HALF-1)); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
+  for(let i=0;i<HALF;i++){ await frame(i/(t6?HALF:HALF-1)*3.5,i/(t6?HALF:HALF-1)); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
   if(fmt==="webp"){
     const wp=await import(WEBP_URL), order=[];
-    for(let k=0;k<HALF;k++) order.push(k); for(let k=HALF-2;k>0;k--) order.push(k);
+    for(let k=0;k<HALF;k++) order.push(k); if(!t6) for(let k=HALF-2;k>0;k--) order.push(k);
     const out=await wp.encodeAnimation(W,H,true,order.map(k=>({data:new Uint8Array(frames[k].buffer,frames[k].byteOffset,frames[k].byteLength),duration:DELAY,config:{lossless:0,quality:isH4?72:SNAP.q}})));
     if(!out) throw new Error("webp");
     return new Blob([out],{type:"image/webp"});
@@ -946,7 +1023,7 @@ async function snapCard(r,animated,fmt){
   const step=5, take=frames.filter((_,i)=>i%3===0), sample=new Uint8ClampedArray(Math.ceil(W*H/step)*4*take.length); let n=0;
   take.forEach(d=>{ for(let p=0;p<W*H;p+=step){ const o=n*4; sample[o]=d[p*4]; sample[o+1]=d[p*4+1]; sample[o+2]=d[p*4+2]; sample[o+3]=255; n++; } });
   const pal=mod.quantize(sample.subarray(0,n*4),256), order=[];
-  for(let k=0;k<HALF;k++) order.push(k); for(let k=HALF-2;k>0;k--) order.push(k);
+  for(let k=0;k<HALF;k++) order.push(k); if(!t6) for(let k=HALF-2;k>0;k--) order.push(k);
   const gif=mod.GIFEncoder(), bayer=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
   for(let j=0;j<order.length;j++){
     const d=new Uint8ClampedArray(frames[order[j]]);
