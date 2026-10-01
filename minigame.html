@@ -43,13 +43,22 @@ body{
   color:var(--text);
   font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo","Hiragino Sans","Yu Gothic","Microsoft YaHei","PingFang SC",sans-serif;
   line-height:1.4;-webkit-font-smoothing:antialiased;touch-action:manipulation;
-  display:flex;justify-content:center;
-  padding:max(10px,env(safe-area-inset-top)) 14px max(10px,env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;
 }
 button{font:inherit;cursor:pointer}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+.shell{flex:1;min-height:0;display:flex;justify-content:center;padding:10px 14px max(10px,env(safe-area-inset-bottom))}
 .app{width:100%;max-width:1000px;height:100%;display:flex;flex-direction:column;gap:10px;min-height:0}
+
+/* 사이트 공통 상단 탭 */
+.site-tabs{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:max(10px,env(safe-area-inset-top)) 16px 10px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.site-tabs a{padding:8px 16px;border-radius:8px;background:var(--surface);color:var(--text-muted);font-size:14px;text-decoration:none;transition:background .13s,color .13s}
+.site-tabs a:hover{background:var(--bg);color:var(--text)}
+.site-tabs a.active{background:var(--accent-soft);color:var(--accent-strong);font-weight:700;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.site-tabs a.home{background:var(--accent-strong);color:var(--bg);font-weight:700}
+.site-tabs a.home:hover{filter:brightness(1.08)}
+@media (max-width:680px){.site-tabs{gap:6px;padding:max(8px,env(safe-area-inset-top)) 12px 8px}.site-tabs a{padding:6px 12px;font-size:13px}}
 
 /* 머리글 */
 .head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;flex:none}
@@ -131,11 +140,15 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 .rise{animation:rise .3s cubic-bezier(.22,.9,.36,1) both}
 
 
-/* 버튼: 테마와 같은 초록/로즈를 쓰되 반짝이는 안쪽 그림자 대신 얇은 윗선과 색이 입혀진 부드러운 그림자만 사용 */
-.guess button[data-d=up]{background:linear-gradient(180deg,var(--btn-up-hi),var(--btn-up));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 16px -10px color-mix(in srgb,var(--btn-up) 70%,#000)}
-.guess button[data-d=down]{background:linear-gradient(180deg,var(--btn-down-hi),var(--btn-down));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 16px -10px color-mix(in srgb,var(--btn-down) 70%,#000)}
+/* 버튼: 탭/칩과 같은 결의 톤온톤 스타일(연한 면 + 같은 색 테두리/글자). 올려두면 진한 색으로 채워진다. 다음 버튼만 로즈 단색 */
+.guess button[data-d=up]{background:var(--good-soft);border:1px solid color-mix(in srgb,var(--good) 55%,var(--border));color:var(--good-strong);box-shadow:var(--shadow-sm)}
+.guess button[data-d=down]{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 55%,var(--border));color:var(--accent-strong);box-shadow:var(--shadow-sm)}
+.guess button[data-d=up]:not(:disabled):hover{background:var(--btn-up);border-color:var(--btn-up);color:#fff}
+.guess button[data-d=down]:not(:disabled):hover{background:var(--btn-down);border-color:var(--btn-down);color:#fff}
+.guess button:not(:disabled):hover{transform:translateY(-1px)}
+.guess button:disabled{filter:none;opacity:.5;box-shadow:none}
 .next{justify-self:center;width:min(100%,420px);background:linear-gradient(180deg,var(--btn-down-hi),var(--btn-down));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 16px -10px color-mix(in srgb,var(--btn-down) 70%,#000)}
-.guess button:hover,.next:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.next:hover{transform:translateY(-1px);filter:brightness(1.04)}
 .tabs button[aria-selected=true]{background:linear-gradient(180deg,var(--btn-down-hi),var(--btn-down));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 6px 12px -8px color-mix(in srgb,var(--btn-down) 70%,#000)}
 .ico{width:9px;height:9px;border-left:2.5px solid currentColor;border-top:2.5px solid currentColor;display:inline-block;flex:none}
 .ico.up{transform:translateY(2px) rotate(45deg)}
@@ -147,7 +160,7 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
   padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .ovt{color:#fff;font-weight:700;font-size:14px;letter-spacing:.02em;flex:none}
 .rwrap{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;perspective:900px;flex:0 1 auto;min-height:0;display:flex;--h:min(68dvh,560px)}
-.rtilt{position:relative;height:var(--h);aspect-ratio:5/7;max-width:calc(100vw - 28px);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s ease-out}
+.rtilt{position:relative;height:var(--h);aspect-ratio:5/7;max-width:calc(100vw - 28px);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s ease-out;will-change:transform}
 /* 카드 바깥 광채: 움직임은 opacity 만 쓴다(오래 켜 둬도 다시 그리기 없음) */
 .rglow{position:absolute;inset:0;border-radius:24px;pointer-events:none;z-index:0;opacity:.75;animation:pulse 3.2s ease-in-out infinite;will-change:opacity}
 .rglow.t0{display:none}
@@ -156,11 +169,11 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 .rglow.t3{box-shadow:-18px 0 40px 2px rgba(255,80,140,.18),18px 0 40px 2px rgba(60,200,255,.18),0 -14px 40px 2px rgba(255,220,80,.14),0 14px 40px 2px rgba(150,90,255,.18)}
 @keyframes pulse{50%{opacity:1}}
 .rcard{
-  position:relative;z-index:1;width:100%;height:100%;border-radius:24px;overflow:hidden;clip-path:inset(0 round 24px);isolation:isolate;color:#fff;
+  position:relative;z-index:1;width:100%;height:100%;border-radius:24px;overflow:hidden;isolation:isolate;color:#fff;
   display:flex;flex-direction:column;align-items:center;padding:16px 16px 14px;gap:6px;
   background:linear-gradient(165deg,#252b3d,#141824 70%);border:1px solid rgba(255,255,255,.14);
   box-shadow:0 18px 40px -14px rgba(0,0,0,.7);
-  backface-visibility:hidden}
+  }
 .rtop{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:11px;font-weight:800;letter-spacing:.14em;opacity:.85;flex:none}
 .rart{flex:1 1 0;min-height:0;width:100%;display:grid;place-items:center;border-radius:16px;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.14),rgba(255,255,255,.03) 70%);border:1px solid rgba(255,255,255,.12);position:relative;z-index:2}
 .rart img{position:absolute;left:8%;top:6%;width:84%;height:88%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
@@ -176,7 +189,7 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 
 /* 20콤보: 오로라. 블러/블렌드 없이 부드러운 그라데이션을 transform 으로만 천천히 이동 */
 .rcard.t2{border-color:#c48aff;background:#0c0a1c;box-shadow:0 0 0 2px rgba(196,138,255,.7)}
-.rcard.t2::before,.rcard.t2::after{content:"";position:absolute;inset:-22%;z-index:0;pointer-events:none;will-change:transform;backface-visibility:hidden}
+.rcard.t2::before,.rcard.t2::after{content:"";position:absolute;inset:-22%;z-index:0;pointer-events:none;will-change:transform}
 .rcard.t2::before{background:
   radial-gradient(42% 30% at 25% 30%,rgba(120,80,255,.8),transparent 72%),
   radial-gradient(40% 32% at 75% 22%,rgba(30,220,190,.72),transparent 72%),
@@ -196,7 +209,7 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
              conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f) border-box;
   box-shadow:0 0 0 1px rgba(255,255,255,.25)}
 .rholo{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;border-radius:inherit}
-.hl{position:absolute;inset:-45%;will-change:transform;transition:transform .15s ease-out;backface-visibility:hidden}
+.hl{position:absolute;inset:-45%;will-change:transform;transition:transform .15s ease-out}
 .hl>i{position:absolute;inset:0;display:block}
 .hl-1{transform:translate3d(calc((var(--mx) - 50%) * -.3),calc((var(--my) - 50%) * -.3),0)}
 .hl-1>i{mix-blend-mode:color-dodge;opacity:.34;
@@ -232,6 +245,35 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.05s!important}}
 </style>
 
+<nav class="site-tabs" id="siteTabs">
+  <a href="/" class="home">홈</a>
+  <a href="sim/index.html">코디 시뮬레이터</a>
+  <a href="lookup.html">장비 강화·인챈트 조회</a>
+  <a href="gacha.html">확률 계산기</a>
+  <a href="title.html">타이틀 검색기</a>
+  <a href="specialization.html">스킬 특화</a>
+  <a href="monster.html">라테일 몬스터 도감</a>
+  <a href="exp.html">경험치 인던 (beta)</a>
+  <a href="minigame.html" class="active">몬스터 HP 미니게임</a>
+</nav>
+<script>if (window.top !== window.self) document.getElementById("siteTabs").style.display = "none";</script>
+<script>
+/* 모바일: 상단 탭을 '홈' + 현재 페이지만 남기고 나머지는 '더보기'로 접기 */
+(function(){
+  var nav=document.getElementById("siteTabs"); if(!nav||nav.querySelector(".st-more"))return;
+  var s=document.createElement("style");
+  s.textContent="#siteTabs .st-more{display:none;font-family:inherit;font-size:14px;padding:8px 14px;border:0;border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;}"
+   +"@media(max-width:680px){#siteTabs a:not(.home):not(.active){display:none;}#siteTabs.st-open a:not(.home):not(.active){display:inline-block;}#siteTabs .st-more{display:inline-block;padding:6px 12px;font-size:13px;}#siteTabs.st-open .st-more{background:var(--bg);}}";
+  document.head.appendChild(s);
+  var n=nav.querySelectorAll("a:not(.home):not(.active)").length;
+  var b=document.createElement("button");
+  b.type="button"; b.className="st-more"; b.setAttribute("data-noi18n",""); b.setAttribute("aria-expanded","false");
+  function lbl(){ b.textContent = nav.classList.contains("st-open") ? "접기" : "더보기 · "+n; }
+  b.addEventListener("click",function(){ var o=nav.classList.toggle("st-open"); b.setAttribute("aria-expanded",o?"true":"false"); lbl(); });
+  lbl(); nav.appendChild(b);
+})();
+</script>
+<div class="shell">
 <div class="app">
   <div class="head">
     <h1><span class="plain">몬스터</span> <span>HP 미니게임</span></h1>
@@ -278,6 +320,7 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
   </div>
 </div>
 
+</div>
 <div class="ov" id="ov" hidden role="dialog" aria-modal="true" aria-label="결과 카드">
   <div class="ovt" id="ovt"></div>
   <div class="rwrap" id="rwrap"><div class="rtilt"><div class="rglow t0" id="rglow"></div><div class="rcard" id="rcard"></div></div></div>
@@ -500,7 +543,8 @@ LKI18N.add({
   "공유에 실패했어요":{en:"Sharing failed",zh:"分享失败",ja:"共有に失敗しました"},
   "테마 전환":{en:"Toggle theme",zh:"切换主题",ja:"テーマ切替"},
   "몬스터 종류":{en:"Monster type",zh:"怪物类型",ja:"モンスターの種類"},
-  "몬스터 HP 미니게임":{en:"Monster HP Minigame",zh:"怪物HP小游戏",ja:"モンスターHPミニゲーム"}
+  "몬스터 HP 미니게임":{en:"Monster HP Minigame",zh:"怪物HP小游戏",ja:"モンスターHPミニゲーム"},
+  "라테일 몬스터 도감":{en:"Monster Codex",zh:"怪物图鉴",ja:"モンスター図鑑"}
 });
 LKI18N.addRules([
   [/\[계정\]/g, {en:"[Account]", zh:"[账号]", ja:"[アカウント]"}],
@@ -558,11 +602,19 @@ const pick = ()=>MOBS[rnd(MOBS.length)];
 const fresh = a =>{ let m; do{ m=pick(); }while(a && (m.n===a.n||m.hp===a.hp)); return m; };
 
 function fill(S,m){
+  $("img"+S).onerror=()=>imgFailed(S,m);
   $("img"+S).src=imgUrl(m); $("img"+S).alt=m.n;
   $("name"+S).textContent=m.n;
   $("where"+S).innerHTML=esc(m.g||"")+(m.l?` <b>${esc(m.l)}</b>`:""); $("where"+S).hidden=!m.g;
   if(S==="T"){ countUp($("hpT"),m.hp); $("hprawT").textContent=m.hp.toLocaleString("en")+" HP"; }
   else{ $("hpB").textContent="?"; $("hpB").classList.add("q"); $("hprawB").textContent=""; }
+}
+// 그림을 불러오지 못한 몬스터는 문제에서 빼고 바로 다른 몬스터로 바꾼다(엑박이 화면에 남지 않게)
+function imgFailed(S,m){
+  for(const k of ["boss","mob"]){ const i=DATA[k].indexOf(m); if(i>=0) DATA[k].splice(i,1); }
+  if(MOBS.length<3) return;
+  if(S==="B" && !locked){ B=fresh(T); fill("B",B); }
+  else if(S==="T"){ T=pick(); if(B&&!locked){ B=fresh(T); fill("B",B); } fill("T",T); }
 }
 function newRound(carry){
   locked=false;
