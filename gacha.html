@@ -128,24 +128,40 @@ tr.reward-row.best td{color:var(--best);}
 }
 .modal-box.mythic-glow{border-color:var(--mythic-purple);animation:mythicGlow 1.8s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){.modal-box.mythic-glow{animation:none;box-shadow:0 0 0 2px var(--mythic-purple),0 0 24px 6px rgba(196,138,255,0.45);}}
-/* 포켓몬 카드 홀로그램(simeydotme/pokemon-cards-css) 방식 - 포인터 위치를
-   CSS 변수(--pointer-x/y)로 넘겨 무지개 샤인 + 글레어가 마우스를 따라
-   은은하게 스치게 한다(사용자 요청, 2026-09-23, 신화 상자 획득 모달).
-   평소엔 --card-opacity:0이라 아무 효과 없다가 마우스를 올릴 때만 켜진다.
-   클릭은 그대로 통과해야 하므로 두 레이어 다 pointer-events:none. */
-.modal-box{position:relative;overflow-x:hidden;--pointer-x:50%;--pointer-y:50%;--card-opacity:0;}
-.holo-shine,.holo-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;
-  opacity:calc(var(--card-opacity) * var(--holo-strength, 1));transition:opacity .5s ease;}
-.holo-shine{background-image:repeating-linear-gradient(110deg,
+/* 홀로그램 카드 - 신화 상자 획득 모달 전용.
+   무지개 띠(color-dodge) + 노이즈로 오려낸 무지개 포일 얼룩 + 대각선 광택 + 무지개 테두리 + 네 갈래 빛 조각.
+   포인터 위치(--pointer-x/y)는 색 위치와 광택에만 쓰고 질감/빛 조각 위치는 고정한다.
+   평소(--card-opacity)에도 은은하게 켜져 있다가 마우스를 올리면 진해진다. 모든 레이어 pointer-events:none. */
+.modal-box{position:relative;overflow-x:hidden;--pointer-x:50%;--pointer-y:50%;--card-opacity:.7;}
+.holo-shine,.holo-foil,.holo-sweep,.holo-ring,.holo-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;
+  transition:opacity .5s ease;}
+.holo-shine{opacity:calc(var(--card-opacity) * .8);background-image:repeating-linear-gradient(110deg,
     hsla(2,90%,75%,.22) 0%,hsla(53,90%,72%,.22) 12%,hsla(93,90%,72%,.22) 24%,
     hsla(176,90%,78%,.22) 36%,hsla(228,90%,76%,.22) 48%,hsla(283,90%,76%,.22) 60%,
     hsla(2,90%,75%,.22) 72%);
   background-size:300% 300%;background-position:var(--pointer-x) var(--pointer-y);
-  filter:brightness(1) contrast(1.1) saturate(1);mix-blend-mode:color-dodge;}
-.holo-glare{background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0,0%,100%,.45) 0%,hsla(0,0%,100%,.16) 24%,hsla(0,0%,0%,.16) 90%);
+  mix-blend-mode:color-dodge;}
+.holo-foil{opacity:calc(var(--card-opacity) * .42);
+  background:repeating-linear-gradient(64deg,#ff5d8f 0%,#ffb35d 7%,#f7f06a 14%,#5df2a0 21%,#4dc3ff 28%,#9a7bff 35%,#ff5dd0 42%,#ff5d8f 49%);
+  background-size:260% 260%;background-position:var(--pointer-x) var(--pointer-y);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;}
+.holo-sweep{overflow:hidden;opacity:calc(var(--card-opacity) * 1.1);}
+.holo-sweep>i{position:absolute;inset:0;display:block;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.56) 50%,rgba(255,255,255,.3) 52%,transparent 60%);
+  animation:holoSweep 7s ease-in-out infinite alternate;will-change:transform;}
+@keyframes holoSweep{from{transform:translate3d(-24%,0,0)}to{transform:translate3d(24%,0,0)}}
+.holo-ring{padding:2px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:calc(var(--card-opacity) * 1.2);}
+.holo-glare{opacity:calc(var(--card-opacity) * .9);background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0,0%,100%,.4) 0%,hsla(0,0%,100%,.14) 24%,hsla(0,0%,0%,.14) 90%);
   mix-blend-mode:overlay;}
-@media (prefers-reduced-motion:reduce){.holo-shine,.holo-glare{display:none;}}
+.holo-star{position:absolute;z-index:6;pointer-events:none;width:16px;height:16px;opacity:0;
+  background:linear-gradient(135deg,#fff,#d9f4ff);
+  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+  animation:holoStar 3.2s ease-in-out infinite;}
+@keyframes holoStar{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(20deg)}}
+@media (prefers-reduced-motion:reduce){.holo-sweep>i,.holo-star{animation:none;}.holo-star{opacity:.8;}}
 .mythic-log-entry.royal{color:var(--best);font-weight:bold;}
 @keyframes goldFlash{
   0%{box-shadow:0 0 0 1px var(--best);transform:scale(1);}
@@ -769,18 +785,29 @@ function showModal(html, extraClass) {
   modalBox.innerHTML = html;
   modalOverlay.classList.remove('hidden');
 }
-// 포켓몬 카드 홀로그램 효과 - 마우스 위치를 CSS 변수로 넘겨 무지개 샤인이
-// 포인터를 따라 은은하게 스치게 한다(사용자 요청, 2026-09-23, 신화 상자
-// 획득 모달 전용 - showModal 전체가 아니라 이 함수를 쓴 모달에만 건다).
-// 터치 기기는 마우스오버가 없어 효과가 아예 안 보이므로, hover:none이면
-// 모달이 뜬 순간 중앙 고정으로 살짝 켜준다.
+// 홀로그램 카드 효과: 신화 상자 획득 모달에만 건다(showModal 전체가 아니라 이 함수를 쓴 모달 전용).
+// 마우스 위치는 색 위치와 광택에만 쓰고, 마우스 없는 터치 기기는 중앙 고정으로 켠다.
 function attachModalHolo(panel) {
-  const shine = document.createElement('div');
-  shine.className = 'holo-shine';
-  const glare = document.createElement('div');
-  glare.className = 'holo-glare';
-  panel.appendChild(shine);
-  panel.appendChild(glare);
+  const add = (cls, inner) => {
+    const el = document.createElement('div');
+    el.className = cls;
+    if (inner) el.innerHTML = inner;
+    panel.appendChild(el);
+    return el;
+  };
+  add('holo-shine');
+  add('holo-foil');
+  add('holo-sweep', '<i></i>');
+  add('holo-ring');
+  add('holo-glare');
+  for (let i = 0; i < 6; i++) {
+    const s = add('holo-star');
+    const z = 10 + Math.random() * 14;
+    s.style.left = (6 + Math.random() * 88) + '%';
+    s.style.top = (6 + Math.random() * 88) + '%';
+    s.style.width = s.style.height = z + 'px';
+    s.style.animationDelay = (Math.random() * 3.2) + 's';
+  }
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   panel.addEventListener('mousemove', (e) => {
     const rect = panel.getBoundingClientRect();
@@ -793,12 +820,12 @@ function attachModalHolo(panel) {
   panel.addEventListener('mouseleave', () => {
     panel.style.setProperty('--pointer-x', '50%');
     panel.style.setProperty('--pointer-y', '50%');
-    panel.style.setProperty('--card-opacity', '0');
+    panel.style.setProperty('--card-opacity', '.7');
   });
   if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
     panel.style.setProperty('--pointer-x', '50%');
     panel.style.setProperty('--pointer-y', '35%');
-    panel.style.setProperty('--card-opacity', '1');
+    panel.style.setProperty('--card-opacity', '.85');
   }
 }
 function hideModal() {
