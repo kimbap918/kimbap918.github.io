@@ -759,7 +759,7 @@ function rng(seed){ let s=seed>>>0; return ()=> (s=(s*1664525+1013904223)>>>0)/4
 /* 보이는 카드 그대로 저장: 화면의 카드(DOM)를 SVG foreignObject 로 다시 그려 이미지로 만든다.
    10콤보 미만/금빛은 PNG, 오로라/홀로그램은 움직임까지 담은 GIF. 글꼴과 몬스터 그림은 SVG 안에 직접 넣는다. */
 const WEBP_URL="https://cdn.jsdelivr.net/npm/wasm-webp@0.1.0/+esm";
-const SNAP={half:36,width:560,q:85,delay:50};
+const SNAP={half:44,width:560,q:80,delay:80};
 const GIFENC_URL="https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js";
 function blobToData(b){ return new Promise((res,rej)=>{ const f=new FileReader(); f.onload=()=>res(f.result); f.onerror=rej; f.readAsDataURL(b); }); }
 async function embeddedFonts(text){
@@ -834,7 +834,7 @@ async function snapCard(r,animated,fmt){
     return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png"));
   }
   const HALF=SNAP.half, DELAY=SNAP.delay, frames=[];
-  for(let i=0;i<HALF;i++){ await frame(i/(HALF-1)*7); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
+  for(let i=0;i<HALF;i++){ await frame(i/(HALF-1)*3.5); frames.push(c.getImageData(0,0,W,H).data); await new Promise(r=>setTimeout(r,0)); }
   if(fmt==="webp"){
     const wp=await import(WEBP_URL), order=[];
     for(let k=0;k<HALF;k++) order.push(k); for(let k=HALF-2;k>0;k--) order.push(k);
