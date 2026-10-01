@@ -188,7 +188,12 @@ tr.reward-row.best td{color:var(--best);}
   50%{box-shadow:0 0 0 2px var(--best),0 0 34px 10px rgba(232,185,58,0.6);}
 }
 .modal-box.gold-glow{border-color:var(--best);animation:goldGlow 1.8s ease-in-out infinite;}
-@media (prefers-reduced-motion:reduce){.modal-box.gold-glow{animation:none;box-shadow:0 0 0 2px var(--best),0 0 24px 6px rgba(232,185,58,0.45);}}
+@keyframes goldGlowSoft{
+  0%,100%{box-shadow:0 0 18px 2px rgba(232,185,58,0.3);}
+  50%{box-shadow:0 0 34px 8px rgba(232,185,58,0.5);}
+}
+.modal-box.gold-glow.holo-wish{border-color:transparent;animation:goldGlowSoft 1.8s ease-in-out infinite;}
+@media (prefers-reduced-motion:reduce){.modal-box.gold-glow{animation:none;box-shadow:0 0 0 2px var(--best),0 0 24px 6px rgba(232,185,58,0.45);}.modal-box.gold-glow.holo-wish{box-shadow:0 0 24px 4px rgba(232,185,58,0.4);}}
 .mythic-item-card.royal-selected{outline:2px solid var(--accent);outline-offset:-2px;}
 .n-presets button:hover{border-color:var(--accent);}
 .theme-toggle,.n-presets button,.mode-tab,.mythic-tab,.mythic-item-card,.modal-actions button{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
@@ -1264,7 +1269,10 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
   html += '<p class="small">진행 상황: ' + done.toLocaleString('ko-KR') + ' / ' + totalRolls.toLocaleString('ko-KR') + '회</p>';
   html += '<div class="modal-actions"><button id="royalContinueBtn" class="confirm">이어하기</button></div>';
   pendingModalContinue = onContinue;
-  showModal(html, 'gold-glow');
+  // 카드를 직접 눌러 대상으로 골라 둔 TOP 아이템이 뽑히면 신화 상자와 같은 홀로그램 효과를 입힌다(별도 안내 문구 없음)
+  const wished = chosen.best && target.kind === 'row' && box.rewards[target.idx] && box.rewards[target.idx].id === chosen.id;
+  showModal(html, wished ? 'gold-glow holo-wish' : 'gold-glow');
+  if (wished) attachModalHolo(modalBox);
   (function () {
     var s = document.getElementById('royalShareSlot');
     if (!s || !window.LKShare) return;
@@ -1275,7 +1283,7 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
         emoji: '🎰', accent: '#f0c650', pill: 'ROYAL',
         lines: [box.title, sinceLast.toLocaleString('ko-KR') + '번째 뽑기에 획득', isBonus ? '보너스 뽑기' : ''].filter(Boolean)
       };
-    }, { captureEl: function () { return document.getElementById('modalBox'); } });
+    }, wished ? { holo: true } : { captureEl: function () { return document.getElementById('modalBox'); } });
   })();
   document.getElementById('royalContinueBtn').onclick = hideModal;
 }
