@@ -21,6 +21,7 @@ body{margin:0;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",s
 .site-tabs a.active{background:var(--accent-soft);color:var(--accent);font-weight:700;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent);}
 .site-tabs a.home{background:var(--home);color:var(--accent-ink);font-weight:700;}
 .site-tabs a.home:hover{filter:brightness(1.08);}
+@media (max-width:680px){.site-tabs{gap:6px;padding:8px 12px}.site-tabs a{padding:6px 12px;font-size:13px;line-height:1.5}}
 .theme-toggle{position:fixed;top:14px;right:14px;z-index:9999;padding:7px 12px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px;font-family:inherit;cursor:var(--lk-cur);line-height:1;}
 .theme-toggle:hover{border-color:var(--accent);}
 .theme-toggle{transition:border-color .15s ease,transform .1s ease;}
