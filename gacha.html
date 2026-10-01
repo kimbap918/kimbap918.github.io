@@ -137,6 +137,7 @@ tr.reward-row.best td{color:var(--best);}
    포인터 위치(--pointer-x/y)는 색 위치와 광택에만 쓰고 질감/빛 조각 위치는 고정한다.
    평소(--card-opacity)에도 은은하게 켜져 있다가 마우스를 올리면 진해진다. 모든 레이어 pointer-events:none. */
 .modal-box{position:relative;overflow-x:hidden;--pointer-x:50%;--pointer-y:50%;--card-opacity:.7;}
+.holo-wrap{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;}
 .holo-shine,.holo-foil,.holo-sweep,.holo-ring,.holo-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;
   transition:opacity .5s ease;}
 .holo-shine{opacity:calc(var(--card-opacity) * .8);background-image:repeating-linear-gradient(110deg,
@@ -154,7 +155,7 @@ tr.reward-row.best td{color:var(--best);}
   background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.56) 50%,rgba(255,255,255,.3) 52%,transparent 60%);
   animation:holoSweep 7s ease-in-out infinite alternate;will-change:transform;}
 @keyframes holoSweep{from{transform:translate3d(-24%,0,0)}to{transform:translate3d(24%,0,0)}}
-.holo-ring{inset:-1px;padding:3px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
+.holo-ring{padding:3px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
   mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:calc(var(--card-opacity) * 1.2);}
 .holo-glare{opacity:calc(var(--card-opacity) * .9);background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
@@ -874,11 +875,15 @@ function showModal(html, extraClass) {
 // 홀로그램 카드 효과: 신화 상자 획득 모달에만 건다(showModal 전체가 아니라 이 함수를 쓴 모달 전용).
 // 마우스 위치는 색 위치와 광택에만 쓰고, 마우스 없는 터치 기기는 중앙 고정으로 켠다.
 function attachModalHolo(panel) {
+  // 효과 레이어는 전부 이 래퍼 안에 둔다: 래퍼가 바깥으로 삐져나가는 부분을 잘라서 모달에 스크롤이 생기지 않게 한다
+  const wrap = document.createElement('div');
+  wrap.className = 'holo-wrap';
+  panel.appendChild(wrap);
   const add = (cls, inner) => {
     const el = document.createElement('div');
     el.className = cls;
     if (inner) el.innerHTML = inner;
-    panel.appendChild(el);
+    wrap.appendChild(el);
     return el;
   };
   add('holo-shine');
