@@ -428,14 +428,14 @@ window.LKShare=(function(){
     // 화면의 모달을 프레임마다 다시 그려 부드러운 GIF 로 만든다: 25fps, 전체 프레임이 하나의 팔레트를 공유하고
     // 순서 디더(프레임마다 같은 패턴)로 그라데이션을 부드럽게 표현해 움직여도 색이 깜빡이지 않는다.
     var r=el.getBoundingClientRect(),pad=34,SC=Math.min(2,Math.max(1,600/(r.width+pad*2)));
-    var W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC),HALF=36,DELAY=50;
+    var W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC),HALF=44,DELAY=80;
     toast("이미지 만드는 중...");
     import(GIFENC_URL).then(function(mod){
       var tpl=snapTemplate(el),cv=document.createElement("canvas");cv.width=W;cv.height=H;
       var c=cv.getContext("2d",{willReadFrequently:true}),frames=[],i=0;
       function render(){
         if(i>=HALF){encode();return;}
-        var ph=i/(HALF-1),t=ph*7,ang=ph*Math.PI;
+        var ph=i/(HALF-1),t=ph*3.5,ang=ph*Math.PI;
         var px=Math.round(50+30*Math.cos(ang)),py=Math.round(40+22*Math.sin(ang));
         loadSvg(snapFrameSvg(tpl,r.width,r.height,pad,t,px,py)).then(function(im){
           c.setTransform(1,0,0,1,0,0);
