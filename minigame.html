@@ -239,10 +239,10 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 /* 50콤보: 카드를 기울인 각도에 따라 빛이 움직이는 슈퍼 홀로(자동 회전 없음). 값은 스크립트(--hx/--hy/--hpx/--hpy/--hd)가 부드럽게 갱신한다 */
 .rwrap{--hx:62;--hy:30;--hpx:.24;--hpy:-.4;--hd:.35}
 .rglow.t4{box-shadow:0 0 30px 4px rgba(246,200,100,.34),0 0 80px 10px rgba(160,130,255,.24)}
-.rcard.t4{border:0;padding:26px 22px 16px;gap:6px;background:radial-gradient(120% 80% at 50% 28%,#1c2554 0%,#0b1030 52%,#05060f 100%);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 50px -18px rgba(0,0,0,.8)}
-.rcard.t4 .rtop,.rcard.t4 .rart,.rcard.t4 .rcombo,.rcard.t4 .rname,.rcard.t4 .rsub,.rcard.t4 .rfoot{position:relative;z-index:5}
-.rcard.t4 .rtop{justify-content:center;font-size:10px;opacity:.7}
-.rcard.t4 .rart{background:none;border-color:transparent}
+.rcard.t4,.rcard.t5{border:0;padding:26px 22px 16px;gap:6px;background:radial-gradient(120% 80% at 50% 28%,#1c2554 0%,#0b1030 52%,#05060f 100%);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 24px 50px -18px rgba(0,0,0,.8)}
+.rcard.t4 .rtop,.rcard.t4 .rart,.rcard.t4 .rcombo,.rcard.t4 .rname,.rcard.t4 .rsub,.rcard.t4 .rfoot,.rcard.t5 .rtop,.rcard.t5 .rart,.rcard.t5 .rcombo,.rcard.t5 .rname,.rcard.t5 .rsub,.rcard.t5 .rfoot{position:relative;z-index:5}
+.rcard.t4 .rtop,.rcard.t5 .rtop{justify-content:center;font-size:10px;opacity:.7}
+.rcard.t4 .rart,.rcard.t5 .rart{background:none;border-color:transparent}
 .rcard.t4 .rcombo b{background:linear-gradient(180deg,#fffdf0 0%,#ffe08a 30%,#e0a43a 55%,#fff0b8 80%,#e9b64a 100%);background-size:100% 220%;background-position:0 calc(40% + var(--hpy)*35%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 6px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(255,200,100,.35))}
 .rcard.t4 .rcombo span{color:#ffe9b0;opacity:.9}
