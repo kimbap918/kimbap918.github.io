@@ -353,89 +353,92 @@ window.LKShare=(function(){
     setTimeout(function(){URL.revokeObjectURL(u);},5000);
     toast("이미지 저장됨");
   }
-  // ---- 반짝임 GIF (홀로그램 카드 공유용): 기본 공유 카드 위에 무지개 띠/포일 얼룩/광택/빛 조각/무지개 테두리를 움직여 입힌 반복 GIF ----
   var GIFENC_URL="https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js";
-  function holoRng(seed){var v=seed>>>0;return function(){v=(v*1664525+1013904223)>>>0;return v/4294967296;};}
-  function holoPre(W,H){
-    var rand=holoRng(20260);
-    var mk=document.createElement("canvas");mk.width=W;mk.height=H;var mc=mk.getContext("2d");
-    var lw=Math.ceil(W/4),lh=Math.ceil(H/4),nc=document.createElement("canvas");nc.width=lw;nc.height=lh;var nx=nc.getContext("2d");
-    var id=nx.createImageData(lw,lh),v=new Float32Array(lw*lh),k,x,y;
-    for(k=0;k<v.length;k++)v[k]=rand();
-    for(y=0;y<lh;y++)for(x=0;x<lw;x++){k=y*lw+x;
-      var m=(v[k]*2+v[(k+1)%v.length]+v[(k+lw)%v.length]+v[(k+lw+1)%v.length]*0.5)/4.5;
-      var a=Math.max(0,Math.min(1,(m-0.56)*4.2));
-      id.data[k*4]=255;id.data[k*4+1]=255;id.data[k*4+2]=255;id.data[k*4+3]=Math.round(a*255);}
-    nx.putImageData(id,0,0);mc.imageSmoothingEnabled=true;mc.drawImage(nc,0,0,W,H);
-    var stars=[];for(k=0;k<9;k++)stars.push({x:W*(0.06+rand()*0.88),y:H*(0.08+rand()*0.84),s:W*(0.008+rand()*0.014),ph:rand()});
-    var fl=document.createElement("canvas");fl.width=W;fl.height=H;
-    return {mask:mk,stars:stars,fl:fl};
-  }
-  var HOLO_COLS=["#ff5d8f","#ffb35d","#f7f06a","#5df2a0","#4dc3ff","#9a7bff","#ff5dd0","#ff5d8f"];
-  function holoRainbow(c,W,H,ang,periods,shift){
-    // 길이 W*2 축을 따라 periods 번 반복되는 무지개. shift(0~1)만큼 한 주기 이동해도 이어지게 한다.
-    var L=Math.sqrt(W*W+H*H)*1.6,dx=Math.cos(ang),dy=Math.sin(ang),per=L/periods;
-    var cx=W/2-dx*L/2-dx*per*shift,cy=H/2-dy*L/2-dy*per*shift;
-    var g=c.createLinearGradient(cx,cy,cx+dx*L*(1+1/periods),cy+dy*L*(1+1/periods)),n=HOLO_COLS.length-1,p,i;
-    var total=periods+1;
-    for(p=0;p<total;p++)for(i=0;i<n;i++){var pos=(p+i/n)/total;g.addColorStop(Math.min(1,pos),HOLO_COLS[i]);}
-    g.addColorStop(1,HOLO_COLS[0]);
-    return g;
-  }
-  function holoStar(c,x,y,s){
-    c.beginPath();c.moveTo(x,y-s);c.quadraticCurveTo(x,y,x+s,y);c.quadraticCurveTo(x,y,x,y+s);c.quadraticCurveTo(x,y,x-s,y);c.quadraticCurveTo(x,y,x,y-s);c.fill();
-  }
-  function holoFrame(c,base,W,H,t,pre){
-    c.globalCompositeOperation="source-over";c.globalAlpha=1;c.drawImage(base,0,0,W,H);
-    // 무지개 띠
-    c.globalCompositeOperation="color-dodge";c.globalAlpha=0.12;
-    c.fillStyle=holoRainbow(c,W,H,1.1,2,t);c.fillRect(0,0,W,H);
-    // 포일 얼룩: 질감 위치는 고정, 색만 흘러간다
-    var fx=pre.fl.getContext("2d");fx.globalCompositeOperation="source-over";fx.clearRect(0,0,W,H);
-    fx.fillStyle=holoRainbow(fx,W,H,-1.0,2,1-t);fx.fillRect(0,0,W,H);
-    fx.globalCompositeOperation="destination-in";fx.drawImage(pre.mask,0,0);
-    c.globalCompositeOperation="screen";c.globalAlpha=0.26;c.drawImage(pre.fl,0,0);
-    // 대각선 광택이 한 번 지나간다
-    c.globalCompositeOperation="lighter";c.globalAlpha=1;
-    c.save();c.translate(W/2,H/2);c.rotate(-0.35);
-    var gx=(t*2-1)*W*0.75,sg=c.createLinearGradient(gx-W*0.12,0,gx+W*0.12,0);
-    sg.addColorStop(0,"rgba(255,255,255,0)");sg.addColorStop(0.5,"rgba(255,255,255,0.32)");sg.addColorStop(1,"rgba(255,255,255,0)");
-    c.fillStyle=sg;c.fillRect(-W,-H,W*2,H*2);c.restore();
-    // 빛 조각
-    c.globalCompositeOperation="source-over";c.fillStyle="#fff";
-    pre.stars.forEach(function(st){
-      var a=Math.sin(Math.PI*2*(t+st.ph));a=a>0?a*a:0;if(a<0.02)return;
-      var hg=c.createRadialGradient(st.x,st.y,0,st.x,st.y,st.s*2.4);hg.addColorStop(0,"rgba(255,255,255,"+(0.55*a)+")");hg.addColorStop(1,"rgba(255,255,255,0)");
-      c.globalAlpha=1;c.fillStyle=hg;c.beginPath();c.arc(st.x,st.y,st.s*2.4,0,7);c.fill();
-      c.globalAlpha=a;c.fillStyle="#fff";holoStar(c,st.x,st.y,st.s);});
-    c.globalAlpha=1;
-    // 무지개 테두리(색이 한 바퀴 돈다)
-    var bs;
-    if(c.createConicGradient){bs=c.createConicGradient(Math.PI*2*t,W/2,H/2);HOLO_COLS.forEach(function(col,i,a){bs.addColorStop(i/(a.length-1),col);});}
-    else bs=holoRainbow(c,W,H,0.6,1,t);
-    c.lineWidth=Math.max(4,W*0.006);c.strokeStyle=bs;c.strokeRect(c.lineWidth/2,c.lineWidth/2,W-c.lineWidth,H-c.lineWidth);
-  }
-  function makeHoloGif(s,cb){
-    var W=800,H=420,N=20,DELAY=90;
-    toast("반짝임 GIF 만드는 중...");
-    var fail=function(){withFonts(function(){drawCard(s).toBlob(cb,"image/png");});};
-    withFonts(function(){
-      var base=drawCard(s);
-      import(GIFENC_URL).then(function(mod){
-        var cv=document.createElement("canvas");cv.width=W;cv.height=H;var c=cv.getContext("2d",{willReadFrequently:true});
-        var pre=holoPre(W,H),gif=mod.GIFEncoder(),i=0;
-        (function next(){
-          if(i>=N){gif.finish();cb(new Blob([gif.bytes()],{type:"image/gif"}));return;}
-          holoFrame(c,base,W,H,i/N,pre);
-          var d=c.getImageData(0,0,W,H).data,pal=mod.quantize(d,256),idx=mod.applyPalette(d,pal);
-          gif.writeFrame(idx,W,H,{palette:pal,delay:DELAY});
-          i++;setTimeout(next,0);
-        })();
-      }).catch(fail);
+  // ---- 실제 화면 그대로 GIF: 지금 보이는 모달(DOM)을 SVG foreignObject 로 프레임마다 다시 그려서 GIF 로 묶는다 ----
+  // 계산된 스타일을 인라인으로 복사하고, 애니메이션은 일시정지 + 음수 지연으로 원하는 시점에 고정한다.
+  function snapTemplate(el){
+    var clone=el.cloneNode(true),srcAll=[el].concat([].slice.call(el.querySelectorAll("*"))),dstAll=[clone].concat([].slice.call(clone.querySelectorAll("*")));
+    var rm=[];
+    srcAll.forEach(function(src,i){
+      var dst=dstAll[i];
+      if(src.classList&&src.classList.contains("lk-sb")){rm.push(dst);return;}
+      var cs=getComputedStyle(src),txt="";
+      for(var k=0;k<cs.length;k++){var pn=cs[k];txt+=pn+":"+cs.getPropertyValue(pn)+";";}
+      dst.setAttribute("style",txt);
+      dst.removeAttribute("id");dst.removeAttribute("class");
+      if(cs.animationName&&cs.animationName!=="none")dst.setAttribute("data-anim",String(cs.animationName.split(",").length));
     });
+    rm.forEach(function(n){if(n.parentNode)n.parentNode.removeChild(n);});
+    clone.style.margin="0";clone.style.position="relative";clone.style.left="0";clone.style.top="0";clone.style.transform="none";
+    return clone;
+  }
+  var snapKF=null;
+  function snapKeyframes(){
+    // 키프레임은 페이지 스타일시트에만 있어서, SVG 안에도 같이 넣어 줘야 애니메이션이 그 시점의 모습으로 그려진다
+    if(snapKF!==null)return snapKF;
+    var out="";
+    [].slice.call(document.styleSheets).forEach(function(sh){
+      try{[].slice.call(sh.cssRules).forEach(function(r){if(r.type===7)out+=r.cssText+" ";});}catch(e){}
+    });
+    snapKF=out.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    return snapKF;
+  }
+  function snapFrameSvg(tpl,w,h,pad,t,px,py){
+    var c=tpl.cloneNode(true),all=[c].concat([].slice.call(c.querySelectorAll("*")));
+    all.forEach(function(n){
+      var a=n.getAttribute&&n.getAttribute("data-anim");
+      if(a){var cnt=parseInt(a,10),d=[],ps=[];for(var i=0;i<cnt;i++){d.push("-"+t.toFixed(3)+"s");ps.push("paused");}
+        n.style.animationDelay=d.join(",");n.style.animationPlayState=ps.join(",");n.removeAttribute("data-anim");}
+    });
+    // 포인터를 타원 궤도로 움직여 색 위치/광택이 흐르게 한다
+    var shine=c.querySelectorAll("[style*='repeating-linear-gradient']");
+    all.forEach(function(n){
+      var st=n.getAttribute&&n.getAttribute("style")||"";
+      if(st.indexOf("repeating-linear-gradient")>=0&&st.indexOf("background-size: 260% 260%")>=0||st.indexOf("background-size: 300% 300%")>=0){
+        n.style.backgroundPosition=px+"% "+py+"%";}
+      if(st.indexOf("radial-gradient")>=0&&st.indexOf("farthest-corner")>=0){
+        n.style.backgroundImage=n.style.backgroundImage.replace(/at [^,]+,/,"at "+px+"% "+py+"%,");}
+    });
+    var host=document.createElement("div");host.appendChild(c);
+    var inner=new XMLSerializer().serializeToString(c);
+    var W=w+pad*2,H=h+pad*2;
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><foreignObject x="0" y="0" width="'+W+'" height="'+H+'">'
+      +'<div xmlns="http://www.w3.org/1999/xhtml" style="padding:'+pad+'px;width:'+W+'px;height:'+H+'px;box-sizing:border-box;background:transparent"><style>'+snapKeyframes()+'</style>'+inner+'</div></foreignObject></svg>';
+  }
+  function loadSvg(svg){
+    return new Promise(function(res,rej){var im=new Image();im.onload=function(){res(im);};im.onerror=rej;
+      im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);});
+  }
+  function makeSnapGif(el,cb,fail){
+    var r=el.getBoundingClientRect(),pad=28,SC=Math.min(2,Math.max(1,640/(r.width+pad*2))),N=12,DELAY=110;
+    var W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC);
+    var bg=getComputedStyle(document.body).backgroundColor||"#12151b";
+    toast("이미지 만드는 중...");
+    import(GIFENC_URL).then(function(mod){
+      var tpl=snapTemplate(el),cv=document.createElement("canvas");cv.width=W;cv.height=H;
+      var c=cv.getContext("2d",{willReadFrequently:true}),gif=mod.GIFEncoder(),order=[],i;
+      for(i=0;i<N;i++)order.push(i);for(i=N-2;i>0;i--)order.push(i);   // 앞으로 갔다가 되돌아와서 끊김 없이 반복
+      var idx=0;
+      (function next(){
+        if(idx>=order.length){gif.finish();cb(new Blob([gif.bytes()],{type:"image/gif"}));return;}
+        var f=order[idx],ph=f/N,t=ph*7,ang=ph*Math.PI*2;
+        var px=Math.round(50+30*Math.cos(ang)),py=Math.round(40+25*Math.sin(ang));
+        loadSvg(snapFrameSvg(tpl,r.width,r.height,pad,t,px,py)).then(function(im){
+          c.setTransform(1,0,0,1,0,0);c.fillStyle=bg;c.fillRect(0,0,W,H);
+          c.drawImage(im,0,0,W,H);
+          var d=c.getImageData(0,0,W,H).data,pal=mod.quantize(d,256),pix=mod.applyPalette(d,pal);
+          gif.writeFrame(pix,W,H,{palette:pal,delay:DELAY});
+          idx++;setTimeout(next,0);
+        }).catch(fail);
+      })();
+    }).catch(fail);
   }
   function makeBlob(s,opts,cb){
-    if(opts&&opts.holo){makeHoloGif(s,cb);return;}
+    var el0=opts&&opts.holo&&opts.captureEl&&opts.captureEl();
+    if(el0){makeSnapGif(el0,cb,function(){makeBlobStatic(s,opts,cb);});return;}
+    makeBlobStatic(s,opts,cb);
+  }
+  function makeBlobStatic(s,opts,cb){
     var el=opts&&opts.captureEl&&opts.captureEl();
     if(el&&window.html2canvas){
       var prev={ov:el.style.overflow,h:el.style.height,mh:el.style.maxHeight};
@@ -468,7 +471,7 @@ window.LKShare=(function(){
     var m=document.createElement("div");m.className="lk-menu";
     var withImg=!(opts&&opts.image===false);
     m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
-      +(withImg?'<button data-a="img">'+(opts&&opts.holo?'✨ 반짝임 GIF 저장':'🖼️ 이미지 저장')+'</button>':'')
+      +(withImg?'<button data-a="img">🖼️ 이미지 저장</button>':'')
       +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
     document.body.appendChild(m);
     var r=btn.getBoundingClientRect();
@@ -1283,7 +1286,7 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
         emoji: '🎰', accent: '#f0c650', pill: 'ROYAL',
         lines: [box.title, sinceLast.toLocaleString('ko-KR') + '번째 뽑기에 획득', isBonus ? '보너스 뽑기' : ''].filter(Boolean)
       };
-    }, wished ? { holo: true } : { captureEl: function () { return document.getElementById('modalBox'); } });
+    }, wished ? { holo: true, captureEl: function () { return document.getElementById('modalBox'); } } : { captureEl: function () { return document.getElementById('modalBox'); } });
   })();
   document.getElementById('royalContinueBtn').onclick = hideModal;
 }
@@ -1694,7 +1697,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
         emoji: '✨', accent: '#cf9bff', pill: 'MYTHIC',
         lines: [zone.name, sinceLast.toLocaleString('ko-KR') + '회차에 등장', elapsed + ' 만에 획득'].filter(Boolean)
       };
-    }, { holo: true });
+    }, { holo: true, captureEl: function () { return document.getElementById('modalBox'); } });
   })();
   document.getElementById('mythicContinueBtn').onclick = hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
