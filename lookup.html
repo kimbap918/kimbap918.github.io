@@ -422,7 +422,13 @@ td:first-child .stage-arrow{display:inline-block;}
   #detail{padding:18px 16px 32px;}
   #detail>*{max-width:none;}
   #gradeMain{flex-direction:column;height:auto;}
-  #gradeRosterView{width:100%;max-height:44vh;border-right:none;border-bottom:1px solid var(--border);}
+  #gradeRosterView{width:100%;max-height:52vh;border-right:none;border-bottom:1px solid var(--border);}
+  /* 던전 버튼을 2열 작은 칸으로 줄여, 던전을 눌렀을 때 아래 아이템 목록/드롭다운이 스크롤 없이 한눈에 보이게 한다 */
+  .grade-group-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+  .grade-group-tab{padding:6px 9px;gap:7px;font-size:12.5px;min-width:0;}
+  .grade-group-tab img{width:22px;height:22px;}
+  .grade-group-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .grade-picker{padding-top:10px;}
   #gradeDetail{padding:18px 16px 32px;}
   #gradeDetail>*{max-width:none;}
   /* 아이템 이름이 길면(예: "카울리니의 스파이럴소드 [신화]") 아이콘/버튼과
@@ -1383,6 +1389,13 @@ function renderGradeRoster() {
     el.addEventListener('click', () => {
       currentGradeGroupKey = el.dataset.key;
       renderGradeRoster();
+      // 목록이 화면(또는 목록 상자) 밖으로 밀려 있으면 바로 보이는 위치로 맞춘다
+      const pk = document.getElementById('gradePicker');
+      if (pk) {
+        const need = pk.getBoundingClientRect().bottom - gradeRosterView.getBoundingClientRect().bottom;
+        if (need > 0) gradeRosterView.scrollTop += need + 8;
+        pk.scrollIntoView({ block: 'nearest' });
+      }
     });
   });
   renderGradePicker();
@@ -1986,6 +1999,8 @@ function renderGradeOptionRows(chainIds, tierIndex, slotState, visibleSlots, onA
       onGradeInput(rowKey, input, o);
       renderCurrentResultCard();
       renderProjectedSection();
+      // 옵션을 고르면 바로 그 칸의 수치 입력칸으로 커서를 보낸다
+      setTimeout(() => { if (!input.disabled) input.focus(); }, 0);
     });
     input.addEventListener('input', () => {
       const o = select.value !== '' ? opts[parseInt(select.value, 10)] : null;
