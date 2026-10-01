@@ -1662,6 +1662,7 @@ function select(id){
     hp:       Math.round(b.hp*m.hp),
     redAbs:   Math.round(b.reduce_dam_abs*m.red),
     redEle:   Math.round(b.reduce_ele_dam_abs*m.red),
+    guard:    Math.max(0, (b.guard||0)+m.guard),
     atkDam:   b.atk_dam_pct.map(v=>Math.round(v*m.dam)),
     eleDam:   b.ele_dam_pct.map(v=>Math.round(v*m.dam)),
     phyDodge: b.phy_dodge_rate+m.dodge,
@@ -1730,6 +1731,7 @@ function select(id){
         ${kvItem("속성 저항", nf.format(b.water_res))}
         ${kvItem("물리 방어무시", b.def_penetration, "phys")}
         ${kvItem("마법 방어무시", b.ele_penetration, "magic")}
+        ${kvItem("대미지 감소 %", E.guard+"%")}
       </div>
       <p class="note" style="margin-top:11px"><b>참고</b> · 위 스탯은 몹이 항상 지니는 고정값입니다. 실제 게임 속 정보와 틀리거나 다를 수 있습니다.</p>
     </div>
