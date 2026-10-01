@@ -126,8 +126,12 @@ tr.reward-row.best td{color:var(--best);}
   0%,100%{box-shadow:0 0 0 1px var(--mythic-purple),0 0 18px 4px rgba(196,138,255,0.35);}
   50%{box-shadow:0 0 0 2px var(--mythic-purple),0 0 34px 10px rgba(196,138,255,0.6);}
 }
-.modal-box.mythic-glow{border-color:var(--mythic-purple);animation:mythicGlow 1.8s ease-in-out infinite;}
-@media (prefers-reduced-motion:reduce){.modal-box.mythic-glow{animation:none;box-shadow:0 0 0 2px var(--mythic-purple),0 0 24px 6px rgba(196,138,255,0.45);}}
+.modal-box.mythic-glow{border-color:transparent;animation:mythicGlowSoft 1.8s ease-in-out infinite;}
+@keyframes mythicGlowSoft{
+  0%,100%{box-shadow:0 0 18px 2px rgba(196,138,255,0.3);}
+  50%{box-shadow:0 0 34px 8px rgba(196,138,255,0.5);}
+}
+@media (prefers-reduced-motion:reduce){.modal-box.mythic-glow{animation:none;box-shadow:0 0 24px 4px rgba(196,138,255,0.4);}}
 /* 홀로그램 카드 - 신화 상자 획득 모달 전용.
    무지개 띠(color-dodge) + 노이즈로 오려낸 무지개 포일 얼룩 + 대각선 광택 + 무지개 테두리 + 네 갈래 빛 조각.
    포인터 위치(--pointer-x/y)는 색 위치와 광택에만 쓰고 질감/빛 조각 위치는 고정한다.
@@ -150,7 +154,7 @@ tr.reward-row.best td{color:var(--best);}
   background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.56) 50%,rgba(255,255,255,.3) 52%,transparent 60%);
   animation:holoSweep 7s ease-in-out infinite alternate;will-change:transform;}
 @keyframes holoSweep{from{transform:translate3d(-24%,0,0)}to{transform:translate3d(24%,0,0)}}
-.holo-ring{padding:2px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
+.holo-ring{inset:-1px;padding:3px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
   mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:calc(var(--card-opacity) * 1.2);}
 .holo-glare{opacity:calc(var(--card-opacity) * .9);background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
@@ -338,12 +342,94 @@ window.LKShare=(function(){
   function dl(b,s){
     if(!b){toast("이미지 생성 실패");return;}
     var u=URL.createObjectURL(b),a=document.createElement("a");
-    a.href=u;a.download="latale-"+String(s.page||"card").replace(/[^A-Za-z0-9]+/g,"")+".png";
+    a.href=u;a.download="latale-"+String(s.page||"card").replace(/[^A-Za-z0-9]+/g,"")+(b.type==="image/gif"?".gif":".png");
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(u);},5000);
     toast("이미지 저장됨");
   }
+  // ---- 반짝임 GIF (홀로그램 카드 공유용): 기본 공유 카드 위에 무지개 띠/포일 얼룩/광택/빛 조각/무지개 테두리를 움직여 입힌 반복 GIF ----
+  var GIFENC_URL="https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js";
+  function holoRng(seed){var v=seed>>>0;return function(){v=(v*1664525+1013904223)>>>0;return v/4294967296;};}
+  function holoPre(W,H){
+    var rand=holoRng(20260);
+    var mk=document.createElement("canvas");mk.width=W;mk.height=H;var mc=mk.getContext("2d");
+    var lw=Math.ceil(W/4),lh=Math.ceil(H/4),nc=document.createElement("canvas");nc.width=lw;nc.height=lh;var nx=nc.getContext("2d");
+    var id=nx.createImageData(lw,lh),v=new Float32Array(lw*lh),k,x,y;
+    for(k=0;k<v.length;k++)v[k]=rand();
+    for(y=0;y<lh;y++)for(x=0;x<lw;x++){k=y*lw+x;
+      var m=(v[k]*2+v[(k+1)%v.length]+v[(k+lw)%v.length]+v[(k+lw+1)%v.length]*0.5)/4.5;
+      var a=Math.max(0,Math.min(1,(m-0.56)*4.2));
+      id.data[k*4]=255;id.data[k*4+1]=255;id.data[k*4+2]=255;id.data[k*4+3]=Math.round(a*255);}
+    nx.putImageData(id,0,0);mc.imageSmoothingEnabled=true;mc.drawImage(nc,0,0,W,H);
+    var stars=[];for(k=0;k<9;k++)stars.push({x:W*(0.06+rand()*0.88),y:H*(0.08+rand()*0.84),s:W*(0.008+rand()*0.014),ph:rand()});
+    var fl=document.createElement("canvas");fl.width=W;fl.height=H;
+    return {mask:mk,stars:stars,fl:fl};
+  }
+  var HOLO_COLS=["#ff5d8f","#ffb35d","#f7f06a","#5df2a0","#4dc3ff","#9a7bff","#ff5dd0","#ff5d8f"];
+  function holoRainbow(c,W,H,ang,periods,shift){
+    // 길이 W*2 축을 따라 periods 번 반복되는 무지개. shift(0~1)만큼 한 주기 이동해도 이어지게 한다.
+    var L=Math.sqrt(W*W+H*H)*1.6,dx=Math.cos(ang),dy=Math.sin(ang),per=L/periods;
+    var cx=W/2-dx*L/2-dx*per*shift,cy=H/2-dy*L/2-dy*per*shift;
+    var g=c.createLinearGradient(cx,cy,cx+dx*L*(1+1/periods),cy+dy*L*(1+1/periods)),n=HOLO_COLS.length-1,p,i;
+    var total=periods+1;
+    for(p=0;p<total;p++)for(i=0;i<n;i++){var pos=(p+i/n)/total;g.addColorStop(Math.min(1,pos),HOLO_COLS[i]);}
+    g.addColorStop(1,HOLO_COLS[0]);
+    return g;
+  }
+  function holoStar(c,x,y,s){
+    c.beginPath();c.moveTo(x,y-s);c.quadraticCurveTo(x,y,x+s,y);c.quadraticCurveTo(x,y,x,y+s);c.quadraticCurveTo(x,y,x-s,y);c.quadraticCurveTo(x,y,x,y-s);c.fill();
+  }
+  function holoFrame(c,base,W,H,t,pre){
+    c.globalCompositeOperation="source-over";c.globalAlpha=1;c.drawImage(base,0,0,W,H);
+    // 무지개 띠
+    c.globalCompositeOperation="color-dodge";c.globalAlpha=0.12;
+    c.fillStyle=holoRainbow(c,W,H,1.1,2,t);c.fillRect(0,0,W,H);
+    // 포일 얼룩: 질감 위치는 고정, 색만 흘러간다
+    var fx=pre.fl.getContext("2d");fx.globalCompositeOperation="source-over";fx.clearRect(0,0,W,H);
+    fx.fillStyle=holoRainbow(fx,W,H,-1.0,2,1-t);fx.fillRect(0,0,W,H);
+    fx.globalCompositeOperation="destination-in";fx.drawImage(pre.mask,0,0);
+    c.globalCompositeOperation="screen";c.globalAlpha=0.26;c.drawImage(pre.fl,0,0);
+    // 대각선 광택이 한 번 지나간다
+    c.globalCompositeOperation="lighter";c.globalAlpha=1;
+    c.save();c.translate(W/2,H/2);c.rotate(-0.35);
+    var gx=(t*2-1)*W*0.75,sg=c.createLinearGradient(gx-W*0.12,0,gx+W*0.12,0);
+    sg.addColorStop(0,"rgba(255,255,255,0)");sg.addColorStop(0.5,"rgba(255,255,255,0.32)");sg.addColorStop(1,"rgba(255,255,255,0)");
+    c.fillStyle=sg;c.fillRect(-W,-H,W*2,H*2);c.restore();
+    // 빛 조각
+    c.globalCompositeOperation="source-over";c.fillStyle="#fff";
+    pre.stars.forEach(function(st){
+      var a=Math.sin(Math.PI*2*(t+st.ph));a=a>0?a*a:0;if(a<0.02)return;
+      var hg=c.createRadialGradient(st.x,st.y,0,st.x,st.y,st.s*2.4);hg.addColorStop(0,"rgba(255,255,255,"+(0.55*a)+")");hg.addColorStop(1,"rgba(255,255,255,0)");
+      c.globalAlpha=1;c.fillStyle=hg;c.beginPath();c.arc(st.x,st.y,st.s*2.4,0,7);c.fill();
+      c.globalAlpha=a;c.fillStyle="#fff";holoStar(c,st.x,st.y,st.s);});
+    c.globalAlpha=1;
+    // 무지개 테두리(색이 한 바퀴 돈다)
+    var bs;
+    if(c.createConicGradient){bs=c.createConicGradient(Math.PI*2*t,W/2,H/2);HOLO_COLS.forEach(function(col,i,a){bs.addColorStop(i/(a.length-1),col);});}
+    else bs=holoRainbow(c,W,H,0.6,1,t);
+    c.lineWidth=Math.max(4,W*0.006);c.strokeStyle=bs;c.strokeRect(c.lineWidth/2,c.lineWidth/2,W-c.lineWidth,H-c.lineWidth);
+  }
+  function makeHoloGif(s,cb){
+    var W=800,H=420,N=20,DELAY=90;
+    toast("반짝임 GIF 만드는 중...");
+    var fail=function(){withFonts(function(){drawCard(s).toBlob(cb,"image/png");});};
+    withFonts(function(){
+      var base=drawCard(s);
+      import(GIFENC_URL).then(function(mod){
+        var cv=document.createElement("canvas");cv.width=W;cv.height=H;var c=cv.getContext("2d",{willReadFrequently:true});
+        var pre=holoPre(W,H),gif=mod.GIFEncoder(),i=0;
+        (function next(){
+          if(i>=N){gif.finish();cb(new Blob([gif.bytes()],{type:"image/gif"}));return;}
+          holoFrame(c,base,W,H,i/N,pre);
+          var d=c.getImageData(0,0,W,H).data,pal=mod.quantize(d,256),idx=mod.applyPalette(d,pal);
+          gif.writeFrame(idx,W,H,{palette:pal,delay:DELAY});
+          i++;setTimeout(next,0);
+        })();
+      }).catch(fail);
+    });
+  }
   function makeBlob(s,opts,cb){
+    if(opts&&opts.holo){makeHoloGif(s,cb);return;}
     var el=opts&&opts.captureEl&&opts.captureEl();
     if(el&&window.html2canvas){
       var prev={ov:el.style.overflow,h:el.style.height,mh:el.style.maxHeight};
@@ -363,7 +449,7 @@ window.LKShare=(function(){
   function saveCard(s,opts){ makeBlob(s,opts,function(b){dl(b,s);}); }
   function nativeShare(s,opts){
     makeBlob(s,opts,function(b){
-      var f=b?new File([b],"latale.png",{type:"image/png"}):null;
+      var f=b?new File([b],b.type==="image/gif"?"latale.gif":"latale.png",{type:b.type||"image/png"}):null;
       var p={title:s.title,text:summary(s),url:url(s)};
       if(f&&navigator.canShare&&navigator.canShare({files:[f]}))p.files=[f];
       (navigator.share?navigator.share(p):copyText(summary(s)).then(function(){toast("공유 내용 복사됨");})).catch(function(){});
@@ -376,7 +462,7 @@ window.LKShare=(function(){
     var m=document.createElement("div");m.className="lk-menu";
     var withImg=!(opts&&opts.image===false);
     m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
-      +(withImg?'<button data-a="img">🖼️ 이미지 저장</button>':'')
+      +(withImg?'<button data-a="img">'+(opts&&opts.holo?'✨ 반짝임 GIF 저장':'🖼️ 이미지 저장')+'</button>':'')
       +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
     document.body.appendChild(m);
     var r=btn.getBoundingClientRect();
@@ -1595,7 +1681,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
         emoji: '✨', accent: '#cf9bff', pill: 'MYTHIC',
         lines: [zone.name, sinceLast.toLocaleString('ko-KR') + '회차에 등장', elapsed + ' 만에 획득'].filter(Boolean)
       };
-    }, { captureEl: function () { return document.getElementById('modalBox'); } });
+    }, { holo: true });
   })();
   document.getElementById('mythicContinueBtn').onclick = hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
