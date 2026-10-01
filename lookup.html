@@ -135,6 +135,37 @@ main{display:flex;height:calc(100dvh - 96px);}
     hsla(0,0%,100%,.45) 0%,hsla(0,0%,100%,.16) 24%,hsla(0,0%,0%,.16) 90%);
   mix-blend-mode:overlay;}
 @media (prefers-reduced-motion:reduce){.holo-shine,.holo-glare{display:none;}}
+/* 5옵션 + 90%급 아이템의 제목 박스(grade-summary)에만 켜지는 홀로그램 포일.
+   무지개 포일 얼룩(질감은 고정, 색만 포인터 방향으로 흐름) + 대각선 광택 + 무지개 테두리 + 빛 조각.
+   평소 은은하게 켜져 있고(--card-opacity .7) 마우스를 올리면 진해진다. 효과 층은 전부 .holo-extra 안에서 잘린다. */
+.holo-extra{display:none;position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;}
+.grade-summary.holo-full{border-color:transparent;}
+.grade-summary.holo-full .holo-extra{display:block;}
+.holo-foil,.holo-sweep,.holo-ring{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;transition:opacity .5s ease;}
+.holo-foil{opacity:calc(var(--card-opacity) * .5);
+  background:repeating-linear-gradient(64deg,#ff5d8f 0%,#ffb35d 7%,#f7f06a 14%,#5df2a0 21%,#4dc3ff 28%,#9a7bff 35%,#ff5dd0 42%,#ff5d8f 49%);
+  background-size:260% 260%;background-position:var(--pointer-x) var(--pointer-y);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;}
+.holo-sweep{overflow:hidden;opacity:calc(var(--card-opacity) * 1.1);}
+.holo-sweep>i{position:absolute;inset:0;display:block;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.56) 50%,rgba(255,255,255,.3) 52%,transparent 60%);
+  animation:holoSweep 7s ease-in-out infinite alternate;will-change:transform;}
+@keyframes holoSweep{from{transform:translate3d(-24%,0,0)}to{transform:translate3d(24%,0,0)}}
+.holo-ring{padding:3px;background:conic-gradient(from 200deg,#ff5d8f,#ffb35d,#f7f06a,#5df2a0,#4dc3ff,#9a7bff,#ff5dd0,#ff5d8f);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:calc(var(--card-opacity) * 1.2);}
+.holo-star{position:absolute;z-index:6;pointer-events:none;width:14px;height:14px;opacity:0;
+  background:linear-gradient(135deg,#fff,#d9f4ff);
+  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+  animation:holoStar 3.2s ease-in-out infinite;}
+@keyframes holoStar{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(20deg)}}
+@media (prefers-reduced-motion:reduce){.holo-sweep>i,.holo-star{animation:none;}.holo-star{opacity:.8;}}
+/* 4옵션 90%급(포일 없음): 기존 무지개 샤인이 마우스 없이도 보이도록 색을 진하게 하고 천천히 흘려 보낸다 */
+.grade-summary.holo-lite .holo-shine{background-image:repeating-linear-gradient(110deg,
+    hsla(2,95%,72%,.5) 0%,hsla(53,95%,70%,.5) 12%,hsla(93,95%,70%,.5) 24%,
+    hsla(176,95%,75%,.5) 36%,hsla(228,95%,74%,.5) 48%,hsla(283,95%,74%,.5) 60%,
+    hsla(2,95%,72%,.5) 72%);mix-blend-mode:normal;animation:holoLite 9s ease-in-out infinite alternate;}
+@keyframes holoLite{from{background-position:10% 40%}to{background-position:90% 60%}}
 /* 터치 기기는 마우스가 없어 마우스무브로 켜던 효과가 아예 안 보였다
    (사용자 지적, 2026-09-23 - "모바일에서도 제목의 빛나는 효과"). 이전엔
    hover:none에서 아예 꺼버렸는데, updateGradeSummary()가 같은 조건에서
@@ -1278,7 +1309,7 @@ function initGradeHolo(panel) {
   if (!panel) return;
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const onMove = (e) => {
-    if (!gradeIsPerfectTier) return;
+    if (!gradeIsPerfectTier && !gradeIsHoloTier) return;
     const rect = panel.getBoundingClientRect();
     const px = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
     const py = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
@@ -1289,7 +1320,7 @@ function initGradeHolo(panel) {
   const onLeave = () => {
     panel.style.setProperty('--pointer-x', '50%');
     panel.style.setProperty('--pointer-y', '50%');
-    panel.style.setProperty('--card-opacity', '0');
+    panel.style.setProperty('--card-opacity', String(holoBase()));
   };
   panel.addEventListener('mousemove', onMove);
   panel.addEventListener('mouseleave', onLeave);
@@ -1364,6 +1395,7 @@ function renderGradePicker() {
   });
 }
 
+let gradeIsHoloTier = false; // 5옵션 + 90%+ 일 때만 제목 박스에 홀로그램 포일
 let gradeIsPerfectTier = false; // 종합 90%+일 때만 홀로그램 이스터에그 활성 (사용자 지정, 2026-09-22)
 
 // 터치 기기(hover 불가)에서는 마우스 오버로 켜던 제목 글로우가 아예 안
@@ -1376,6 +1408,24 @@ function syncNoHoverGradeGlow(on) {
   panel.style.setProperty('--pointer-x', '50%');
   panel.style.setProperty('--pointer-y', '35%');
   panel.style.setProperty('--card-opacity', on ? '1' : '0');
+}
+
+// 조건(4옵션+90%, 5옵션이면 포일까지)이 달성되면 마우스를 올리지 않아도 효과가 보이도록 평소 농도를 올려 둔다.
+function holoBase() { return (gradeIsPerfectTier || gradeIsHoloTier) ? 0.7 : 0; }
+function applyHoloFull() {
+  const panel = document.querySelector('.grade-summary');
+  if (!panel) return;
+  panel.classList.toggle('holo-full', gradeIsHoloTier);
+  panel.classList.toggle('holo-lite', gradeIsPerfectTier && !gradeIsHoloTier);
+  const touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  const base = holoBase();
+  if (touch && base) {
+    panel.style.setProperty('--pointer-x', '50%');
+    panel.style.setProperty('--pointer-y', '35%');
+    panel.style.setProperty('--card-opacity', '.85');
+  } else if (!panel.matches(':hover')) {
+    panel.style.setProperty('--card-opacity', String(base));
+  }
 }
 
 function updateGradeSummary() {
@@ -1394,9 +1444,11 @@ function updateGradeSummary() {
     barEl.style.width = '0%';
     barEl.className = 'grade-bar-fill';
     gradeIsPerfectTier = false;
+    gradeIsHoloTier = false;
     const nameElEmpty = document.getElementById('gradeItemName');
     if (nameElEmpty) nameElEmpty.classList.remove('legendary');
     syncNoHoverGradeGlow(false);
+    applyHoloFull();
     return;
   }
   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
@@ -1408,9 +1460,11 @@ function updateGradeSummary() {
   barEl.style.width = avg.toFixed(1) + '%';
   barEl.className = 'grade-bar-fill g-' + gradeTierOf(avg);
   gradeIsPerfectTier = avg >= 90 && vals.length >= 4;
+  gradeIsHoloTier = avg >= 90 && vals.length >= 5;
   const nameEl = document.getElementById('gradeItemName');
   if (nameEl) nameEl.classList.toggle('legendary', gradeIsPerfectTier);
   syncNoHoverGradeGlow(gradeIsPerfectTier);
+  applyHoloFull();
 }
 
 
@@ -1494,7 +1548,8 @@ function selectGradeItem(id) {
   out += '<div class="grade-summary">' +
     (item.icon ? '<img class="gs-icon" src="' + item.icon + '" alt="">' : '<div class="gs-icon"></div>') +
     '<div class="gs-title-wrap"><h2 style="margin:0" id="gradeItemName" class="' + (tierIndex >= 7 ? 'transcend' : '') + '">' + tierName(chainIds[tierIndex]) + '</h2><span class="small">' + T(grp.label) + ' · ' + T(item.slot) + '</span></div>' +
-    '<div class="holo-shine"></div><div class="holo-glare"></div></div>';
+    '<div class="holo-shine"></div><div class="holo-glare"></div>' +
+    '<div class="holo-extra"><div class="holo-foil"></div><div class="holo-sweep"><i></i></div><div class="holo-ring"></div><i class="holo-star" style="left:12%;top:20%;width:12px;height:12px;animation-delay:0.0s"></i><i class="holo-star" style="left:30%;top:70%;width:16px;height:16px;animation-delay:0.9s"></i><i class="holo-star" style="left:52%;top:24%;width:11px;height:11px;animation-delay:1.7s"></i><i class="holo-star" style="left:68%;top:62%;width:18px;height:18px;animation-delay:0.4s"></i><i class="holo-star" style="left:84%;top:22%;width:14px;height:14px;animation-delay:2.3s"></i><i class="holo-star" style="left:92%;top:68%;width:11px;height:11px;animation-delay:1.2s"></i></div></div>';
 
   if (chainIds.length > 1) {
     out += '<div class="grade-tier-chips" id="gradeTierChips" role="radiogroup" aria-label="' + T('강화 단계') + '">' +
