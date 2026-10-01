@@ -142,10 +142,9 @@ main{display:flex;height:calc(100dvh - 96px);}
 .grade-summary.holo-full{border-color:transparent;}
 .grade-summary.holo-full .holo-extra{display:block;}
 .holo-foil,.holo-sweep,.holo-ring{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;transition:opacity .5s ease;}
-.holo-foil{opacity:calc(var(--card-opacity) * .5);
-  background:repeating-linear-gradient(64deg,#ff5d8f 0%,#ffb35d 7%,#f7f06a 14%,#5df2a0 21%,#4dc3ff 28%,#9a7bff 35%,#ff5dd0 42%,#ff5d8f 49%);
-  background-size:260% 260%;background-position:var(--pointer-x) var(--pointer-y);
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;}
+.holo-foil{opacity:calc(var(--card-opacity) * .5);overflow:hidden;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;}
+.holo-foil>i{position:absolute;top:0;bottom:0;left:-60%;right:-60%;display:block;background:repeating-linear-gradient(64deg,#ff5d8f 0%,#ffb35d 7%,#f7f06a 14%,#5df2a0 21%,#4dc3ff 28%,#9a7bff 35%,#ff5dd0 42%,#ff5d8f 49%);animation:holoFlow 7s ease-in-out infinite alternate;will-change:transform;}
+@keyframes holoFlow{from{transform:translate3d(-11%,0,0)}to{transform:translate3d(11%,0,0)}}
 .holo-sweep{overflow:hidden;opacity:calc(var(--card-opacity) * 1.1);}
 .holo-sweep>i{position:absolute;inset:0;display:block;
   background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.56) 50%,rgba(255,255,255,.3) 52%,transparent 60%);
@@ -164,8 +163,8 @@ main{display:flex;height:calc(100dvh - 96px);}
 .grade-summary.holo-lite .holo-shine{background-image:repeating-linear-gradient(110deg,
     hsla(2,95%,72%,.5) 0%,hsla(53,95%,70%,.5) 12%,hsla(93,95%,70%,.5) 24%,
     hsla(176,95%,75%,.5) 36%,hsla(228,95%,74%,.5) 48%,hsla(283,95%,74%,.5) 60%,
-    hsla(2,95%,72%,.5) 72%);mix-blend-mode:normal;animation:holoLite 9s ease-in-out infinite alternate;}
-@keyframes holoLite{from{background-position:10% 40%}to{background-position:90% 60%}}
+    hsla(2,95%,72%,.5) 72%);mix-blend-mode:normal;animation:holoLite 7s ease-in-out infinite alternate;}
+@keyframes holoLite{from{background-position:90% 60%}to{background-position:10% 40%}}
 /* 제목 글자/부제는 효과 층 위에 둬서 효과가 켜져도 또렷하게 보이게 한다 */
 .grade-summary .gs-title-wrap{position:relative;z-index:7;}
 /* 5옵션 90%급: 신화 상자 모달처럼 어두운 홀로그램 카드로 바뀐다(라이트/다크 공통).
@@ -176,7 +175,7 @@ main{display:flex;height:calc(100dvh - 96px);}
 .grade-summary.holo-full .holo-shine{background-image:repeating-linear-gradient(110deg,
     hsla(2,95%,72%,.42) 0%,hsla(53,95%,70%,.42) 12%,hsla(93,95%,70%,.42) 24%,
     hsla(176,95%,75%,.42) 36%,hsla(228,95%,74%,.42) 48%,hsla(283,95%,74%,.42) 60%,
-    hsla(2,95%,72%,.42) 72%);mix-blend-mode:color-dodge;animation:holoLite 9s ease-in-out infinite alternate;}
+    hsla(2,95%,72%,.42) 72%);mix-blend-mode:color-dodge;animation:holoLite 7s ease-in-out infinite alternate;}
 .grade-summary.holo-full .holo-foil{opacity:calc(var(--card-opacity) * 1.1);mix-blend-mode:screen;}
 .grade-summary.holo-full .holo-extra{display:block;}
 @media (prefers-reduced-motion:reduce){.grade-summary.holo-full .holo-shine{animation:none;display:block;}}
@@ -1563,7 +1562,7 @@ function selectGradeItem(id) {
     (item.icon ? '<img class="gs-icon" src="' + item.icon + '" alt="">' : '<div class="gs-icon"></div>') +
     '<div class="gs-title-wrap"><h2 style="margin:0" id="gradeItemName" class="' + (tierIndex >= 7 ? 'transcend' : '') + '">' + tierName(chainIds[tierIndex]) + '</h2><span class="small">' + T(grp.label) + ' · ' + T(item.slot) + '</span></div>' +
     '<div class="holo-shine"></div><div class="holo-glare"></div>' +
-    '<div class="holo-extra"><div class="holo-foil"></div><div class="holo-sweep"><i></i></div><div class="holo-ring"></div><i class="holo-star" style="left:12%;top:20%;width:12px;height:12px;animation-delay:0.0s"></i><i class="holo-star" style="left:30%;top:70%;width:16px;height:16px;animation-delay:0.9s"></i><i class="holo-star" style="left:52%;top:24%;width:11px;height:11px;animation-delay:1.7s"></i><i class="holo-star" style="left:68%;top:62%;width:18px;height:18px;animation-delay:0.4s"></i><i class="holo-star" style="left:84%;top:22%;width:14px;height:14px;animation-delay:2.3s"></i><i class="holo-star" style="left:92%;top:68%;width:11px;height:11px;animation-delay:1.2s"></i></div></div>';
+    '<div class="holo-extra"><div class="holo-foil"><i></i></div><div class="holo-sweep"><i></i></div><div class="holo-ring"></div><i class="holo-star" style="left:12%;top:20%;width:12px;height:12px;animation-delay:0.0s"></i><i class="holo-star" style="left:30%;top:70%;width:16px;height:16px;animation-delay:0.9s"></i><i class="holo-star" style="left:52%;top:24%;width:11px;height:11px;animation-delay:1.7s"></i><i class="holo-star" style="left:68%;top:62%;width:18px;height:18px;animation-delay:0.4s"></i><i class="holo-star" style="left:84%;top:22%;width:14px;height:14px;animation-delay:2.3s"></i><i class="holo-star" style="left:92%;top:68%;width:11px;height:11px;animation-delay:1.2s"></i></div></div>';
 
   if (chainIds.length > 1) {
     out += '<div class="grade-tier-chips" id="gradeTierChips" role="radiogroup" aria-label="' + T('강화 단계') + '">' +
