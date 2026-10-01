@@ -528,7 +528,7 @@ window.LKShare=(function(){
     m.innerHTML='<button data-a="link">🔗 링크 복사</button>'
       +(withImg?'<button data-a="img">🖼️ 이미지 저장'+(opts&&opts.holo?' (PNG)':'')+'</button>':'')
       +(withImg&&opts&&opts.holo?'<button data-a="anim">✨ 움직이는 이미지 저장 (WebP)</button>':'')
-      +(navigator.share?'<button data-a="native">↗ 공유…</button>':'');
+      +(navigator.share&&!(opts&&opts.native===false)?'<button data-a="native">↗ 공유…</button>':'');
     document.body.appendChild(m);
     var r=btn.getBoundingClientRect();
     var left=Math.max(8,Math.min(r.left,window.innerWidth-m.offsetWidth-8));
@@ -1360,7 +1360,7 @@ function showRoyalHitModal(box, hit, done, totalRolls, onContinue) {
         emoji: '🎰', accent: '#f0c650', pill: 'ROYAL',
         lines: [box.title, sinceLast.toLocaleString('ko-KR') + '번째 뽑기에 획득', isBonus ? '보너스 뽑기' : ''].filter(Boolean)
       };
-    }, wished ? { holo: true, captureEl: function () { return document.getElementById('modalBox'); } } : { captureEl: function () { return document.getElementById('modalBox'); } });
+    }, wished ? { holo: true, native: false, captureEl: function () { return document.getElementById('modalBox'); } } : { native: false, captureEl: function () { return document.getElementById('modalBox'); } });
   })();
   document.getElementById('royalContinueBtn').onclick = viewOnly ? function () { hideModal(); if (window.LKShare) LKShare.clearParam('r'); } : hideModal;
 }
@@ -1773,7 +1773,7 @@ function showMythicHitModal(zone, hit, done, trials, onContinue) {
         emoji: '✨', accent: '#cf9bff', pill: 'MYTHIC',
         lines: [zone.name, sinceLast.toLocaleString('ko-KR') + '회차에 등장', elapsed + ' 만에 획득'].filter(Boolean)
       };
-    }, { holo: true, captureEl: function () { return document.getElementById('modalBox'); } });
+    }, { holo: true, native: false, captureEl: function () { return document.getElementById('modalBox'); } });
   })();
   document.getElementById('mythicContinueBtn').onclick = viewOnly ? function () { hideModal(); if (window.LKShare) LKShare.clearParam('r'); } : hideModal;
   const eggLink = document.getElementById('mythicEasterEggLink');
