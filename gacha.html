@@ -195,8 +195,10 @@ tr.reward-row.best td{color:var(--best);}
 .modal-box.mythic-glow .small,.modal-box.holo-wish .small{color:rgba(255,255,255,.9);}
 .modal-box.mythic-glow .lk-sb,.modal-box.holo-wish .lk-sb{color:rgba(255,255,255,.7);}
 .modal-box.mythic-glow>*:not(.holo-wrap),.modal-box.holo-wish>*:not(.holo-wrap){position:relative;z-index:7;}
-.modal-box.mythic-glow .mythic-shine,.modal-box.holo-wish .gold-shine{background:none;animation:none;-webkit-text-fill-color:#fff;color:#fff;}
-.modal-box.mythic-glow h3,.modal-box.holo-wish h3,.modal-box.mythic-glow .modal-desc,.modal-box.holo-wish .modal-desc,.modal-box.mythic-glow .small,.modal-box.holo-wish .small,.modal-box.mythic-glow .mythic-shine,.modal-box.holo-wish .gold-shine{text-shadow:0 1px 5px rgba(18,10,40,.9),0 0 2px rgba(18,10,40,.9);}
+.modal-box.mythic-glow .mythic-shine,.modal-box.holo-wish .gold-shine{background:linear-gradient(100deg,#ffb3c9,#ffe0b0 14%,#fffbc4 28%,#b8f7da 42%,#b0e0ff 56%,#d3c4ff 70%,#ffb8ee 84%,#ffb3c9);background-size:300% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:holoName 7s ease-in-out infinite alternate;filter:drop-shadow(0 1px 4px rgba(18,10,40,.85));text-shadow:none;}
+@keyframes holoName{from{background-position:0% 50%}to{background-position:100% 50%}}
+@media (prefers-reduced-motion:reduce){.modal-box.mythic-glow .mythic-shine,.modal-box.holo-wish .gold-shine{animation:none;}}
+.modal-box.mythic-glow h3,.modal-box.holo-wish h3,.modal-box.mythic-glow .modal-desc,.modal-box.holo-wish .modal-desc,.modal-box.mythic-glow .small,.modal-box.holo-wish .small{text-shadow:0 1px 5px rgba(18,10,40,.9),0 0 2px rgba(18,10,40,.9);}
 /* 미니게임 30콤보 카드와 같은 밝은 홀로그램: 선명한 무지개 띠(color-dodge) + 포일 얼룩(screen) + 광택/줄무늬 + 무지개 테두리 */
 .modal-box.mythic-glow .holo-shine,.modal-box.holo-wish .holo-shine{opacity:.48;}
 .modal-box.mythic-glow .holo-shine>i,.modal-box.holo-wish .holo-shine>i{background-image:repeating-linear-gradient(112deg,#ff9fb8 0%,#ffd0a0 8%,#f4f0a8 16%,#a8f2cc 24%,#a4d8ff 32%,#c4b4ff 40%,#ffa8e4 48%,#ff9fb8 56%);filter:blur(22px);}
