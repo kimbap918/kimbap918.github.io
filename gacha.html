@@ -210,6 +210,109 @@ tr.reward-row.best td{color:var(--best);}
 .modal-box.mythic-glow .holo-ring,.modal-box.holo-wish .holo-ring{opacity:.85;}
 .modal-box.mythic-glow .holo-glare,.modal-box.holo-wish .holo-glare{opacity:.6;background-image:radial-gradient(circle at var(--pointer-x) var(--pointer-y),rgba(255,255,255,.5),transparent 34%),repeating-linear-gradient(112deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px);}
 @media (prefers-reduced-motion:reduce){.modal-box.gold-glow{animation:none;box-shadow:0 0 0 2px var(--best),0 0 24px 6px rgba(232,185,58,0.45);}.modal-box.gold-glow.holo-wish{box-shadow:0 0 24px 4px rgba(232,185,58,0.4);}}
+/* 홀로그램(PC·모바일 공통): 미니게임 50/70콤보 카드와 같은 층 구성(별/채광/후광/색 번짐/포일/회절격자/흰 반사광/금속 프레임)을
+   그대로 얹고, 같은 변수(--hx/--hy/--hpx/--hpy/--hd/--hsw)를 매 프레임 갱신해 매끄럽게 움직인다. 신화 모달·인챈트 제목 박스(5옵션)에 적용.
+   위시 모달/4옵션 박스는 은은한 파스텔만 쓴다. 라이트/다크는 --hm-* 와 인챈트 박스의 밝은 변형으로 따로 조절한다. */
+.h4x-back,.h4x-front{display:none;}
+@media all{
+  :root{--hm-soft:.15;--hm-softring:.4;--hm-glow:0 6px 22px -6px rgba(120,20,40,.55);--hm-tint:.16;}
+  :root[data-theme="dark"]{--hm-soft:.18;--hm-softring:.45;--hm-glow:0 0 22px 2px rgba(255,100,90,.34);--hm-tint:.24;}
+  :root[data-theme="light"]{--hm-soft:.13;--hm-softring:.35;--hm-glow:0 6px 22px -6px rgba(120,20,40,.55);--hm-tint:.16;}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hm-soft:.18;--hm-softring:.45;--hm-glow:0 0 22px 2px rgba(255,100,90,.34);--hm-tint:.24;}}
+  .modal-box.mythic-glow,.grade-summary.holo-full{--hx:62;--hy:30;--hpx:.24;--hpy:-.4;--hd:.35;--hsw:-.6;background:radial-gradient(120% 80% at 50% 28%,#5a0f1f 0%,#2a0711 52%,#090204 100%);}
+  .modal-box.mythic-glow{--h4r:10px;animation:none!important;box-shadow:var(--hm-glow);padding-top:44px;}
+  .grade-summary.holo-full{--h4r:12px;}
+  .modal-box.mythic-glow>.holo-wrap,.grade-summary.holo-full>.holo-extra,.grade-summary.holo-full>.holo-shine,.grade-summary.holo-full>.holo-glare{display:none!important;}
+  .modal-box.mythic-glow>.h4x-back,.modal-box.mythic-glow>.h4x-front,.grade-summary.holo-full>.h4x-back,.grade-summary.holo-full>.h4x-front{display:block;position:absolute!important;inset:0;border-radius:inherit;pointer-events:none;overflow:hidden;}
+  .h4x-back{z-index:1!important;} .h4x-front{z-index:8!important;}
+  .h4-stars,.h4-stars2{position:absolute;inset:-12%;z-index:0;pointer-events:none;
+    background-image:radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 72% 12%,#cfe,transparent),radial-gradient(1.4px 1.4px at 40% 44%,#fff,transparent),radial-gradient(1px 1px at 86% 40%,#fff,transparent),radial-gradient(1.2px 1.2px at 24% 70%,#dff,transparent),radial-gradient(1px 1px at 64% 78%,#fff,transparent),radial-gradient(1.3px 1.3px at 90% 88%,#fff,transparent),radial-gradient(1px 1px at 8% 90%,#fff,transparent);
+    background-size:220px 220px;opacity:.8;transform:translate3d(calc(var(--hpx)*-7px),calc(var(--hpy)*-7px),0);}
+  .h4-stars2{background-size:140px 140px;opacity:.5;transform:translate3d(calc(var(--hpx)*-16px),calc(var(--hpy)*-16px),0);}
+  .h4-rays{position:absolute;left:var(--h4cx,50%);top:var(--h4cy,41%);width:min(160%,560px);aspect-ratio:1;translate:-50% -50%;z-index:1;pointer-events:none;
+    background:repeating-conic-gradient(from calc(var(--hpx)*34deg + var(--hpy)*14deg + var(--hsw)*12deg),rgba(255,170,150,0) 0deg 8deg,rgba(255,170,150,.34) 8deg 12deg);
+    -webkit-mask:radial-gradient(circle,#000 0,transparent 60%);mask:radial-gradient(circle,#000 0,transparent 60%);opacity:calc(.75 + var(--hsw)*.1);}
+  .h4-halo{position:absolute;left:var(--h4cx,50%);top:var(--h4cy,41%);width:min(100%,300px);aspect-ratio:1;translate:-50% -50%;z-index:1;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,170,150,.75),rgba(255,100,90,.22) 48%,transparent 72%);opacity:calc(.85 + var(--hsw)*.08);}
+  .h4-hf{position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:inherit;pointer-events:none;}
+  .h4-hf .h4-a{position:absolute;inset:-45%;mix-blend-mode:color-dodge;filter:blur(16px);opacity:calc(.2 + var(--hd)*.2);
+    background:repeating-linear-gradient(112deg,#ff8a7a 0%,#ffc2a0 8%,#ffe0b0 16%,#ff9aa8 24%,#ff7a96 32%,#ffb0a0 40%,#ff8fb0 48%,#ff8a7a 56%);
+    background-size:300% 300%;background-position:calc(var(--hx)*1% + var(--hsw)*7%) calc(var(--hy)*1%);}
+  .h4-hf .h4-b{position:absolute;inset:0;mix-blend-mode:screen;opacity:calc(.24 + var(--hd)*.26);filter:saturate(.8) brightness(1.15);
+    background:repeating-linear-gradient(64deg,#ff4d5d 0%,#ff9a5d 7%,#ffd06a 14%,#ff6f8f 21%,#ff4d7d 28%,#ff8d6d 35%,#ff5da0 42%,#ff4d5d 49%);background-size:260% 260%;background-position:calc(var(--hx)*1% + var(--hsw)*7%) calc(var(--hy)*1%);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 3.4 0 0 0 -1.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/260px 260px;}
+  .h4-hf .h4-g{position:absolute;inset:0;mix-blend-mode:screen;opacity:calc(.14 + var(--hd)*.3);
+    background:linear-gradient(112deg,#ff9a8a,#ffd0a0,#ffb0b8,#ff8aa0,#ffc0a0,#ff9a8a);background-size:240% 240%;background-position:calc(var(--hx)*1% + var(--hsw)*7%) calc(var(--hy)*1%);
+    -webkit-mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 5px);mask:repeating-linear-gradient(112deg,#000 0 1.2px,transparent 1.2px 5px);}
+  .h4-hf .h4-c{position:absolute;inset:0;opacity:calc(.35 + var(--hd)*.5);transform:translate3d(calc((var(--hx) - 50)*.9% + var(--hsw)*24%),0,0);}
+  .h4-hf .h4-c>i{position:absolute;inset:0;display:block;background:linear-gradient(112deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 52%,transparent 60%);}
+  .h4-gl{position:absolute;inset:0;z-index:9;pointer-events:none;mix-blend-mode:overlay;border-radius:inherit;opacity:.45;
+    background:radial-gradient(circle at calc(var(--hx)*1% + var(--hsw)*8%) calc(var(--hy)*1%),rgba(255,255,255,.6),transparent 36%),repeating-linear-gradient(112deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px);}
+  .h4-frame{position:absolute;inset:0;border-radius:inherit;z-index:6;pointer-events:none;padding:6px;
+    background:conic-gradient(from calc(var(--hsw)*70deg + var(--hpx)*40deg + var(--hpy)*25deg),#4d0914,#a81c2c 9%,#e8606c 14%,#ffc2b8 16%,#e8606c 18%,#a81c2c 24%,#5c0b17 36%,#35050d 48%,#7e1322 58%,#c23545 66%,#ff9a92 69%,#c23545 72%,#8e1628 80%,#4d0914);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);}
+  .h4-bevel{position:absolute;inset:0;border-radius:inherit;z-index:7;pointer-events:none;padding:6px;
+    background:linear-gradient(calc(135deg + var(--hpx)*55deg + var(--hpy)*20deg + var(--hsw)*22deg),rgba(255,225,220,.38) 0%,rgba(255,225,220,.1) 18%,rgba(255,255,255,0) 42%,rgba(60,8,8,0) 58%,rgba(60,8,8,.55) 84%,rgba(40,4,4,.75) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);}
+  .h4-bevel::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,225,220,.8),inset 0 2px 3px rgba(255,255,255,.55);}
+  .h4-groove{position:absolute;inset:6px;border-radius:calc(var(--h4r) - 3px);z-index:7;pointer-events:none;border:1px solid rgba(60,8,8,.8);box-shadow:0 0 0 1px rgba(255,190,180,.55),inset 0 1px 3px rgba(0,0,0,.6);}
+  .h4-inner{position:absolute;inset:12px;border-radius:calc(var(--h4r) - 6px);z-index:6;pointer-events:none;border:1px solid rgba(255,170,155,.4);}
+  .h4-corner{position:absolute;z-index:7;width:12px;height:12px;pointer-events:none;
+    background:linear-gradient(#ffb3a6,#ffb3a6) 0 0/100% 2px no-repeat,linear-gradient(#ffb3a6,#ffb3a6) 0 0/2px 100% no-repeat;filter:drop-shadow(0 1px 0 rgba(255,235,230,.7)) drop-shadow(0 -1px 0 rgba(60,8,8,.7)) drop-shadow(0 0 4px rgba(255,100,90,.5));}
+  .h4-corner.tl{top:16px;left:16px}.h4-corner.tr{top:16px;right:16px;transform:scaleX(-1)}
+  .h4-corner.bl{bottom:16px;left:16px;transform:scaleY(-1)}.h4-corner.br{bottom:16px;right:16px;transform:scale(-1)}
+  .modal-box.mythic-glow::before{position:absolute;z-index:9;top:14px;left:50%;transform:translateX(-50%);padding:3px 16px 4px;font-size:11px;font-weight:900;letter-spacing:.34em;text-indent:.34em;background:linear-gradient(180deg,#d4414d 0%,#a3182a 40%,#690c1b 58%,#a82234 100%);box-shadow:0 2px 8px rgba(110,8,22,.65),0 0 0 1px #45060f,inset 0 1px 0 rgba(255,185,175,.5),inset 0 -1px 0 rgba(28,0,5,.65);color:#ffe9d6;text-shadow:0 1px 1px rgba(40,0,8,.85);
+    clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%);content:"MYTHIC";}
+  .modal-box.mythic-glow .modal-actions button{border:0;font-weight:800;background:linear-gradient(180deg,#d4414d 0%,#a3182a 40%,#690c1b 58%,#a82234 100%);box-shadow:0 2px 8px rgba(110,8,22,.65),0 0 0 1px #45060f,inset 0 1px 0 rgba(255,185,175,.5),inset 0 -1px 0 rgba(28,0,5,.65);color:#ffe9d6;text-shadow:0 1px 1px rgba(40,0,8,.85);}
+  .modal-box.mythic-glow .modal-actions button:hover{filter:brightness(1.08);}
+  .modal-box.mythic-glow .modal-actions button:active{filter:brightness(.95);transform:translateY(1px);}
+  .grade-summary.holo-full .gs-title-wrap,.grade-summary.holo-full .gs-icon{z-index:7;}
+  .grade-summary.holo-full .small{color:rgba(255,255,255,.9);}
+  /* 일반 뽑기(위시) 모달: 무지개는 유지하되 채도/세기를 낮춰 은은하게 */
+  .modal-box.holo-wish .holo-foil,.modal-box.holo-wish .holo-star,.grade-summary.holo-lite .holo-foil{display:none!important;}
+  .modal-box.holo-wish .holo-shine{opacity:var(--hm-soft)!important;}
+  .modal-box.holo-wish .holo-shine>i{filter:blur(14px) saturate(.45);}
+  .modal-box.holo-wish .holo-ring{opacity:var(--hm-softring)!important;filter:saturate(.5);}
+  .modal-box.holo-wish .holo-sweep{opacity:.6;}
+  .modal-box.holo-wish .holo-glare{opacity:.3!important;background-image:radial-gradient(circle at var(--pointer-x) var(--pointer-y),rgba(255,255,255,.45),transparent 38%)!important;}
+  .modal-box.holo-wish .gold-shine{background:linear-gradient(100deg,#ffd6e1,#fff1dc 35%,#e0ecff 65%,#ffd6e1);background-size:300% auto;-webkit-background-clip:text;background-clip:text;}
+  .grade-summary.holo-lite .holo-shine{background-image:linear-gradient(110deg,rgba(255,200,205,var(--hm-tint)),rgba(255,235,230,var(--hm-tint)) 40%,rgba(255,200,205,var(--hm-tint)));background-size:300% 300%;mix-blend-mode:normal;}
+  /* 라이트 테마: 인챈트 제목 박스는 어두운 카드 대신 같은 층 구성을 밝은 진주빛으로 */
+  :root[data-theme="light"] .grade-summary.holo-full{background:linear-gradient(135deg,#fffafb,#f6e9ef 60%,#f0e4f4);box-shadow:0 6px 18px -10px rgba(120,40,70,.35);}
+  :root[data-theme="light"] .grade-summary.holo-full .small{color:#6b4a58;text-shadow:none;}
+  :root[data-theme="light"] .grade-summary.holo-full .gs-icon{background:rgba(255,255,255,.75);border-color:rgba(184,80,111,.3);}
+  :root[data-theme="light"] .grade-summary.holo-full h2{background-image:linear-gradient(100deg,#b8506f,#d98a6a 50%,#a63d5f);filter:none;}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-stars,:root[data-theme="light"] .grade-summary.holo-full .h4-stars2{opacity:0;}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-rays{background:repeating-conic-gradient(from calc(var(--hpx)*34deg + var(--hpy)*14deg + var(--hsw)*12deg),rgba(214,100,130,0) 0deg 8deg,rgba(214,100,130,.22) 8deg 12deg);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-halo{background:radial-gradient(circle,rgba(255,120,150,.6),rgba(255,120,150,.14) 52%,transparent 72%);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-hf .h4-a{mix-blend-mode:normal;opacity:calc(.34 + var(--hd)*.2);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-hf .h4-b{mix-blend-mode:normal;opacity:calc(.16 + var(--hd)*.12);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-hf .h4-g{mix-blend-mode:normal;opacity:calc(.14 + var(--hd)*.16);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-hf .h4-c>i{background:linear-gradient(112deg,transparent 40%,rgba(232,150,175,.22) 46%,rgba(255,255,255,.95) 50%,rgba(232,150,175,.22) 54%,transparent 60%);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-frame{background:conic-gradient(from calc(var(--hpx)*80deg + var(--hpy)*50deg + var(--hsw)*35deg),#f0b4c4,#fff,#d9778f,#f0b4c4 30%,#fff3f6,#c45f7c,#f0b4c4 65%,#fff,#e08ca3,#f0b4c4);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-bevel{background:linear-gradient(calc(135deg + var(--hpx)*55deg + var(--hpy)*20deg + var(--hsw)*22deg),rgba(255,255,255,.9) 0%,rgba(255,255,255,.3) 18%,rgba(255,255,255,0) 42%,rgba(120,40,70,0) 58%,rgba(120,40,70,.3) 84%,rgba(90,20,50,.4) 100%);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-groove{border-color:rgba(184,80,111,.4);box-shadow:0 0 0 1px rgba(255,255,255,.8);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-inner{border-color:rgba(184,80,111,.3);}
+  :root[data-theme="light"] .grade-summary.holo-full .h4-corner{background:linear-gradient(#d9778f,#d9778f) 0 0/100% 2px no-repeat,linear-gradient(#d9778f,#d9778f) 0 0/2px 100% no-repeat;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9));}
+  @media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]) .grade-summary.holo-full{background:linear-gradient(135deg,#fffafb,#f6e9ef 60%,#f0e4f4);box-shadow:0 6px 18px -10px rgba(120,40,70,.35);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .small{color:#6b4a58;text-shadow:none;}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .gs-icon{background:rgba(255,255,255,.75);border-color:rgba(184,80,111,.3);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full h2{background-image:linear-gradient(100deg,#b8506f,#d98a6a 50%,#a63d5f);filter:none;}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-stars,:root:not([data-theme="dark"]) .grade-summary.holo-full .h4-stars2{opacity:0;}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-rays{background:repeating-conic-gradient(from calc(var(--hpx)*34deg + var(--hpy)*14deg + var(--hsw)*12deg),rgba(214,100,130,0) 0deg 8deg,rgba(214,100,130,.22) 8deg 12deg);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-halo{background:radial-gradient(circle,rgba(255,120,150,.6),rgba(255,120,150,.14) 52%,transparent 72%);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-hf .h4-a{mix-blend-mode:normal;opacity:calc(.34 + var(--hd)*.2);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-hf .h4-b{mix-blend-mode:normal;opacity:calc(.16 + var(--hd)*.12);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-hf .h4-g{mix-blend-mode:normal;opacity:calc(.14 + var(--hd)*.16);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-hf .h4-c>i{background:linear-gradient(112deg,transparent 40%,rgba(232,150,175,.22) 46%,rgba(255,255,255,.95) 50%,rgba(232,150,175,.22) 54%,transparent 60%);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-frame{background:conic-gradient(from calc(var(--hpx)*80deg + var(--hpy)*50deg + var(--hsw)*35deg),#f0b4c4,#fff,#d9778f,#f0b4c4 30%,#fff3f6,#c45f7c,#f0b4c4 65%,#fff,#e08ca3,#f0b4c4);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-bevel{background:linear-gradient(calc(135deg + var(--hpx)*55deg + var(--hpy)*20deg + var(--hsw)*22deg),rgba(255,255,255,.9) 0%,rgba(255,255,255,.3) 18%,rgba(255,255,255,0) 42%,rgba(120,40,70,0) 58%,rgba(120,40,70,.3) 84%,rgba(90,20,50,.4) 100%);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-groove{border-color:rgba(184,80,111,.4);box-shadow:0 0 0 1px rgba(255,255,255,.8);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-inner{border-color:rgba(184,80,111,.3);}
+  :root:not([data-theme="dark"]) .grade-summary.holo-full .h4-corner{background:linear-gradient(#d9778f,#d9778f) 0 0/100% 2px no-repeat,linear-gradient(#d9778f,#d9778f) 0 0/2px 100% no-repeat;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9));}
+  }
+}
 .mythic-item-card.royal-selected{outline:2px solid var(--accent);outline-offset:-2px;}
 .n-presets button:hover{border-color:var(--accent);}
 .theme-toggle,.n-presets button,.mode-tab,.mythic-tab,.mythic-item-card,.modal-actions button{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
@@ -955,7 +1058,64 @@ function showModal(html, extraClass) {
 }
 // 홀로그램 카드 효과: 신화 상자 획득 모달에만 건다(showModal 전체가 아니라 이 함수를 쓴 모달 전용).
 // 마우스 위치는 색 위치와 광택에만 쓰고, 마우스 없는 터치 기기는 중앙 고정으로 켠다.
+// 모바일 홀로그램 층을 카드에 얹고 빛 변수를 매 프레임 갱신한다(미니게임 50/70콤보와 같은 방식).
+function lkH4Mount(panel) {
+  if (!panel || panel.querySelector(':scope > .h4x-back')) return;
+  const mq = window.matchMedia('all');
+  const back = document.createElement('div');
+  back.className = 'h4x-back';
+  back.innerHTML = '<div class="h4-stars"></div><div class="h4-stars2"></div><div class="h4-rays"></div><div class="h4-halo"></div>' +
+    '<div class="h4-hf"><div class="h4-a"></div><div class="h4-b"></div><div class="h4-g"></div><div class="h4-c"><i></i></div></div>';
+  const front = document.createElement('div');
+  front.className = 'h4x-front';
+  front.innerHTML = '<div class="h4-inner"></div><div class="h4-frame"></div><div class="h4-bevel"></div><div class="h4-groove"></div>' +
+    '<i class="h4-corner tl"></i><i class="h4-corner tr"></i><i class="h4-corner bl"></i><i class="h4-corner br"></i><div class="h4-gl"></div>';
+  panel.insertBefore(back, panel.firstChild);
+  panel.appendChild(front);
+  const cur = { x: .62, y: .3 }, tgt = { x: .62, y: .3 };
+  let touchAt = 0;
+  panel.addEventListener('pointermove', (e) => {
+    const r = panel.getBoundingClientRect();
+    tgt.x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    tgt.y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+    touchAt = performance.now();
+  });
+  const reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // 채광/후광은 카드 중앙이 아니라 아이템 아이콘 뒤에서 뜬다
+  function aimAtIcon() {
+    const ic = panel.querySelector('.modal-icon-row img, .gs-icon');
+    if (!ic) return;
+    const pr = panel.getBoundingClientRect(), ir = ic.getBoundingClientRect();
+    if (!pr.width || !ir.width) return;
+    panel.style.setProperty('--h4cx', (ir.left - pr.left + ir.width / 2).toFixed(1) + 'px');
+    panel.style.setProperty('--h4cy', (ir.top - pr.top + ir.height / 2).toFixed(1) + 'px');
+  }
+  function tick(now) {
+    if (!panel.isConnected) return;
+    requestAnimationFrame(tick);
+    if (!mq.matches || document.hidden) return;
+    aimAtIcon();
+    if (now - touchAt > 2500 && !reduce) {
+      const a = now / 9000 * 2 * Math.PI;
+      tgt.x = .5 + .36 * Math.cos(a + .3);
+      tgt.y = .34 + .26 * Math.sin(a);
+    }
+    cur.x += (tgt.x - cur.x) * .08;
+    cur.y += (tgt.y - cur.y) * .08;
+    const px = (cur.x - .5) * 2, py = (cur.y - .5) * 2, d = Math.min(1, Math.hypot(px, py) / 1.15);
+    const st = panel.style;
+    st.setProperty('--hx', (cur.x * 100).toFixed(2));
+    st.setProperty('--hy', (cur.y * 100).toFixed(2));
+    st.setProperty('--hpx', px.toFixed(3));
+    st.setProperty('--hpy', py.toFixed(3));
+    st.setProperty('--hd', d.toFixed(3));
+    st.setProperty('--hsw', reduce ? '0' : (-Math.cos(now / 7000 * Math.PI)).toFixed(3));
+  }
+  requestAnimationFrame(tick);
+}
+
 function attachModalHolo(panel) {
+  if (panel.classList.contains('mythic-glow')) lkH4Mount(panel);
   // 효과 레이어는 전부 이 래퍼 안에 둔다: 래퍼가 바깥으로 삐져나가는 부분을 잘라서 모달에 스크롤이 생기지 않게 한다
   const wrap = document.createElement('div');
   wrap.className = 'holo-wrap';

@@ -193,6 +193,29 @@ main{display:flex;height:calc(100dvh - 96px);}
 .grade-summary.holo-full .holo-glare{opacity:.6;background-image:radial-gradient(circle at var(--pointer-x) var(--pointer-y),rgba(255,255,255,.5),transparent 34%),repeating-linear-gradient(112deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px);mix-blend-mode:overlay;}
 .grade-summary.holo-full .gs-title-wrap h2{filter:drop-shadow(0 1px 4px rgba(18,10,40,.85));}
 .grade-summary.holo-full .gs-title-wrap .small{text-shadow:0 1px 5px rgba(18,10,40,.85);}
+/* 5옵션 신화 제목 박스: 다크는 위의 어두운 홀로그램 카드 그대로, 라이트는 같은 홀로그램을 밝은 카드 위에 얹는다 */
+:root[data-theme="light"] .grade-summary.holo-full{background:linear-gradient(165deg,#fffafb,#f4ebf6 72%);}
+:root[data-theme="light"] .grade-summary.holo-full .small{color:#6b4a58;text-shadow:none;}
+:root[data-theme="light"] .grade-summary.holo-full .gs-icon{background:rgba(255,255,255,.7);border-color:rgba(184,80,111,.3);}
+:root[data-theme="light"] .grade-summary.holo-full .gs-title-wrap h2{filter:none;}
+:root[data-theme="light"] .grade-summary.holo-full .gs-title-wrap .small{text-shadow:none;}
+:root[data-theme="light"] .grade-summary.holo-full .holo-shine{opacity:.55;mix-blend-mode:normal;}
+:root[data-theme="light"] .grade-summary.holo-full .holo-foil{opacity:.3;mix-blend-mode:normal;}
+:root[data-theme="light"] .grade-summary.holo-full .holo-foil>i{filter:saturate(.8) brightness(1.05);}
+:root[data-theme="light"] .grade-summary.holo-full .holo-sweep>i{background:linear-gradient(112deg,transparent 40%,rgba(232,150,175,.22) 46%,rgba(255,255,255,.95) 50%,rgba(232,150,175,.22) 54%,transparent 60%);}
+:root[data-theme="light"] .grade-summary.holo-full .holo-glare{opacity:.45;}
+@media (prefers-color-scheme:light){
+:root:not([data-theme="dark"]) .grade-summary.holo-full{background:linear-gradient(165deg,#fffafb,#f4ebf6 72%);}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .small{color:#6b4a58;text-shadow:none;}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .gs-icon{background:rgba(255,255,255,.7);border-color:rgba(184,80,111,.3);}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .gs-title-wrap h2{filter:none;}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .gs-title-wrap .small{text-shadow:none;}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .holo-shine{opacity:.55;mix-blend-mode:normal;}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .holo-foil{opacity:.3;mix-blend-mode:normal;}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .holo-foil>i{filter:saturate(.8) brightness(1.05);}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .holo-sweep>i{background:linear-gradient(112deg,transparent 40%,rgba(232,150,175,.22) 46%,rgba(255,255,255,.95) 50%,rgba(232,150,175,.22) 54%,transparent 60%);}
+:root:not([data-theme="dark"]) .grade-summary.holo-full .holo-glare{opacity:.45;}
+}
 /* 터치 기기는 마우스가 없어 마우스무브로 켜던 효과가 아예 안 보였다
    (사용자 지적, 2026-09-23 - "모바일에서도 제목의 빛나는 효과"). 이전엔
    hover:none에서 아예 꺼버렸는데, updateGradeSummary()가 같은 조건에서
