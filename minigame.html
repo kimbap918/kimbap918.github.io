@@ -274,7 +274,7 @@ h1 span.plain{background:none;-webkit-background-clip:initial;background-clip:in
 /* 흰 반사광: 포인터 위치로 옮겨지는 위에 30콤보처럼 천천히 좌우로 오간다 */
 .h4-hf .h4-c>i{position:absolute;inset:0;display:block;
   background:linear-gradient(112deg,transparent 40%,rgba(255,255,255,.3) 48%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 52%,transparent 60%)}
-.h4-gl{position:absolute;inset:0;z-index:9;pointer-events:none;mix-blend-mode:overlay;border-radius:inherit;opacity:.7;
+.h4-gl{position:absolute;inset:7px;z-index:9;pointer-events:none;mix-blend-mode:overlay;border-radius:17px;opacity:.7;
   background:radial-gradient(circle at calc(var(--hx)*1% + var(--hsw)*8%) calc(var(--hy)*1%),rgba(255,255,255,.6),transparent 36%),repeating-linear-gradient(112deg,rgba(255,255,255,.06) 0 1px,transparent 1px 7px)}
 /* 금속 프레임: 빛이 닿는 방향이 포인터를 따라 바뀐다 */
 .h4-frame{position:absolute;inset:0;border-radius:inherit;z-index:6;pointer-events:none;padding:7px;
@@ -942,7 +942,7 @@ function rng(seed){ let s=seed>>>0; return ()=> (s=(s*1664525+1013904223)>>>0)/4
 /* 보이는 카드 그대로 저장: 화면의 카드(DOM)를 SVG foreignObject 로 다시 그려 이미지로 만든다.
    10콤보 미만/금빛은 PNG, 오로라/홀로그램은 움직임까지 담은 GIF. 글꼴과 몬스터 그림은 SVG 안에 직접 넣는다. */
 const WEBP_URL="https://cdn.jsdelivr.net/npm/wasm-webp@0.1.0/+esm";
-const SNAP={half:44,width:560,q:80,delay:80};
+const SNAP={half:44,width:560,q:95,delay:80};
 const GIFENC_URL="https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js";
 function blobToData(b){ return new Promise((res,rej)=>{ const f=new FileReader(); f.onload=()=>res(f.result); f.onerror=rej; f.readAsDataURL(b); }); }
 async function embeddedFonts(text){
@@ -971,6 +971,7 @@ function snapTemplate(el){
     const d=dst[i], cs=getComputedStyle(s); let txt="";
     for(let k=0;k<cs.length;k++){ const pn=cs[k]; txt+=pn+":"+cs.getPropertyValue(pn)+";"; }
     d.setAttribute("style",txt); d.removeAttribute("id"); d.removeAttribute("class");
+    if(s.classList&&s.classList.contains("rglow")) d.style.display="none";
     if(cs.animationName&&cs.animationName!=="none"){
       d.setAttribute("data-anim",String(cs.animationName.split(",").length));
       d.setAttribute("data-ad",cs.animationDelay.split(",").map(x=>parseFloat(x)||0).join(","));
@@ -1004,7 +1005,7 @@ async function snapCard(r,animated,fmt){
 }
 async function snapCardRun(r,animated,fmt){
   const mon=findMon(r.mode,r.id), wrap=document.querySelector(".rtilt");
-  const rect=wrap.getBoundingClientRect(), w=rect.width, h=rect.height, pad=44;
+  const rect=wrap.getBoundingClientRect(), w=rect.width, h=rect.height, pad=0;
   const imgData=await blobToData(await (await fetch(imgUrl(mon))).blob());
   const build=()=>{ const t=snapTemplate(wrap), im=t.querySelector("img"); if(im) im.setAttribute("src",imgData); return t; };
   let tpl=build();
@@ -1012,14 +1013,15 @@ async function snapCardRun(r,animated,fmt){
   const t6=wrap.querySelector(".rcard").classList.contains("t6");
   if(t6){ document.body.classList.add("lk-snap"); tpl=build(); }
   const css=await embeddedFonts(wrap.textContent+"0123456789");
-  const SC=animated?Math.min(2,Math.max(1,SNAP.width/(w+pad*2))):2, W=Math.round((w+pad*2)*SC), H=Math.round((h+pad*2)*SC);
+  const SC=2, W=Math.round((w+pad*2)*SC), H=Math.round((h+pad*2)*SC);
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H; const c=cv.getContext("2d",{willReadFrequently:true});
   async function frame(tm,ph){
     if(isH4&&ph!==undefined){ const a=ph*(t6?2:1)*Math.PI; h4Set(.5+.4*Math.cos(a+.3),.34+.26*Math.sin(a)); $("rwrap").style.setProperty("--hsw",(t6?Math.sin(ph*2*Math.PI):-Math.cos(ph*Math.PI/2)).toFixed(3)); tpl=build(); }
     const img=await loadSvg(snapFrameSvg(tpl,w,h,pad,tm,css));
     c.setTransform(1,0,0,1,0,0);
     const g=c.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,Math.max(W,H)*.75); g.addColorStop(0,"#1a1d29"); g.addColorStop(1,"#0a0b10");
-    c.fillStyle=g; c.fillRect(0,0,W,H); c.drawImage(img,0,0,W,H);
+    if(fmt==="gif"){ c.fillStyle=g; c.fillRect(0,0,W,H); } else c.clearRect(0,0,W,H);
+    c.drawImage(img,0,0,W,H);
   }
   if(!animated){
     await frame(0);
@@ -1030,7 +1032,7 @@ async function snapCardRun(r,animated,fmt){
   if(fmt==="webp"){
     const wp=await import(WEBP_URL), order=[];
     for(let k=0;k<HALF;k++) order.push(k); if(!t6) for(let k=HALF-2;k>0;k--) order.push(k);
-    const out=await wp.encodeAnimation(W,H,true,order.map(k=>({data:new Uint8Array(frames[k].buffer,frames[k].byteOffset,frames[k].byteLength),duration:DELAY,config:{lossless:0,quality:isH4?72:SNAP.q}})));
+    const out=await wp.encodeAnimation(W,H,true,order.map(k=>({data:new Uint8Array(frames[k].buffer,frames[k].byteOffset,frames[k].byteLength),duration:DELAY,config:{lossless:0,quality:isH4?95:SNAP.q}})));
     if(!out) throw new Error("webp");
     return new Blob([out],{type:"image/webp"});
   }
