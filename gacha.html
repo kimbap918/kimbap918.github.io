@@ -398,6 +398,12 @@ window.LKShare=(function(){
     var t=document.createElement("div");t.className="lk-toast";t.textContent=m;
     document.body.appendChild(t);setTimeout(function(){t.remove();},2400);
   }
+  function busy(m){
+    var o=document.querySelector(".lk-busy");
+    if(!o){o=document.createElement("div");o.className="lk-toast lk-busy";document.body.appendChild(o);}
+    o.textContent=m;
+  }
+  function busyEnd(){var o=document.querySelector(".lk-busy");if(o)o.remove();}
   function copyText(x){
     if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(x);
     return new Promise(function(res,rej){try{var a=document.createElement("textarea");
@@ -536,22 +542,39 @@ window.LKShare=(function(){
     return '<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><foreignObject x="0" y="0" width="'+W+'" height="'+H+'">'
       +'<div xmlns="http://www.w3.org/1999/xhtml" style="padding:'+pad+'px;width:'+W+'px;height:'+H+'px;box-sizing:border-box;background:transparent"><style>'+snapKeyframes()+'</style>'+inner+'</div></foreignObject></svg>';
   }
+  // 카드의 둥근 모서리 바깥은 모두 투명하게 깎는다(모퉁이 끝 조각이 남지 않게)
+  function maskRound(c,W,H,r){
+    if(!r)return;
+    c.save();c.globalCompositeOperation="destination-in";c.beginPath();
+    c.moveTo(r,0);c.arcTo(W,0,W,H,r);c.arcTo(W,H,0,H,r);c.arcTo(0,H,0,0,r);c.arcTo(0,0,W,0,r);c.closePath();
+    c.fillStyle="#000";c.fill();c.restore();
+  }
+  // 저장하는 동안에는 마우스 위치와 상관없이 같은 기준 상태로 찍는다
+  function neutral(el){
+    var k=["--pointer-x","--pointer-y","--card-opacity"],v=["50%","50%",".7"];
+    if(el.querySelector(":scope > .h4x-back")){k=k.concat(["--hx","--hy","--hpx","--hpy","--hd","--hsw"]);v=v.concat(["62","30",".24","-.4",".35","-.6"]);}
+    var old=k.map(function(n){return el.style.getPropertyValue(n);});
+    k.forEach(function(n,i){el.style.setProperty(n,v[i]);});
+    return function(){k.forEach(function(n,i){if(old[i])el.style.setProperty(n,old[i]);else el.style.removeProperty(n);});};
+  }
   function loadSvg(svg){
     return new Promise(function(res,rej){var im=new Image();im.onload=function(){res(im);};im.onerror=rej;
       im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);});
   }
   function makeSnapGif(el,cb,fail){
-    var f0=fail;fail=function(){el.__h4lock=false;f0();};
+    var un=function(){},f0=fail,cb0=cb;
+    fail=function(){try{un();}catch(e){}el.__h4lock=false;busyEnd();f0();};
+    cb=function(b){busyEnd();cb0(b);};
     // 화면의 모달을 프레임마다 다시 그려 부드러운 GIF 로 만든다: 25fps, 전체 프레임이 하나의 팔레트를 공유하고
     // 순서 디더(프레임마다 같은 패턴)로 그라데이션을 부드럽게 표현해 움직여도 색이 깜빡이지 않는다.
     var r=el.getBoundingClientRect(),pad=0,SC=2;
-    var W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC),HALF=44,DELAY=80;
-    toast("이미지 만드는 중...");
+    var W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC),HALF=44,DELAY=80,rad=(parseFloat(getComputedStyle(el).borderTopLeftRadius)||0)*SC;
+    busy("이미지 저장 중... 0%");
+    el.__h4lock=true;un=neutral(el);
     import(GIFENC_URL).then(function(mod){
       var tpl=snapTemplate(el),cv=document.createElement("canvas");cv.width=W;cv.height=H;
       var c=cv.getContext("2d",{willReadFrequently:true}),frames=[],i=0;
       var h4=!!el.querySelector(":scope > .h4x-back");
-      if(h4)el.__h4lock=true;
       function h4set(ph){
         var a=ph*Math.PI,x=.5+.4*Math.cos(a+.3),y=.34+.26*Math.sin(a),ppx=(x-.5)*2,ppy=(y-.5)*2,dd=Math.min(1,Math.hypot(ppx,ppy)/1.15),st=el.style;
         st.setProperty("--hx",(x*100).toFixed(2));st.setProperty("--hy",(y*100).toFixed(2));
@@ -565,13 +588,14 @@ window.LKShare=(function(){
         if(h4){h4set(ph);tpl=snapTemplate(el);}
         loadSvg(snapFrameSvg(tpl,r.width,r.height,pad,t,px,py)).then(function(im){
           c.setTransform(1,0,0,1,0,0);
-          c.clearRect(0,0,W,H);c.drawImage(im,0,0,W,H);
+          c.clearRect(0,0,W,H);c.drawImage(im,0,0,W,H);maskRound(c,W,H,rad);
           frames.push(c.getImageData(0,0,W,H).data);
-          i++;setTimeout(render,0);
+          i++;busy("이미지 저장 중... "+Math.round(i/HALF*85)+"%");setTimeout(render,0);
         }).catch(fail);
       }
       function encode(){
-        el.__h4lock=false;
+        busy("이미지 저장 중... 인코딩 (90%)");
+        un();el.__h4lock=false;
         // 전체 색상 애니메이션 WebP 를 먼저 시도하고, 불러오지 못하면 GIF 로 만든다
         var order=[],k;for(k=0;k<HALF;k++)order.push(k);for(k=HALF-2;k>0;k--)order.push(k);
         import(WEBP_URL).then(function(wp){
@@ -604,15 +628,19 @@ window.LKShare=(function(){
   function makeSnapStill(el,cb,fail){
     // 움직임 없이 지금 보이는 모습 그대로 PNG 한 장
     var r=el.getBoundingClientRect(),pad=0,SC=2,W=Math.round((r.width+pad*2)*SC),H=Math.round((r.height+pad*2)*SC);
-    var tpl=snapTemplate(el),cv=document.createElement("canvas");cv.width=W;cv.height=H;var c=cv.getContext("2d");
+    var rad=(parseFloat(getComputedStyle(el).borderTopLeftRadius)||0)*SC,un=neutral(el);
+    var tpl=snapTemplate(el);un();var cv=document.createElement("canvas");cv.width=W;cv.height=H;var c=cv.getContext("2d");
     loadSvg(snapFrameSvg(tpl,r.width,r.height,pad,2.4,50,40)).then(function(im){
-      c.clearRect(0,0,W,H);c.drawImage(im,0,0,W,H);
+      c.clearRect(0,0,W,H);c.drawImage(im,0,0,W,H);maskRound(c,W,H,rad);
       cv.toBlob(function(b){b?cb(b):fail();},"image/png");
     }).catch(fail);
   }
   function makeBlob(s,opts,cb,still){
     var el0=opts&&opts.holo&&opts.captureEl&&opts.captureEl();
-    if(el0){(still?makeSnapStill:makeSnapGif)(el0,cb,function(){makeBlobStatic(s,opts,cb);});return;}
+    if(el0){
+      if(document.querySelector(".lk-busy"))return;
+      busy("이미지 저장 중...");var cb1=cb;cb=function(b){busyEnd();cb1(b);};
+      (still?makeSnapStill:makeSnapGif)(el0,cb,function(){busyEnd();makeBlobStatic(s,opts,cb);});return;}
     makeBlobStatic(s,opts,cb);
   }
   function makeBlobStatic(s,opts,cb){
@@ -626,7 +654,7 @@ window.LKShare=(function(){
       var undo=opts&&opts.prep?opts.prep(el):null;
       var restore=function(){el.style.overflow=prev.ov;el.style.height=prev.h;el.style.maxHeight=prev.mh;fix.remove();if(undo)try{undo();}catch(e){}};
       window.html2canvas(el,{backgroundColor:null,scale:2,logging:false,ignoreElements:function(x){return x.classList&&x.classList.contains("lk-sb");}})
-        .then(function(cv){restore();cv.toBlob(cb,"image/png");})
+        .then(function(cv){restore();maskRound(cv.getContext("2d"),cv.width,cv.height,(parseFloat(getComputedStyle(el).borderTopLeftRadius)||0)*2);cv.toBlob(cb,"image/png");})
         .catch(function(){restore();withFonts(function(){drawCard(s).toBlob(cb,"image/png");});});
       return;
     }
@@ -1161,6 +1189,7 @@ function attachModalHolo(panel) {
   }
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   panel.addEventListener('mousemove', (e) => {
+    if (panel.__h4lock) return;
     const rect = panel.getBoundingClientRect();
     const px = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
     const py = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
@@ -1169,6 +1198,7 @@ function attachModalHolo(panel) {
     panel.style.setProperty('--card-opacity', '1');
   });
   panel.addEventListener('mouseleave', () => {
+    if (panel.__h4lock) return;
     panel.style.setProperty('--pointer-x', '50%');
     panel.style.setProperty('--pointer-y', '50%');
     panel.style.setProperty('--card-opacity', '.7');
