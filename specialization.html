@@ -1339,6 +1339,58 @@ LKI18N.add({
   "장착 시":{en:"On equip",zh:"装备时",ja:"装着時"},
   "· 자세한 소모량과 파편 환산은 아래 장착 요약에서":{en:"· detailed costs and fragment conversion are in the Equip summary below",zh:"· 详细消耗量与碎片换算见下方装备摘要",ja:"· 詳しい消費量とかけら換算は下の装着サマリーで"}
 });
+/* 스크린샷으로 불러오기 · 장착/최대 레벨 */
+LKI18N.add({
+  "스크린샷으로 불러오기":{en:"Import from screenshot",zh:"从截图导入",ja:"スクリーンショットから読み込む"},
+  "스킬 특화 화면을 캡처한 이미지를 올리면 장착 상태를 읽어옵니다":{en:"Upload a capture of the skill specialization screen to read the equipped state",zh:"上传技能特化界面的截图，即可读取装备状态",ja:"スキル特化画面のキャプチャをアップロードすると装着状態を読み取ります"},
+  "닫기":{en:"Close",zh:"关闭",ja:"閉じる"},
+  "{n}번째 줄: 스킬을 인식하지 못해 제외했습니다.":{en:"Line {n}: skill not recognized, skipped.",zh:"第{n}行：未识别技能，已跳过。",ja:"{n}行目：スキルを認識できず除外しました。"},
+  "{name} {k}번 슬롯":{en:"{name} slot {k}",zh:"{name} 槽位{k}",ja:"{name} スロット{k}"},
+  "같은 특화석이 두 번 나와 제외했습니다":{en:"the same stone appeared twice, so it was skipped",zh:"同一特化石出现两次，已跳过",ja:"同じ特化石が2回出たため除外しました"},
+  "유니크 특화석은 스킬당 1개만 가능해 제외했습니다":{en:"only 1 Unique stone per skill is allowed, so it was skipped",zh:"每个技能仅限1颗专属特化石，已跳过",ja:"ユニーク特化石はスキル1つにつき1個のため除外しました"},
+  "인벤토리의 장착중 표시와 맞지 않습니다. 확인해 주세요.":{en:"does not match the “Equipped” marks in the inventory. Please check.",zh:"与背包中的“装备中”标记不一致，请确认。",ja:"インベントリの「装着中」表示と一致しません。確認してください。"},
+  "특화석 종류를 읽지 못해 비워 둡니다.":{en:"could not read the stone type, left empty.",zh:"未能读取特化石种类，已留空。",ja:"特化石の種類を読み取れなかったため空にしました。"},
+  "스킬 이름 글자 읽기를 쓰지 못해 아이콘 비교만 사용했습니다.":{en:"Skill-name text reading was unavailable, so only icon matching was used.",zh:"无法使用技能名称文字识别，仅使用了图标比对。",ja:"スキル名の文字認識が使えなかったため、アイコン照合のみを使用しました。"},
+  "스크린샷에서 특화석 {n}개를 불러왔습니다.":{en:"Imported {n} stones from the screenshot.",zh:"已从截图导入 {n} 个特化石。",ja:"スクリーンショットから特化石を {n} 個読み込みました。"},
+  "취소":{en:"Cancel",zh:"取消",ja:"キャンセル"},
+  "적용":{en:"Apply",zh:"应用",ja:"適用"},
+  "장착한 특화석의 별을 클릭하여 레벨을 조정할 수 있습니다":{en:"Click the stars on an equipped stone to adjust its level",zh:"点击已装备特化石的星星即可调整等级",ja:"装着した特化石の星をクリックしてレベルを調整できます"},
+  "클릭하여 이 레벨로 변경":{en:"Click to set this level",zh:"点击设为此等级",ja:"クリックしてこのレベルに変更"},
+  "눌러서 비슷한 특화석으로 바꾸기":{en:"Click to switch to a similar stone",zh:"点击切换为相似的特化石",ja:"クリックして似た特化石に切り替え"},
+  "이미지 분석 중...":{en:"Analyzing image...",zh:"正在分析图片...",ja:"画像を解析中..."},
+  "화면 크기 찾는 중...":{en:"Detecting screen scale...",zh:"正在检测画面缩放...",ja:"画面サイズを検出中..."},
+  "칸 위치 찾는 중...":{en:"Locating slots...",zh:"正在定位格子...",ja:"マスの位置を検出中..."},
+  "특화석 읽는 중...":{en:"Reading stones...",zh:"正在读取特化石...",ja:"特化石を読み取り中..."},
+  "스킬 찾는 중...":{en:"Finding skills...",zh:"正在查找技能...",ja:"スキルを検索中..."},
+  "스킬 이름 읽는 중...":{en:"Reading skill names...",zh:"正在读取技能名称...",ja:"スキル名を読み取り中..."},
+  "이미지 파일만 불러올 수 있습니다.":{en:"Only image files can be loaded.",zh:"只能导入图片文件。",ja:"画像ファイルのみ読み込めます。"},
+  "특화석 칸을 찾지 못했습니다. 스킬 특화 화면이 전부 보이는 이미지인지 확인해 주세요.":{en:"Could not find the stone slots. Make sure the whole skill specialization screen is visible.",zh:"未找到特化石格子。请确认图片完整显示了技能特化界面。",ja:"特化石のマスが見つかりませんでした。スキル特化画面全体が写っているか確認してください。"},
+  "왼쪽 스킬 목록(장착 칸)을 찾지 못했습니다. 스킬 목록과 특화석 칸이 함께 보이게 캡처해 주세요.":{en:"Could not find the skill list (equip slots) on the left. Capture the skill list and stone slots together.",zh:"未找到左侧的技能列表（装备栏）。请将技能列表和特化石格子一起截图。",ja:"左のスキル一覧（装着欄）が見つかりませんでした。スキル一覧と特化石のマスが一緒に写るようにキャプチャしてください。"},
+  "직업을 판단하지 못했습니다. 스킬 이름과 아이콘이 선명하게 보이는 이미지를 사용해 주세요.":{en:"Could not determine the job. Use an image where skill names and icons are clearly visible.",zh:"无法判断职业。请使用技能名称和图标清晰可见的图片。",ja:"職業を判定できませんでした。スキル名とアイコンがはっきり見える画像を使ってください。"},
+  "이미지를 읽지 못했습니다. 다시 시도해 주세요.":{en:"Could not read the image. Please try again.",zh:"无法读取图片，请重试。",ja:"画像を読み取れませんでした。もう一度お試しください。"},
+  "직업:":{en:"Job:",zh:"职业:",ja:"職業:"},
+  "스킬 미인식":{en:"Skill not recognized",zh:"未识别技能",ja:"スキル未認識"},
+  "(미인식)":{en:"(not recognized)",zh:"(未识别)",ja:"(未認識)"},
+  "아이콘·이름 일치":{en:"Icon & name match",zh:"图标与名称一致",ja:"アイコンと名前が一致"},
+  "아이콘 기준":{en:"Based on icon",zh:"以图标为准",ja:"アイコン基準"},
+  "확인 필요":{en:"Check needed",zh:"需确认",ja:"要確認"},
+  "잠금":{en:"Locked",zh:"锁定",ja:"ロック"},
+  "빈 칸":{en:"Empty",zh:"空",ja:"空き"},
+  "이 직업의 기존 장착을 모두 지우고 적용":{en:"Clear this job's existing equips and apply",zh:"清除该职业现有装备后应用",ja:"この職業の既存の装着をすべて消して適用"},
+  "최대 Lv 일괄":{en:"Bulk max Lv",zh:"批量最高Lv",ja:"最大Lv一括"},
+  "(장착 특화석 전체 · 장착 Lv → 최대 Lv 합산)":{en:"(all equipped stones · equipped Lv → max Lv, summed)",zh:"(全部已装备特化石 · 装备Lv → 最高Lv 合计)",ja:"(装着した特化石すべて · 装着Lv → 最大Lv の合計)"},
+  "· 장착 레벨은 슬롯의 별을 눌러 바꾸고, 최대 레벨(기본 Lv5)은 위에서 고릅니다. 장착 레벨부터 최대 레벨까지의 단계만 계산합니다.":{en:"· Change the equipped level by clicking the stars on the slot, and pick the max level (default Lv5) above. Only the steps from the equipped level to the max level are calculated.",zh:"· 点击槽位上的星星可更改装备等级，最高等级（默认Lv5）在上方选择。仅计算从装备等级到最高等级的阶段。",ja:"· 装着レベルはスロットの星をクリックして変更し、最大レベル（既定Lv5）は上で選びます。装着レベルから最大レベルまでの段階のみ計算します。"}
+});
+LKI18N.addRules([
+  [/읽은 스킬 (\d+)줄/g, {en:"Skills read: $1",zh:"已读取技能 $1 行",ja:"読み取ったスキル $1 行"}],
+  [/두 방식이 달라 확인 필요/g, {en:"The two methods differ — please check",zh:"两种方式结果不同，请确认",ja:"2つの方式で結果が異なります。確認してください"}],
+  [/\(아이콘: /g, {en:"(Icon: ",zh:"(图标: ",ja:"(アイコン: "}],
+  [/ \/ 글자: /g, {en:" / Text: ",zh:" / 文字: ",ja:" / 文字: "}],
+  [/일반 (\d+)/g, {en:"Common $1",zh:"普通 $1",ja:"通常 $1"}],
+  [/유니크 (\d+)/g, {en:"Unique $1",zh:"专属 $1",ja:"ユニーク $1"}],
+  [/장착 Lv(\d+)/g, {en:"Equipped Lv$1",zh:"已装备 Lv$1",ja:"装着 Lv$1"}],
+  [/→ 최대/g, {en:"→ Max",zh:"→ 最高",ja:"→ 最大"}]
+]);
 LKI18N.init();
 </script>
 
@@ -3316,7 +3368,7 @@ LKI18N.init();
       bindStoneTip(el, cur.t, cur.no);
       // 장착한 채로 별을 눌러 바로 레벨(목표 등급)을 바꾼다
       Array.prototype.forEach.call(f.querySelectorAll('s .stx'), function (sp, idx) {
-        sp.title = 'Lv' + (idx + 1) + '로 변경';
+        sp.title = '클릭하여 이 레벨로 변경';
         sp.onclick = function (ev) {
           ev.stopPropagation();
           if (cur.lv === idx + 1) return;
@@ -3778,6 +3830,7 @@ LKI18N.init();
     var modal = document.getElementById('shotModal'), body = document.getElementById('shotBody'), foot = document.getElementById('shotFoot');
     if (!btn || !window.LKShot) { if (btn) btn.hidden = true; return; }
     var busy = false, plan = null;
+    var tt = function (k) { return window.LKI18N ? LKI18N.t(k) : k; };   // 다국어 문구(고정 문장 + 자리표시자)
     function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function openM() { modal.hidden = false; }
     function closeM() { modal.hidden = true; plan = null; }
@@ -3833,11 +3886,11 @@ LKI18N.init();
       var res = plan.res, job = res.job, J = D.jobs[job], warns = [], rows = [], used = {};
       res.rows.forEach(function (r, i) {
         var row = { si: r.skill ? r.skill.si : null, name: r.skill ? J.skills[r.skill.si].name : null, agree: r.agree, byIcon: r.byIcon, byOcr: r.byOcr, chips: [], stones: [] };
-        if (!r.skill || r.skill.job !== job) { row.si = null; row.name = null; warns.push((i + 1) + '번째 줄: 스킬을 인식하지 못해 제외했습니다.'); rows.push(row); return; }
+        if (!r.skill || r.skill.job !== job) { row.si = null; row.name = null; warns.push(tt('{n}번째 줄: 스킬을 인식하지 못해 제외했습니다.').replace('{n}', i + 1)); rows.push(row); return; }
         var hasUq = false;
         r.slots.forEach(function (c, k) {
           var chip = { kind: c.kind, i: i, k: k };
-          var lab = row.name + ' ' + (k + 1) + '번 슬롯';
+          var lab = tt('{name} {k}번 슬롯').replace('{name}', row.name).replace('{k}', k + 1);
           if (c.kind === 'stone') {
             var list = (c.cands && c.cands.length) ? c.cands : [{ t: c.t, no: c.no }];
             var idx = (plan.sel[i + ':' + k] || 0) % list.length, pk = list[idx];
@@ -3845,20 +3898,20 @@ LKI18N.init();
             chip.unsure = !!c.unsure && idx === 0;
             chip.warn = !!(c.notInInv || chip.unsure);
             var key = pk.t + ':' + pk.no, why = null;
-            if (used[key]) why = '같은 특화석이 두 번 나와 제외했습니다';
-            else if (pk.t === 'uq' && hasUq) why = '유니크 특화석은 스킬당 1개만 가능해 제외했습니다';
+            if (used[key]) why = tt('같은 특화석이 두 번 나와 제외했습니다');
+            else if (pk.t === 'uq' && hasUq) why = tt('유니크 특화석은 스킬당 1개만 가능해 제외했습니다');
             if (why) { chip.skip = true; chip.warn = true; warns.push(lab + ' (' + (pk.t === 'gen' ? pk.no : 'U' + pk.no) + '): ' + why); }
             else { used[key] = true; if (pk.t === 'uq') hasUq = true; var lvv = Math.max(1, Math.min(5, c.lv || 1)); row.stones.push({ t: pk.t, no: pk.no, lv: lvv }); }
-            if (c.notInInv) warns.push(lab + ': 인벤토리의 장착중 표시와 맞지 않습니다. 확인해 주세요.');
+            if (c.notInInv) warns.push(lab + ': ' + tt('인벤토리의 장착중 표시와 맞지 않습니다. 확인해 주세요.'));
           } else if (c.kind === 'covered') {
-            chip.warn = true; warns.push(lab + ': 특화석 종류를 읽지 못해 비워 둡니다.');
+            chip.warn = true; warns.push(lab + ': ' + tt('특화석 종류를 읽지 못해 비워 둡니다.'));
           }
           row.chips.push(chip);
         });
         if (r.lowConf && r.byIcon && r.byOcr) row.check = true;
         rows.push(row);
       });
-      if (res.ocrFailed) warns.push('스킬 이름 글자 읽기를 쓰지 못해 아이콘 비교만 사용했습니다.');
+      if (res.ocrFailed) warns.push(tt('스킬 이름 글자 읽기를 쓰지 못해 아이콘 비교만 사용했습니다.'));
       plan.view = { job: job, rows: rows, warns: warns };
     }
 
@@ -3921,7 +3974,7 @@ LKI18N.init();
         b[r.si] = r.stones.slice(0, 3); n += r.stones.length;
       });
       save(); render(); closeM();
-      simToast('스크린샷에서 특화석 ' + n + '개를 불러왔습니다.');
+      simToast((window.LKI18N ? LKI18N.t('스크린샷에서 특화석 {n}개를 불러왔습니다.') : '스크린샷에서 특화석 {n}개를 불러왔습니다.').replace('{n}', n));
     }
   })();
 
