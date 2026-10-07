@@ -1050,7 +1050,7 @@ LKI18N.init();
 <div id="app">
   <header>
     <button class="theme-toggle" id="themeToggle" aria-label="다크/라이트 모드 전환" type="button"></button>
-    <h1>확률형 상자 기대값 계산기 <span class="updateDate"><span>최근 업데이트</span> 2026.09.23</span></h1>
+    <h1>확률형 상자 기대값 계산기 <span class="updateDate"><span>최근 업데이트</span> 2026.10.07</span></h1>
     <p class="lead">실제 공개된 확률(게임산업법 확률 공개용 수치)과 캐시샵 가격을 그대로 계산에 씁니다.</p>
     <div class="mode-tabs">
       <button id="modeRoyalBtn" class="mode-tab active">로얄 상자 시뮬레이터</button>
@@ -1220,7 +1220,9 @@ function hideModal() {
 }
 modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) hideModal(); });
 
-boxes.forEach((b, i) => {
+// 드롭다운은 최신 출시(상자 번호가 큰 것)가 앞에 오게 보여준다. option.value는 boxes 배열 인덱스 그대로라
+// 공유 링크(?box=<인덱스>)와 boxes[boxSelect.value] 접근은 순서와 무관하게 유지된다.
+boxes.map((b, i) => ({ b, i })).sort((x, y) => y.b.id - x.b.id).forEach(({ b, i }) => {
   const opt = document.createElement('option');
   opt.value = i;
   opt.textContent = b.title;
@@ -2253,7 +2255,7 @@ function showSharedHit(P) {
   try {
     const P = new URLSearchParams(location.search);
     const bx = P.get('box');
-    if (bx !== null && boxSelect.options[+bx]) { boxSelect.value = bx; target = { kind: 'row', idx: 0 }; royalRecentEvents = []; }
+    if (bx !== null && boxes[+bx]) { boxSelect.value = bx; target = { kind: 'row', idx: 0 }; royalRecentEvents = []; }
     const zn = P.get('zone');
     if (zn !== null && mythicZones[+zn]) mythicZoneIdx = +zn;
     if (P.get('mode') === 'mythic') { switchMode('mythic'); showSharedHit(P); return; }
