@@ -236,6 +236,8 @@ LKI18N.add({
   "마네킹 모드 (대머리+무표정)":{en:"Mannequin mode (bald + blank face)",zh:"人偶模式(光头+无表情)",ja:"マネキンモード(ハゲ+無表情)"},
   "실시간 이동 테스트 (←/→, 짧게 두번=달리기, C=점프)":{en:"Live movement test (←/→, double-tap = run, C = jump)",zh:"实时移动测试 (←/→，短按两次=奔跑，C=跳跃)",ja:"リアルタイム移動テスト (←/→、2回=走る、C=ジャンプ)"},
   "잔상 적용":{en:"Apply afterimage",zh:"应用残影",ja:"残像を適用"},
+  "잔상 색 적용 (beta)":{en:"Apply afterimage color (beta)",zh:"应用残影颜色 (测试版)",ja:"残像の色を適用 (ベータ版)"},
+  "잔상거울의 색상을 잔상색이 적용되는 헤어, 아이템에 적용합니다. 현재는 실험중으로, 실제와 크게 다를 수 있습니다.":{en:"Applies the afterimage mirror's color to hair and items that support afterimage color. This is currently experimental and may differ greatly from the real game.",zh:"将残影镜的颜色应用到支持残影色的发型和物品上。目前为实验功能，可能与实际效果有较大差异。",ja:"残像ミラーの色を、残像色が適用されるヘア・アイテムに適用します。現在は実験中のため、実際とは大きく異なる場合があります。"},
   "배경 포함":{en:"Include background",zh:"包含背景",ja:"背景を含む"},
   "일반":{en:"Normal",zh:"普通",ja:"通常"},
   "크리티컬":{en:"Critical",zh:"暴击",ja:"クリティカル"},
@@ -284,7 +286,7 @@ LKI18N.init();
 <header class="topbar">
   <div class="title-block">
     <h1>LaTale 캐릭터 코디 시뮬레이터 Latte_1</h1>
-    <span class="version-tag">v1.2.6 · chipok</span>
+    <span class="version-tag">v1.2.7 · chipok</span>
     <span class="version-tag">최근 업데이트 2026.10.12</span>
   </div>
   <div class="header-controls">
@@ -365,6 +367,13 @@ LKI18N.init();
         <span>잔상 종류</span>
         <select id="ghostStyleSelect"></select>
         <button id="mirrorGalleryBtn" type="button">잔상 갤러리</button>
+      </div>
+      <div class="control-row hidden" id="haloRow">
+        <label class="halo-check">
+          <input type="checkbox" id="afterimageHaloCheck">
+          <span>잔상 색 적용 (beta)</span>
+        </label>
+        <span class="help-tip" tabindex="0" role="button" aria-label="?">?<span class="help-tip-body">잔상거울의 색상을 잔상색이 적용되는 헤어, 아이템에 적용합니다. 현재는 실험중으로, 실제와 크게 다를 수 있습니다.</span></span>
       </div>
       <div class="move-hint hidden" id="moveHint">방향키로 좌우 이동 · 장비를 바꾸려면 체크를 껐다 켜세요</div>
     </div>
