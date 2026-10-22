@@ -2384,11 +2384,13 @@ LKI18N.init();
       var lo = xsP[0] - cell * 0.4, hi = xsP[xsP.length - 1] + cell * 0.4;
       var pk = peaks.filter(function (p) { return p.x >= lo && p.x <= hi; });
       var rowsG = clusterAxis(pk.map(function (p) { return p.y; }), cell * 0.3);
+      var supported = rowsG.filter(function (g) { return g.items.length >= 2; });
+      if (supported.length >= 2) rowsG = supported;     // 칸 2개 이상 뒷받침된 행만 (가림·배경 오검출 제거)
       var ys = rowsG.map(function (g) { return g.mean; });
       var pitchY = 0;
       if (ys.length > 1) {
         var d = []; for (var q = 1; q < ys.length; q++) d.push(ys[q] - ys[q - 1]);
-        d.sort(function (a, b) { return a - b; }); pitchY = d[0];
+        d.sort(function (a, b) { return a - b; }); pitchY = d[Math.floor(d.length / 2)];   // 중앙값
       }
       // 빈 행 메우기
       var rowsFull = [];
@@ -2429,6 +2431,38 @@ LKI18N.init();
       }
     }
     return num / Math.sqrt(Math.max(1, sI) * Math.max(1, sT));
+  }
+
+  // 가림에 강한 점수: 픽셀 오차를 K x 평균 에너지에서 잘라 합산한다 (스킬 아이콘 전용).
+  // 일반 점수 sqdiff 와 같은 척도(오차 / 평균 에너지)라서 임계값(0.25)을 그대로 쓴다.
+  function sqdiffR(data, W, H, t, cx, cy, st) {
+    st = st || 1;
+    var K = 3;
+    var x0 = Math.round(cx - t.w / 2), y0 = Math.round(cy - t.h / 2);
+    if (x0 < 0 || y0 < 0 || x0 + t.w > W || y0 + t.h > H) return 9;
+    var sI = 0, sT = 0, n = 0;
+    for (var y = 0; y < t.h; y += st) {
+      var ip = ((y0 + y) * W + x0) * 4, tp = y * t.w * 4, mp = y * t.w;
+      for (var x = 0; x < t.w; x += st, ip += 4 * st, tp += 4 * st, mp += st) {
+        if (!t.m[mp]) continue;
+        n++;
+        sI += data[ip] * data[ip] + data[ip + 1] * data[ip + 1] + data[ip + 2] * data[ip + 2];
+        sT += t.d[tp] * t.d[tp] + t.d[tp + 1] * t.d[tp + 1] + t.d[tp + 2] * t.d[tp + 2];
+      }
+    }
+    if (!n) return 9;
+    var geo = Math.sqrt(Math.max(1, sI) * Math.max(1, sT)) / n;   // 평균 에너지(기하평균)
+    var cap = K * geo, sum = 0;
+    for (y = 0; y < t.h; y += st) {
+      ip = ((y0 + y) * W + x0) * 4; tp = y * t.w * 4; mp = y * t.w;
+      for (x = 0; x < t.w; x += st, ip += 4 * st, tp += 4 * st, mp += st) {
+        if (!t.m[mp]) continue;
+        var dr = data[ip] - t.d[tp], dg = data[ip + 1] - t.d[tp + 1], db = data[ip + 2] - t.d[tp + 2];
+        var e = dr * dr + dg * dg + db * db;
+        sum += e < cap ? e : cap;
+      }
+    }
+    return (sum / n) / geo;
   }
   function bestShift(data, W, H, t, cx, cy, rad) {
     var best = 9;
@@ -2605,7 +2639,7 @@ LKI18N.init();
       var best = 9, bx = 0, by = 0;
       for (var dy = -ry; dy <= ry; dy += 2) {
         for (var dx = -rx; dx <= rx; dx += 2) {
-          var v = sqdiff(data, W, H, t, cx + dx, cy + dy, 2);
+          var v = sqdiffR(data, W, H, t, cx + dx, cy + dy, 2);
           if (v < best) { best = v; bx = dx; by = dy; }
         }
       }
@@ -2615,7 +2649,7 @@ LKI18N.init();
     var res = coarse.slice(0, 12).map(function (q) {
       var best = 9;
       for (var ey = -2; ey <= 2; ey++) for (var ex = -2; ex <= 2; ex++) {
-        var v = sqdiff(data, W, H, q.t, cx + q.bx + ex, cy + q.by + ey, 1);
+        var v = sqdiffR(data, W, H, q.t, cx + q.bx + ex, cy + q.by + ey, 1);
         if (v < best) best = v;
       }
       return { c: q.c, score: best };
