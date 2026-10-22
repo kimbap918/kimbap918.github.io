@@ -3682,6 +3682,7 @@ LKI18N.init();
        + '</div>';
 
     h += '<div id="matCalc"></div>';
+    h += '<div id="forestCalc"></div>';
 
     h += '<div class="row sub" style="margin-top:8px">· 단계별 소모 : Lv1→2 결정 1개 · Lv2→3 결정 2개 · Lv3→4 결정 3개 · Lv4→5 결정 4개 (엘리도 1·2·3·4억). 합쳐서 Lv1→5 = 결정 10개 · 엘리 10억.</div>';
     h += '<div class="row sub">· 장착 레벨은 슬롯의 별을 눌러 바꾸고, 최대 레벨(기본 Lv5)은 위에서 고릅니다. 장착 레벨부터 최대 레벨까지의 단계만 계산합니다.</div>';
@@ -3744,7 +3745,42 @@ LKI18N.init();
          + '" value="' + haveVal(key) + '"></label>';
   }
   var _matNeed = { genCry: 0, uqCry: 0, upEly: 0, ulGenCry: 0, ulUqCry: 0, ulEly: 0, exclUnlock: false, exclEnh: false };
-  function renderMatCalc() {
+  var _matShort = { gs: 0, us: 0 };
+var _forestMode = 'solo';
+var FOREST = {
+  solo: { label: '개인 (1인)', gs: 100, us: 5, note: '보스 처치 시 확정 드랍 · 주 1회' },
+  party: { label: '파티 (4인)', gs: 0, us: 0, note: '주간 퀘스트 보상은 [이벤트] 파편(주 일반 1,800 · 유니크 22)만 지급되어 일반·유니크 파편 수급에 쓸 수 없음' }
+};
+function renderForest() {
+    var host = document.getElementById('forestCalc'); if (!host) return;
+    var sel = host.querySelector('#forestMode');
+    if (sel) _forestMode = sel.value;
+    var F = FOREST[_forestMode] || FOREST.solo;
+    var gs = _matShort.gs, us = _matShort.us;
+    var opts = '';
+    Object.keys(FOREST).forEach(function (k) {
+      opts += '<option value="' + k + '"' + (k === _forestMode ? ' selected' : '') + '>' + FOREST[k].label + '</option>';
+    });
+    var h = '<div class="row mat-head" style="margin-top:12px;color:var(--g-txt);font-weight:600">신비한 숲의 신전 주간 계산 <span class="mh-sub">(위 부족분 기준)</span></div>';
+    h += '<div class="row"><span class="k">던전</span> <select id="forestMode">' + opts + '</select></div>';
+    h += '<div class="row sub">' + F.note + '</div>';
+    if (gs === 0 && us === 0) {
+      h += '<div class="row">부족한 파편이 없습니다. 0주</div>';
+    } else if ((gs > 0 && F.gs === 0) || (us > 0 && F.us === 0)) {
+      h += '<div class="row">이 던전으로는 부족한 파편을 채울 수 없습니다.</div>';
+    } else {
+      var wG = gs > 0 ? Math.ceil(gs / F.gs) : 0;
+      var wU = us > 0 ? Math.ceil(us / F.us) : 0;
+      var weeks = Math.max(wG, wU);
+      h += '<div class="row">파편[일반] 부족 ' + gs.toLocaleString() + '개 → 주 ' + F.gs + '개씩 · ' + (gs > 0 ? wG + '주' : '-') + '</div>';
+      h += '<div class="row">파편[유니크] 부족 ' + us.toLocaleString() + '개 → 주 ' + F.us + '개씩 · ' + (us > 0 ? wU + '주' : '-') + '</div>';
+      h += '<div class="row"><b>필요 주 수: ' + weeks + '주</b> (두 파편을 같은 주에 함께 받는다고 가정)</div>';
+    }
+    host.innerHTML = h;
+    var s2 = host.querySelector('#forestMode');
+    if (s2) s2.onchange = function () { renderForest(); };
+}
+function renderMatCalc() {
     var host = document.getElementById('matCalc'); if (!host) return;
     var enhOn = !_matNeed.exclEnh;
     var needGC = enhOn ? _matNeed.genCry : 0, needUC = enhOn ? _matNeed.uqCry : 0;   // 제외 시 강화분 0
@@ -3767,7 +3803,8 @@ LKI18N.init();
     var needGS_fromGC = shortGC * CONV.genCry.shard;             // 강화 결정[일반] → 파편[일반]
     var needGS_fromUS = shortUS * CONV.uqShard.shard;            // 부족 파편[유니크] → 파편[일반]
     var needGS  = needGS_fromGC + needGS_fromUS + ulNeedGS_direct;
-    var shortGS = Math.max(0, needGS - haveGS);                  // 최종 파밍해야 할 파편[일반]
+    var shortGS = Math.max(0, needGS - haveGS);
+    _matShort = { gs: shortGS, us: shortUS }; renderForest();                  // 최종 파밍해야 할 파편[일반]
 
     var swapEly = shortGC * CONV.genCry.ely + shortUC * CONV.uqCry.ely + shortUS * CONV.uqShard.ely; // 교환 엘리(강화분)
     var totEly = upEly + swapEly + ulCraftEly + ulSlotEly;
