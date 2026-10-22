@@ -3797,7 +3797,7 @@ var SOLO_STAGE = [
 ];
 var _forestSolo = 1, _forestParty = 4;
 function renderForest() {
-    var PINK = '#ff7eb6', PF = 'filter:sepia(1) saturate(5) hue-rotate(300deg) brightness(1.05);';
+    var PINK = '#ff7eb6', PF = '';
     var host = document.getElementById('forestCalc'); if (!host) return;
     var selS = host.querySelector('#forestSolo'), selP = host.querySelector('#forestParty');
     if (selS) _forestSolo = +selS.value;
@@ -3833,7 +3833,7 @@ function renderForest() {
       var weeks = Math.max(wG, wU);
       h += '<div class="row" style="color:' + PINK + '"><span style="' + PF + '">' + matIcon('genShard') + '</span> 파편[일반] 부족 ' + gs.toLocaleString() + '개 → 주 ' + wGS.toLocaleString() + '개씩 · ' + (gs > 0 ? wG + '주' : '-') + '</div>';
       h += '<div class="row" style="color:' + PINK + '"><span style="' + PF + '">' + matIcon('uqShard') + '</span> 파편[유니크] 부족 ' + us.toLocaleString() + '개 → 주 ' + wUS + '개씩 · ' + (us > 0 ? wU + '주' : '-') + '</div>';
-      h += '<div class="row" style="color:' + PINK + ';font-weight:700">' + '<span style="' + PF + '">' + matIcon('genShard') + '</span> 필요 주 수: ' + weeks + '주</div>';
+      h += '<div class="row" style="color:' + PINK + ';font-weight:700">' + '필요 주 수: ' + weeks + '주</div>';
     }
     host.innerHTML = h;
     var x = host.querySelector('#forestSolo'), y = host.querySelector('#forestParty');
