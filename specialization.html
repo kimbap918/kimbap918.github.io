@@ -3780,39 +3780,64 @@ LKI18N.init();
   }
   var _matNeed = { genCry: 0, uqCry: 0, upEly: 0, ulGenCry: 0, ulUqCry: 0, ulEly: 0, exclUnlock: false, exclEnh: false };
   var _matShort = { gs: 0, us: 0 };
-var _forestMode = 'solo';
-var FOREST = {
-  solo: { label: '개인 (1인)', gs: 100, us: 5, note: '보스 처치 시 확정 드랍 · 주 1회' },
-  party: { label: '파티 (4인)', gs: 0, us: 0, note: '주간 퀘스트 보상은 [이벤트] 파편(주 일반 1,800 · 유니크 22)만 지급되어 일반·유니크 파편 수급에 쓸 수 없음' }
-};
+var PARTY_CUM = [
+  { gs: 0, us: 0 },        // 0단계 (안 함)
+  { gs: 300, us: 0 },      // 1단계까지
+  { gs: 700, us: 2 },      // 2단계까지
+  { gs: 1200, us: 12 },    // 3단계까지
+  { gs: 1800, us: 22 }     // 4단계까지
+];
+var SOLO_BOSS = { gs: 100, us: 5 };   // 보스 확정 드랍 (단계 공통 가정)
+var SOLO_STAGE = [
+  { gs: 0, us: 0 },        // 안 함
+  { gs: 300, us: 0 },      // 1단계 보스 15마리 확정 드랍 합계
+  { gs: 400, us: 1 },      // 2단계 보스 15마리 합계
+  { gs: 500, us: 5 },      // 3단계 보스 15마리 합계
+  { gs: 600, us: 10 }      // 4단계 보스 15마리 합계
+];
+var _forestSolo = 1, _forestParty = 4;
 function renderForest() {
     var host = document.getElementById('forestCalc'); if (!host) return;
-    var sel = host.querySelector('#forestMode');
-    if (sel) _forestMode = sel.value;
-    var F = FOREST[_forestMode] || FOREST.solo;
+    var selS = host.querySelector('#forestSolo'), selP = host.querySelector('#forestParty');
+    if (selS) _forestSolo = +selS.value;
+    if (selP) _forestParty = +selP.value;
+    var sc = SOLO_STAGE[_forestSolo] || SOLO_STAGE[0];
+    var soloOn = _forestSolo > 0;
+    var pc = PARTY_CUM[_forestParty] || PARTY_CUM[0];
+    var wGS = (soloOn ? SOLO_BOSS.gs + sc.gs : 0) + pc.gs;   // 주간 일반 파편 합계
+    var wUS = (soloOn ? SOLO_BOSS.us + sc.us : 0) + pc.us;   // 주간 유니크 파편 합계
     var gs = _matShort.gs, us = _matShort.us;
-    var opts = '';
-    Object.keys(FOREST).forEach(function (k) {
-      opts += '<option value="' + k + '"' + (k === _forestMode ? ' selected' : '') + '>' + FOREST[k].label + '</option>';
-    });
-    var h = '<div class="row mat-head" style="margin-top:12px;color:var(--g-txt);font-weight:600">신비한 숲의 신전 주간 계산 <span class="mh-sub">(위 부족분 기준)</span></div>';
-    h += '<div class="row"><span class="k">던전</span> <select id="forestMode">' + opts + '</select></div>';
-    h += '<div class="row sub">' + F.note + '</div>';
+
+    var h = '<div class="row mat-head" style="margin-top:12px;color:var(--g-txt);font-weight:600">신비한 숲의 신전 주간 계산 <span class="mh-sub">(개인·파티 파편 합산 · 위 부족분 기준)</span></div>';
+    h += '<div class="row"><span class="k">개인 (1인)</span> <select id="forestSolo">';
+    for (var i = 0; i <= 4; i++) {
+      h += '<option value="' + i + '"' + (_forestSolo === i ? ' selected' : '') + '>' + (i === 0 ? '안 함' : i + '단계 (주 1회)') + '</option>';
+    }
+    h += '</select></div>';
+    h += '<div class="row"><span class="k">파티 (4인)</span> <select id="forestParty">';
+    for (var k = 0; k <= 4; k++) {
+      h += '<option value="' + k + '"' + (_forestParty === k ? ' selected' : '') + '>' + (k === 0 ? '안 함' : k + '단계까지 (주 1회)') + '</option>';
+    }
+    h += '</select></div>';
+    h += '<div class="row sub">개인 보상 = 선택 단계 보스 15마리 드랍 + 최종 보스 드랍(일반 100 · 유니크 5, 모든 단계 공통 가정). 파티 보상 = 1~선택 단계 누적.</div>';
+    h += '<div class="row sub">주간 합계: 파편[일반] ' + wGS.toLocaleString() + '개 · 파편[유니크] ' + wUS + '개</div>';
+
     if (gs === 0 && us === 0) {
       h += '<div class="row">부족한 파편이 없습니다. 0주</div>';
-    } else if ((gs > 0 && F.gs === 0) || (us > 0 && F.us === 0)) {
-      h += '<div class="row">이 던전으로는 부족한 파편을 채울 수 없습니다.</div>';
+    } else if ((gs > 0 && wGS === 0) || (us > 0 && wUS === 0)) {
+      h += '<div class="row">선택한 던전 구성으로는 부족한 파편을 채울 수 없습니다.</div>';
     } else {
-      var wG = gs > 0 ? Math.ceil(gs / F.gs) : 0;
-      var wU = us > 0 ? Math.ceil(us / F.us) : 0;
+      var wG = gs > 0 ? Math.ceil(gs / wGS) : 0;
+      var wU = us > 0 ? Math.ceil(us / wUS) : 0;
       var weeks = Math.max(wG, wU);
-      h += '<div class="row">파편[일반] 부족 ' + gs.toLocaleString() + '개 → 주 ' + F.gs + '개씩 · ' + (gs > 0 ? wG + '주' : '-') + '</div>';
-      h += '<div class="row">파편[유니크] 부족 ' + us.toLocaleString() + '개 → 주 ' + F.us + '개씩 · ' + (us > 0 ? wU + '주' : '-') + '</div>';
-      h += '<div class="row"><b>필요 주 수: ' + weeks + '주</b> (두 파편을 같은 주에 함께 받는다고 가정)</div>';
+      h += '<div class="row">파편[일반] 부족 ' + gs.toLocaleString() + '개 → 주 ' + wGS.toLocaleString() + '개씩 · ' + (gs > 0 ? wG + '주' : '-') + '</div>';
+      h += '<div class="row">파편[유니크] 부족 ' + us.toLocaleString() + '개 → 주 ' + wUS + '개씩 · ' + (us > 0 ? wU + '주' : '-') + '</div>';
+      h += '<div class="row"><b>필요 주 수: ' + weeks + '주</b></div>';
     }
     host.innerHTML = h;
-    var s2 = host.querySelector('#forestMode');
-    if (s2) s2.onchange = function () { renderForest(); };
+    var x = host.querySelector('#forestSolo'), y = host.querySelector('#forestParty');
+    if (x) x.onchange = function () { renderForest(); };
+    if (y) y.onchange = function () { renderForest(); };
 }
 function renderMatCalc() {
     var host = document.getElementById('matCalc'); if (!host) return;
