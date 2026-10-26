@@ -18,13 +18,14 @@
 .lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
 .lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
 .lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+html[lang="th"] body,html[lang="th"] button,html[lang="th"] input,html[lang="th"] select,html[lang="th"] textarea{font-family:"Noto Sans Thai","Leelawadee UI","Sarabun",Tahoma,"Pretendard","Malgun Gothic",sans-serif}
 @media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
 </style>
 <script>
 window.LKI18N=(function(){
-  var LANGS=["ko","en","zh","ja"];
-  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
-  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var LANGS=["ko","en","zh","ja","th"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日",th:"ไทย"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語",th:"ไทย"};
   var strings={};
   var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
   var cur="ko";
@@ -33,16 +34,21 @@ window.LKI18N=(function(){
 
   function norm(s){return (s||"").replace(/\s+/g," ").trim();}
   function hasKo(s){return /[가-힣]/.test(s||"");}
+  function pick(o){
+    if(!o||cur==="ko") return null;
+    if(o[cur]!=null) return o[cur];
+    return (cur==="th" && o.en!=null) ? o.en : null;
+  }
   function tr(ko){
     var e=strings[ko]||strings[norm(ko)];
     if(!e) return null;
-    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+    return pick(e);
   }
   function applyRules(s){
     if(cur==="ko"||!rules.length) return s;
     var out=s;
     for(var i=0;i<rules.length;i++){
-      var rep=rules[i][1][cur];
+      var rep=pick(rules[i][1]);
       if(rep!=null) out=out.replace(rules[i][0],rep);
     }
     return out;
@@ -152,19 +158,48 @@ window.LKI18N=(function(){
     "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
     "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
   };
+  var COMMON_TH={
+    "홈":"หน้าแรก",
+    "코디 시뮬레이터":"โปรแกรมจำลองการแต่งตัว",
+    "장비 강화·인챈트 조회":"ค้นหาการตีบวก·เอนแชนต์อุปกรณ์",
+    "확률 계산기":"เครื่องคำนวณความน่าจะเป็น",
+    "타이틀 검색기":"ค้นหาไทเทิล",
+    "스킬 특화":"สกิลเฉพาะทาง",
+    "보스 도감":"สารานุกรมบอส",
+    "경험치 인던 (beta)":"ดันเจี้ยน EXP (beta)",
+    "다크/라이트 모드 전환":"สลับโหมดมืด/สว่าง",
+    "오늘":"วันนี้",
+    "실시간":"เรียลไทม์",
+    "최근 업데이트":"อัปเดตล่าสุด",
+    "공유":"แชร์",
+    "링크 복사":"คัดลอกลิงก์",
+    "이미지 저장":"บันทึกรูปภาพ",
+    "링크 복사됨":"คัดลอกลิงก์แล้ว",
+    "이미지 저장됨":"บันทึกรูปภาพแล้ว",
+    "라테일 몬스터 도감":"สารานุกรมมอนสเตอร์ LaTale",
+    "몬스터 HP 미니게임":"มินิเกมทายพลังชีวิตมอนสเตอร์",
+    "보스 몬스터 도감":"สารานุกรมมอนสเตอร์บอส",
+    "나도 해보기":"ลองเล่นเองบ้าง",
+    "공유된 획득 결과예요. 직접 도전해 볼까요?":"นี่คือผลลัพธ์ที่มีคนแชร์ไว้ ลองท้าทายด้วยตัวเองดูไหม?",
+    "스냅샷":"สแนปช็อต"
+  };
   return {
-    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=map[k], p=strings[k]||strings[norm(k)]; if(p && p!==o && p.th!=null && o.th==null) o.th=p.th; strings[k]=o; strings[norm(k)]=o; } },
     addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    addTh:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=map[k]; } },
+    addRulesTh:function(list){ (list||[]).forEach(function(x){ var s=(x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g")).source; for(var i=0;i<rules.length;i++){ if(rules[i][0].source===s){ rules[i][1].th=x[1]; } } }); },
     init:function(){
       var self=this;
       if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
       this.add(COMMON);
+      for(var k in COMMON_TH){ var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=COMMON_TH[k]; }
       buildSwitcher();
       try{ mo=new MutationObserver(schedule); }catch(e){}
       var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
       setLang(saved);
     },
     setLang:setLang, apply:apply,
+    pick:function(o){ return pick(o); },
     lang:function(){ return cur; },
     t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
   };
@@ -220,6 +255,51 @@ LKI18N.add({
   "명 다녀감 · 누적":{en:" visits · total",zh:"人到访 · 累计",ja:"人来訪 · 累計"},
   "명":{en:" online",zh:"人",ja:"人"}
 });
+/* TH_I18N */
+LKI18N.addTh({
+"홈":"หน้าแรก",
+"흥미로 만든 도구를 모아두는":"รวมเครื่องมือที่ทำขึ้นตามความสนใจ —",
+"개인 블로그":"บล็อกส่วนตัว",
+"입니다.":"",
+"정보 제공을 목적으로 운영하는 사이트는 아닙니다.":"เว็บไซต์นี้ไม่ได้ดำเนินการเพื่อวัตถุประสงค์ในการให้ข้อมูล",
+"도구":"เครื่องมือ",
+"코디 시뮬레이터 & 홈 러너 (web)":"จำลองการแต่งตัว & ตัวละครวิ่ง (web)",
+"코디 미리보기 · 홈 러너 등록":"ดูตัวอย่างการแต่งตัว · ลงทะเบียนตัวละครวิ่งหน้าแรก",
+"PC 코디 시뮬레이터 (설치형)":"จำลองการแต่งตัว PC (แบบติดตั้ง)",
+"실행파일 다운로드 · 라테일 설치 필요":"ดาวน์โหลดไฟล์ปฏิบัติการ · ต้องติดตั้ง LaTale",
+"데스크톱 캐릭터 러너":"ตัวละครวิ่งบนเดสก์ท็อป",
+"바탕화면 캐릭터 펫 · 라테일 설치 불필요":"สัตว์เลี้ยงตัวละครบนเดสก์ท็อป · ไม่ต้องติดตั้ง LaTale",
+"강화/인챈트 옵션과 확률 조회":"ค้นหาตัวเลือกและอัตราการตีบวก/เอนแชนต์",
+"확률형 아이템의 기대값 계산":"คำนวณค่าคาดหวังของไอเทมแบบสุ่ม",
+"타이틀과 옵션 빠른 검색":"ค้นหาไทเทิลและตัวเลือกได้อย่างรวดเร็ว",
+"보스·일반 몬스터 스탯을 한 곳에서 조회":"ดูค่าสเตตัสของบอสและมอนสเตอร์ทั่วไปได้ในที่เดียว",
+"직업별 스킬 특화 정보":"ข้อมูลสกิลเฉพาะทางแยกตามอาชีพ",
+"경험치 인던 계산":"เครื่องคำนวณดันเจี้ยน EXP",
+"인던별 획득 경험치·레벨업까지 완주 횟수":"EXP ที่ได้ในแต่ละดันเจี้ยน · จำนวนครั้งที่ต้องเคลียร์จนเลเวลอัป",
+"두 몬스터의 체력, 어느 쪽이 더 높을까?":"มอนสเตอร์สองตัวนี้ ตัวไหนมี HP สูงกว่ากัน?",
+"방명록":"สมุดเยี่ยม",
+"OO님의 캐릭터":"ตัวละครของคุณ OO",
+"님의 캐릭터":" · ตัวละคร",
+"하단 러너 캐릭터 켜기/끄기":"เปิด/ปิดตัวละครวิ่งด้านล่าง",
+"하단 러너 캐릭터 켜기":"เปิดตัวละครวิ่งด้านล่าง",
+"하단 러너 캐릭터 끄기":"ปิดตัวละครวิ่งด้านล่าง",
+"온라인":"ออนไลน์",
+"홈 러너로 등록":"ลงทะเบียนเป็นตัวละครวิ่ง",
+"이 러너를 삭제할까요? (휴지통으로 이동)":"ลบตัวละครวิ่งนี้หรือไม่? (ย้ายไปถังขยะ)",
+"정말 삭제할까요?":"ต้องการลบจริงหรือไม่?",
+"휴지통에서 완전히 삭제할까요? 복구할 수 없습니다.":"ลบออกจากถังขยะอย่างถาวรหรือไม่? ไม่สามารถกู้คืนได้",
+"삭제":"ลบ",
+"복구":"กู้คืน",
+"완전삭제":"ลบถาวร",
+"휴지통":"ถังขยะ",
+"성격":"บุคลิก",
+"지금 이동 방향":"ทิศทางการเคลื่อนที่ปัจจุบัน",
+"치폭":"ดาเมจคริติคอล",
+"명 · 오늘":" คน · วันนี้",
+"명 다녀감 · 누적":" คนเข้าชม · สะสม",
+"명":" คนออนไลน์"
+});
+/* /TH_I18N */
 LKI18N.init();
 </script>
 <script>(function(){try{if(localStorage.getItem('hub_runner_enabled')==='0')document.documentElement.classList.add('runners-off');}catch(e){}})();</script>

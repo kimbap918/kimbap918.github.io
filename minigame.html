@@ -497,13 +497,14 @@ body.lk-snap .rcard.t6 .h6-num{transform:translate3d(calc(var(--hpx)*-5px),0,0)}
 .lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
 .lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
 .lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+html[lang="th"] body,html[lang="th"] button,html[lang="th"] input,html[lang="th"] select,html[lang="th"] textarea{font-family:"Noto Sans Thai","Leelawadee UI","Sarabun",Tahoma,"Pretendard","Malgun Gothic",sans-serif}
 @media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
 </style>
 <script>
 window.LKI18N=(function(){
-  var LANGS=["ko","en","zh","ja"];
-  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
-  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var LANGS=["ko","en","zh","ja","th"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日",th:"ไทย"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語",th:"ไทย"};
   var strings={};
   var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
   var cur="ko";
@@ -512,16 +513,21 @@ window.LKI18N=(function(){
 
   function norm(s){return (s||"").replace(/\s+/g," ").trim();}
   function hasKo(s){return /[가-힣]/.test(s||"");}
+  function pick(o){
+    if(!o||cur==="ko") return null;
+    if(o[cur]!=null) return o[cur];
+    return (cur==="th" && o.en!=null) ? o.en : null;
+  }
   function tr(ko){
     var e=strings[ko]||strings[norm(ko)];
     if(!e) return null;
-    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+    return pick(e);
   }
   function applyRules(s){
     if(cur==="ko"||!rules.length) return s;
     var out=s;
     for(var i=0;i<rules.length;i++){
-      var rep=rules[i][1][cur];
+      var rep=pick(rules[i][1]);
       if(rep!=null) out=out.replace(rules[i][0],rep);
     }
     return out;
@@ -631,19 +637,48 @@ window.LKI18N=(function(){
     "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
     "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
   };
+  var COMMON_TH={
+    "홈":"หน้าแรก",
+    "코디 시뮬레이터":"โปรแกรมจำลองการแต่งตัว",
+    "장비 강화·인챈트 조회":"ค้นหาการตีบวก·เอนแชนต์อุปกรณ์",
+    "확률 계산기":"เครื่องคำนวณความน่าจะเป็น",
+    "타이틀 검색기":"ค้นหาไทเทิล",
+    "스킬 특화":"สกิลเฉพาะทาง",
+    "보스 도감":"สารานุกรมบอส",
+    "경험치 인던 (beta)":"ดันเจี้ยน EXP (beta)",
+    "다크/라이트 모드 전환":"สลับโหมดมืด/สว่าง",
+    "오늘":"วันนี้",
+    "실시간":"เรียลไทม์",
+    "최근 업데이트":"อัปเดตล่าสุด",
+    "공유":"แชร์",
+    "링크 복사":"คัดลอกลิงก์",
+    "이미지 저장":"บันทึกรูปภาพ",
+    "링크 복사됨":"คัดลอกลิงก์แล้ว",
+    "이미지 저장됨":"บันทึกรูปภาพแล้ว",
+    "라테일 몬스터 도감":"สารานุกรมมอนสเตอร์ LaTale",
+    "몬스터 HP 미니게임":"มินิเกมทายพลังชีวิตมอนสเตอร์",
+    "보스 몬스터 도감":"สารานุกรมมอนสเตอร์บอส",
+    "나도 해보기":"ลองเล่นเองบ้าง",
+    "공유된 획득 결과예요. 직접 도전해 볼까요?":"นี่คือผลลัพธ์ที่มีคนแชร์ไว้ ลองท้าทายด้วยตัวเองดูไหม?",
+    "스냅샷":"สแนปช็อต"
+  };
   return {
-    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=map[k], p=strings[k]||strings[norm(k)]; if(p && p!==o && p.th!=null && o.th==null) o.th=p.th; strings[k]=o; strings[norm(k)]=o; } },
     addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    addTh:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=map[k]; } },
+    addRulesTh:function(list){ (list||[]).forEach(function(x){ var s=(x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g")).source; for(var i=0;i<rules.length;i++){ if(rules[i][0].source===s){ rules[i][1].th=x[1]; } } }); },
     init:function(){
       var self=this;
       if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
       this.add(COMMON);
+      for(var k in COMMON_TH){ var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=COMMON_TH[k]; }
       buildSwitcher();
       try{ mo=new MutationObserver(schedule); }catch(e){}
       var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
       setLang(saved);
     },
     setLang:setLang, apply:apply,
+    pick:function(o){ return pick(o); },
     lang:function(){ return cur; },
     t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
   };
@@ -718,7 +753,8 @@ let mode = "boss", MOBS = DATA.boss;
 })();
 
 const UNITS={ko:[["조",1e12],["억",1e8],["만",1e4]], ja:[["兆",1e12],["億",1e8],["万",1e4]], zh:[["万亿",1e12],["亿",1e8],["万",1e4]],
-  en:[["T",1e12],["B",1e9],["M",1e6],["K",1e3]]};
+  en:[["T",1e12],["B",1e9],["M",1e6],["K",1e3]],
+  th:[[" ล้านล้าน",1e12],[" พันล้าน",1e9],[" ล้าน",1e6]]};
 function fmt(n){
   const us=UNITS[LKI18N.lang()]||UNITS.ko;
   for(const [u,v] of us){ if(n>=v) return (n/v).toLocaleString("en",{maximumFractionDigits: v>=1e8?2:(n<v*10?1:0)})+u; }
@@ -730,7 +766,7 @@ function countUp(el,to){
   (function fr(t){const k=Math.min((t-t0)/dur,1),e=1-Math.pow(1-k,3);
     el.textContent=fmt(Math.round(to*e)); if(k<1) requestAnimationFrame(fr);})(t0);
 }
-const IMG_DIR = "minigame_img";
+const IMG_DIR = "img";
 const imgUrl = m => IMG_DIR+"/"+m.i+".webp";
 
 /* ───── 게임 ───── */
@@ -1109,6 +1145,52 @@ $("lang").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b) return;
   LKI18N.setLang(b.dataset.l); setTimeout(refreshLang,0);
 });
+/* TH_I18N */
+LKI18N.addTh({
+"레벨":"เลเวล",
+"홈":"หน้าแรก",
+"몬스터":"มอนสเตอร์",
+"HP 미니게임":"มินิเกม HP",
+"보스 몬스터":"มอนสเตอร์บอส",
+"일반 몬스터":"มอนสเตอร์ทั่วไป",
+"콤보":"คอมโบ",
+"최고":"สูงสุด",
+"체력":"HP",
+"아래 몬스터의 체력은?":"HP ของมอนสเตอร์ด้านล่างเป็นเท่าไร?",
+"오른쪽 몬스터의 체력은?":"HP ของมอนสเตอร์ทางขวาเป็นเท่าไร?",
+"더 높다":"สูงกว่า",
+"더 낮다":"ต่ำกว่า",
+"다음 →":"ถัดไป →",
+"정답":"ถูกต้อง",
+"오답":"ผิด",
+"결과 카드":"การ์ดผลลัพธ์",
+"{m} {n}콤보 결과 카드":"{m} · การ์ดผลลัพธ์ {n} คอมโบ",
+"{m} · 체력 {hp}":"{m} · HP {hp}",
+"{m} 퀴즈 결과":"ผลควิซ {m}",
+"공유하기":"แชร์",
+"PNG 저장":"บันทึก PNG",
+"다시 하기 →":"เล่นอีกครั้ง →",
+"나도 도전하기":"ลองท้าทายด้วยตัวเอง",
+"닫기":"ปิด",
+"링크를 복사하고 카드 이미지를 저장했어요":"คัดลอกลิงก์และบันทึกรูปการ์ดแล้ว",
+"링크를 복사했어요":"คัดลอกลิงก์แล้ว",
+"카드 이미지를 저장했어요":"บันทึกรูปการ์ดแล้ว",
+"공유를 취소했어요":"ยกเลิกการแชร์แล้ว",
+"공유에 실패했어요":"แชร์ไม่สำเร็จ",
+"테마 전환":"สลับธีม",
+"몬스터 종류":"ประเภทมอนสเตอร์"
+});
+LKI18N.addRulesTh([
+[/\[계정\]/g,"[บัญชี]"],
+[/\(파티\)/g,"(ปาร์ตี้)"],
+[/\(솔로\)/g,"(เล่นคนเดียว)"],
+[/\(1인\)/g,"(เล่นคนเดียว)"],
+[/\((\d+)인\)/g,"($1 คน)"],
+[/\(레이드\)/g,"(เรด)"],
+[/(\d+)단계/g,"ขั้น $1"],
+[/(\d+)층/g,"ชั้น $1"]
+]);
+/* /TH_I18N */
 LKI18N.init();
 document.title=TITLE();
 

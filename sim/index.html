@@ -64,13 +64,14 @@ a,button{cursor:var(--lk-cursor-icon), pointer;}
 .lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
 .lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
 .lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+html[lang="th"] body,html[lang="th"] button,html[lang="th"] input,html[lang="th"] select,html[lang="th"] textarea{font-family:"Noto Sans Thai","Leelawadee UI","Sarabun",Tahoma,"Pretendard","Malgun Gothic",sans-serif}
 @media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
 </style>
 <script>
 window.LKI18N=(function(){
-  var LANGS=["ko","en","zh","ja"];
-  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
-  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var LANGS=["ko","en","zh","ja","th"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日",th:"ไทย"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語",th:"ไทย"};
   var strings={};
   var rules=[];   // [ [RegExp, {en,zh,ja}] ] — 게임 데이터에 섞인 구조적 토큰 부분치환용
   var cur="ko";
@@ -79,16 +80,21 @@ window.LKI18N=(function(){
 
   function norm(s){return (s||"").replace(/\s+/g," ").trim();}
   function hasKo(s){return /[가-힣]/.test(s||"");}
+  function pick(o){
+    if(!o||cur==="ko") return null;
+    if(o[cur]!=null) return o[cur];
+    return (cur==="th" && o.en!=null) ? o.en : null;
+  }
   function tr(ko){
     var e=strings[ko]||strings[norm(ko)];
     if(!e) return null;
-    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+    return pick(e);
   }
   function applyRules(s){
     if(cur==="ko"||!rules.length) return s;
     var out=s;
     for(var i=0;i<rules.length;i++){
-      var rep=rules[i][1][cur];
+      var rep=pick(rules[i][1]);
       if(rep!=null) out=out.replace(rules[i][0],rep);
     }
     return out;
@@ -199,19 +205,48 @@ window.LKI18N=(function(){
     "링크 복사됨":{en:"Link copied",zh:"已复制链接",ja:"リンクをコピーしました"},
     "이미지 저장됨":{en:"Image saved",zh:"已保存图片",ja:"画像を保存しました"}
   };
+  var COMMON_TH={
+    "홈":"หน้าแรก",
+    "코디 시뮬레이터":"โปรแกรมจำลองการแต่งตัว",
+    "장비 강화·인챈트 조회":"ค้นหาการตีบวก·เอนแชนต์อุปกรณ์",
+    "확률 계산기":"เครื่องคำนวณความน่าจะเป็น",
+    "타이틀 검색기":"ค้นหาไทเทิล",
+    "스킬 특화":"สกิลเฉพาะทาง",
+    "보스 도감":"สารานุกรมบอส",
+    "경험치 인던 (beta)":"ดันเจี้ยน EXP (beta)",
+    "다크/라이트 모드 전환":"สลับโหมดมืด/สว่าง",
+    "오늘":"วันนี้",
+    "실시간":"เรียลไทม์",
+    "최근 업데이트":"อัปเดตล่าสุด",
+    "공유":"แชร์",
+    "링크 복사":"คัดลอกลิงก์",
+    "이미지 저장":"บันทึกรูปภาพ",
+    "링크 복사됨":"คัดลอกลิงก์แล้ว",
+    "이미지 저장됨":"บันทึกรูปภาพแล้ว",
+    "라테일 몬스터 도감":"สารานุกรมมอนสเตอร์ LaTale",
+    "몬스터 HP 미니게임":"มินิเกมทายพลังชีวิตมอนสเตอร์",
+    "보스 몬스터 도감":"สารานุกรมมอนสเตอร์บอส",
+    "나도 해보기":"ลองเล่นเองบ้าง",
+    "공유된 획득 결과예요. 직접 도전해 볼까요?":"นี่คือผลลัพธ์ที่มีคนแชร์ไว้ ลองท้าทายด้วยตัวเองดูไหม?",
+    "스냅샷":"สแนปช็อต"
+  };
   return {
-    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=map[k], p=strings[k]||strings[norm(k)]; if(p && p!==o && p.th!=null && o.th==null) o.th=p.th; strings[k]=o; strings[norm(k)]=o; } },
     addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    addTh:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=map[k]; } },
+    addRulesTh:function(list){ (list||[]).forEach(function(x){ var s=(x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g")).source; for(var i=0;i<rules.length;i++){ if(rules[i][0].source===s){ rules[i][1].th=x[1]; } } }); },
     init:function(){
       var self=this;
       if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
       this.add(COMMON);
+      for(var k in COMMON_TH){ var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=COMMON_TH[k]; }
       buildSwitcher();
       try{ mo=new MutationObserver(schedule); }catch(e){}
       var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
       setLang(saved);
     },
     setLang:setLang, apply:apply,
+    pick:function(o){ return pick(o); },
     lang:function(){ return cur; },
     t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
   };
@@ -281,6 +316,65 @@ LKI18N.add({
   "여":{en:"F",zh:"女",ja:"女"},
   "남":{en:"M",zh:"男",ja:"男"}
 });
+/* TH_I18N */
+LKI18N.addTh({
+"LaTale 캐릭터 코디 시뮬레이터 Latte_1":"โปรแกรมจำลองการแต่งตัวตัวละคร LaTale — Latte_1",
+"캐릭터 미리보기":"ดูตัวอย่างตัวละคร",
+"내 홈 러너 관리":"จัดการตัวละครวิ่งของฉัน",
+"내 러너 관리":"จัดการตัวละครวิ่งของฉัน",
+"잔상 갤러리":"แกลเลอรีภาพเงาตกค้าง",
+"포즈":"ท่าทาง",
+"이모티콘 (포즈 사용)":"อีโมติคอน (ใช้ท่าทาง)",
+"(포즈 사용)":"(ใช้ท่าทาง)",
+"자동 재생":"เล่นอัตโนมัติ",
+"패션 비활성 (헤어/눈/피부만)":"ปิดแฟชั่น (เฉพาะทรงผม/ตา/ผิว)",
+"마네킹 모드 (대머리+무표정)":"โหมดหุ่นโชว์ (หัวล้าน+ไร้สีหน้า)",
+"실시간 이동 테스트 (←/→, 짧게 두번=달리기, C=점프)":"ทดสอบการเคลื่อนที่แบบเรียลไทม์ (←/→, กดเร็วสองครั้ง = วิ่ง, C = กระโดด)",
+"잔상 적용":"ใช้ภาพเงาตกค้าง",
+"잔상 색 적용 (beta)":"ใช้สีภาพเงาตกค้าง (beta)",
+"잔상거울의 색상을 잔상색이 적용되는 헤어, 아이템에 적용합니다. 현재는 실험중으로, 실제와 크게 다를 수 있습니다.":"นำสีของกระจกภาพเงาตกค้างไปใช้กับทรงผมและไอเทมที่รองรับสีภาพเงาตกค้าง ขณะนี้อยู่ในช่วงทดลอง อาจแตกต่างจากในเกมจริงมาก",
+"배경 포함":"รวมพื้นหลัง",
+"일반":"ปกติ",
+"크리티컬":"คริติคอล",
+"억대":"หลักร้อยล้าน",
+"점프":"กระโดด",
+"현재 조합 저장":"บันทึกชุดปัจจุบัน",
+"TXT 저장":"บันทึกเป็น TXT",
+"모두 탈의":"ถอดทั้งหมด",
+"세트 모음":"รวมเซ็ต",
+"대미지 스킨":"สกินดาเมจ",
+"숨김 아이템":"ไอเทมที่ซ่อน",
+"★ 즐겨찾기만":"★ เฉพาะรายการโปรด",
+"랜덤 데미지":"ดาเมจสุ่ม",
+"전체 숫자 0~9 보기":"ดูตัวเลขทั้งหมด 0–9",
+"취소":"ยกเลิก",
+"등록":"ลงทะเบียน",
+"닫기":"ปิด",
+"저장":"บันทึก",
+"적용":"ใช้",
+"초기화":"รีเซ็ต",
+"방향키로 좌우 이동 · 장비를 바꾸려면 체크를 껐다 켜세요":"ใช้ปุ่มลูกศรเลื่อนซ้าย/ขวา · หากต้องการเปลี่ยนอุปกรณ์ ให้ติ๊กออกแล้วติ๊กใหม่",
+"현재 캐릭터가 달리는 동안 전체 잔상거울(+6 강화)이 남기는 잔상을 실시간으로 미리 봅니다.":"ดูตัวอย่างภาพเงาตกค้างที่กระจกภาพเงาตกค้างแบบเต็ม (ตีบวก +6) ทิ้งไว้แบบเรียลไทม์ ขณะที่ตัวละครกำลังวิ่ง",
+"전체 부위 통합검색 (예: 고양이, 라이트 피치... / 초성검색 가능)":"ค้นหาทุกส่วนพร้อมกัน (เช่น 고양이, 라이트 피치... / ค้นหาด้วยพยัญชนะต้นภาษาเกาหลีได้)",
+"검색 (초성검색 가능)":"ค้นหา (ค้นหาด้วยพยัญชนะต้นภาษาเกาหลีได้)",
+"닉네임 (선택, 홈 화면에 캐릭터 클릭 시 표시)":"ชื่อเล่น (ไม่บังคับ แสดงเมื่อคลิกตัวละครบนหน้าแรก)",
+"프레임":"เฟรม",
+"이모티콘":"อีโมติคอน",
+"렌더링 중…":"กำลังเรนเดอร์…",
+"기본옷 색상":"สีชุดพื้นฐาน",
+"이동속도":"ความเร็วในการเคลื่อนที่",
+"잔상 종류":"ประเภทภาพเงาตกค้าง",
+"프리셋 (이 브라우저에만 저장됨)":"พรีเซ็ต (บันทึกไว้ในเบราว์เซอร์นี้เท่านั้น)",
+"장비창":"ช่องอุปกรณ์",
+"홈 화면 러너로 등록하시겠습니까?":"ต้องการลงทะเบียนเป็นตัวละครวิ่งบนหน้าแรกหรือไม่?",
+"최근 업데이트 2026.10.12":"อัปเดตล่าสุด 2026.10.12",
+"저장된 프리셋이 없습니다.":"ไม่มีพรีเซ็ตที่บันทึกไว้",
+"전투":"การต่อสู้",
+"패션":"แฟชั่น",
+"여":"หญิง",
+"남":"ชาย"
+});
+/* /TH_I18N */
 LKI18N.init();
 </script>
 <header class="topbar">
