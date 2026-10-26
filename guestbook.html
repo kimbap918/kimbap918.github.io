@@ -154,13 +154,14 @@ h1{font-size:22px;margin:0 0 6px;}
 .lk-lang button:hover{color:var(--text,var(--ink,#e7e9ef))}
 .lk-lang button[aria-pressed="true"]{background:var(--accent,#3b82f6);color:#fff;font-weight:700}
 .lk-lang button:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:1px}
+html[lang="th"] body,html[lang="th"] button,html[lang="th"] input,html[lang="th"] select,html[lang="th"] textarea{font-family:"Noto Sans Thai","Leelawadee UI","Sarabun",Tahoma,"Pretendard","Malgun Gothic",sans-serif}
 @media (max-width:680px){.lk-lang{top:auto;bottom:12px;right:12px}}
 </style>
 <script>
 window.LKI18N=(function(){
-  var LANGS=["ko","en","zh","ja"];
-  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日"};
-  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語"};
+  var LANGS=["ko","en","zh","ja","th"];
+  var LABEL={ko:"한",en:"EN",zh:"中",ja:"日",th:"ไทย"};
+  var FULL={ko:"한국어",en:"English",zh:"中文",ja:"日本語",th:"ไทย"};
   var strings={};
   var rules=[];
   var cur="ko";
@@ -169,16 +170,21 @@ window.LKI18N=(function(){
 
   function norm(s){return (s||"").replace(/\s+/g," ").trim();}
   function hasKo(s){return /[가-힣]/.test(s||"");}
+  function pick(o){
+    if(!o||cur==="ko") return null;
+    if(o[cur]!=null) return o[cur];
+    return (cur==="th" && o.en!=null) ? o.en : null;
+  }
   function tr(ko){
     var e=strings[ko]||strings[norm(ko)];
     if(!e) return null;
-    return (cur!=="ko" && e[cur]!=null) ? e[cur] : null;
+    return pick(e);
   }
   function applyRules(s){
     if(cur==="ko"||!rules.length) return s;
     var out=s;
     for(var i=0;i<rules.length;i++){
-      var rep=rules[i][1][cur];
+      var rep=pick(rules[i][1]);
       if(rep!=null) out=out.replace(rules[i][0],rep);
     }
     return out;
@@ -272,19 +278,48 @@ window.LKI18N=(function(){
     "홈":{en:"Home",zh:"首页",ja:"ホーム"},
     "다크/라이트 모드 전환":{en:"Toggle dark / light mode",zh:"切换深色/浅色模式",ja:"ダーク/ライト切替"}
   };
+  var COMMON_TH={
+    "홈":"หน้าแรก",
+    "코디 시뮬레이터":"โปรแกรมจำลองการแต่งตัว",
+    "장비 강화·인챈트 조회":"ค้นหาการตีบวก·เอนแชนต์อุปกรณ์",
+    "확률 계산기":"เครื่องคำนวณความน่าจะเป็น",
+    "타이틀 검색기":"ค้นหาไทเทิล",
+    "스킬 특화":"สกิลเฉพาะทาง",
+    "보스 도감":"สารานุกรมบอส",
+    "경험치 인던 (beta)":"ดันเจี้ยน EXP (beta)",
+    "다크/라이트 모드 전환":"สลับโหมดมืด/สว่าง",
+    "오늘":"วันนี้",
+    "실시간":"เรียลไทม์",
+    "최근 업데이트":"อัปเดตล่าสุด",
+    "공유":"แชร์",
+    "링크 복사":"คัดลอกลิงก์",
+    "이미지 저장":"บันทึกรูปภาพ",
+    "링크 복사됨":"คัดลอกลิงก์แล้ว",
+    "이미지 저장됨":"บันทึกรูปภาพแล้ว",
+    "라테일 몬스터 도감":"สารานุกรมมอนสเตอร์ LaTale",
+    "몬스터 HP 미니게임":"มินิเกมทายพลังชีวิตมอนสเตอร์",
+    "보스 몬스터 도감":"สารานุกรมมอนสเตอร์บอส",
+    "나도 해보기":"ลองเล่นเองบ้าง",
+    "공유된 획득 결과예요. 직접 도전해 볼까요?":"นี่คือผลลัพธ์ที่มีคนแชร์ไว้ ลองท้าทายด้วยตัวเองดูไหม?",
+    "스냅샷":"สแนปช็อต"
+  };
   return {
-    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; strings[k]=map[k]; strings[norm(k)]=map[k]; } },
+    add:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=map[k], p=strings[k]||strings[norm(k)]; if(p && p!==o && p.th!=null && o.th==null) o.th=p.th; strings[k]=o; strings[norm(k)]=o; } },
     addRules:function(list){ (list||[]).forEach(function(x){ rules.push([x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g"), x[1]]); }); },
+    addTh:function(map){ for(var k in map){ if(!map.hasOwnProperty(k)) continue; var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=map[k]; } },
+    addRulesTh:function(list){ (list||[]).forEach(function(x){ var s=(x[0] instanceof RegExp ? x[0] : new RegExp(x[0],"g")).source; for(var i=0;i<rules.length;i++){ if(rules[i][0].source===s){ rules[i][1].th=x[1]; } } }); },
     init:function(){
       var self=this;
       if(!document.body){ document.addEventListener("DOMContentLoaded",function(){ self.init(); }); return; }
       this.add(COMMON);
+      for(var k in COMMON_TH){ var o=strings[k]||strings[norm(k)]; if(!o){ o={}; strings[k]=o; strings[norm(k)]=o; } o.th=COMMON_TH[k]; }
       buildSwitcher();
       try{ mo=new MutationObserver(schedule); }catch(e){}
       var saved="ko"; try{ saved=localStorage.getItem("lk_lang")||"ko"; }catch(e){}
       setLang(saved);
     },
     setLang:setLang, apply:apply,
+    pick:function(o){ return pick(o); },
     lang:function(){ return cur; },
     t:function(ko){ var v=tr(norm(ko)); return v!=null?v:ko; }
   };
@@ -320,6 +355,38 @@ LKI18N.addRules([
   [/^(\d+)초 후 다시 남길 수 있어요\.$/, {en:"You can post again in $1s.", zh:"$1秒后可以再次留言。", ja:"$1秒後にまた投稿できます。"}],
   [/^(\d+)개$/, {en:"$1", zh:"$1条", ja:"$1件"}]
 ]);
+/* TH_I18N */
+LKI18N.addTh({
+"← 홈으로":"← กลับหน้าแรก",
+"하고 싶은 말을 자유롭게 남겨보세요.":"ฝากข้อความที่อยากบอกได้ตามสบายเลย",
+"하고 싶은 말을 자유롭게 남겨보세요":"ฝากข้อความที่อยากบอกได้ตามสบายเลย",
+"닉네임":"ชื่อเล่น",
+"비밀번호 (삭제할 때 필요)":"รหัสผ่าน (ใช้ตอนลบ)",
+"남기기":"โพสต์",
+"닉네임을 입력해주세요.":"กรุณากรอกชื่อเล่น",
+"비밀번호를 입력해주세요.":"กรุณากรอกรหัสผ่าน",
+"남겼습니다!":"โพสต์เรียบร้อยแล้ว!",
+"실패했어요. 잠시 후 다시 시도해주세요.":"ไม่สำเร็จ กรุณาลองใหม่อีกครั้งในอีกสักครู่",
+"아직 방명록이 없습니다. 첫 글을 남겨보세요!":"ยังไม่มีข้อความในสมุดเยี่ยม มาเป็นคนแรกที่โพสต์กันเถอะ!",
+"작성할 때 입력한 비밀번호를 입력하세요":"กรอกรหัสผ่านที่ตั้งไว้ตอนโพสต์",
+"비밀번호가 일치하지 않습니다.":"รหัสผ่านไม่ตรงกัน",
+"이 글을 삭제할까요?":"ต้องการลบข้อความนี้หรือไม่?",
+"내용을 수정하세요":"แก้ไขข้อความของคุณ",
+"내용을 비울 수 없습니다.":"ไม่สามารถปล่อยข้อความว่างได้",
+"수정에 실패했습니다. 잠시 후 다시 시도해주세요.":"แก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้งในอีกสักครู่",
+"수정":"แก้ไข",
+"(수정됨)":"(แก้ไขแล้ว)",
+"불러오는 중...":"กำลังโหลด...",
+"🔒 비밀글로 남기기":"🔒 โพสต์เป็นข้อความลับ",
+"🔒 비밀글입니다. 클릭하여 확인하세요.":"🔒 นี่คือข้อความลับ คลิกเพื่อดู",
+"🔒 비밀글":"🔒 ข้อความลับ",
+"방명록":"สมุดเยี่ยม"
+});
+LKI18N.addRulesTh([
+[/^(\d+)초 후 다시 남길 수 있어요\.$/,"โพสต์ใหม่ได้อีกครั้งใน $1 วินาที"],
+[/^(\d+)개$/,"$1"]
+]);
+/* /TH_I18N */
 LKI18N.init();
 </script>
 
